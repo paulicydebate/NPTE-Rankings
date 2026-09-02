@@ -225,13 +225,13 @@
                     ${rankHtml}
                     <td class="p-3 whitespace-nowrap text-gray-500">${row.Year}</td>
                     <td class="p-3">
-                        <span class="clickable text-blue-700" onclick="openModal('team', '${row.Team.replace(/'/g, "\'") }')">${teamDisplay}</span>
+                        <span class="clickable text-blue-700" onclick="openModal('team', '${row.Team.replace(/'/g, "\\'") }')">${teamDisplay}</span>
                     </td>
                     <td class="p-3">
-                        <span class="clickable" onclick="openModal('school', '${row.School.replace(/'/g, "\'") }')">${row.School}</span>
+                        <span class="clickable" onclick="openModal('school', '${row.School.replace(/'/g, "\\'") }')">${row.School}</span>
                     </td>
                     <td class="p-3 font-semibold text-gray-700">
-                        <span class="clickable text-purple-700" onclick="openModal('seasonPoints', '${row.Team.replace(/'/g, "\'") }', '${row.Year}')">${parseFloat(row['Points Earned']).toFixed(2)}</span>
+                        <span class="clickable text-purple-700" onclick="openModal('seasonPoints', '${row.Team.replace(/'/g, "\\'") }', '${row.Year}')">${parseFloat(row['Points Earned']).toFixed(2)}</span>
                     </td>
                     <td class="p-3">
                         <div class="flex items-center">
@@ -337,8 +337,8 @@
                     const d2 = filteredLogs[0]['Debater 2'] || '';
                     
                     let links = [];
-                    if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\'") }')">${d1}</span>`);
-                    if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\'") }')">${d2}</span>`);
+                    if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\\'") }')">${d1}</span>`);
+                    if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\\'") }')">${d2}</span>`);
                     
                     sub = "Debaters: " + links.join(' & ');
 
@@ -357,8 +357,8 @@
                     const d1 = filteredLogs[0]['Debater 1'] || '';
                     const d2 = filteredLogs[0]['Debater 2'] || '';
                     let links = [];
-                    if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\'") }')">${d1}</span>`);
-                    if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\'") }')">${d2}</span>`);
+                    if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\\'") }')">${d1}</span>`);
+                    if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\\'") }')">${d2}</span>`);
                     sub = links.join(' & ') + ` — Top 4 tournaments are highlighted in yellow.`;
                 }
                 pointsLabel = "Top 4 Points";
