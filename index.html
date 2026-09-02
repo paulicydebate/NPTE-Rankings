@@ -285,6 +285,24 @@
             renderTable(filtered);
         }
 
+        // Normalizes a debater name for matching: trims whitespace and lowercases.
+        // This is what lets us recognize "Brenna Seiersen" as the same person
+        // whether she's listed at Diablo Valley College or at Berkeley.
+        function normName(n) {
+            return (n || '').toString().trim().toLowerCase();
+        }
+
+        // A pair key is order-independent and school-independent: it identifies
+        // a TEAM (the two debaters together) regardless of which program they
+        // were registered under for a given tournament. Two logs with the same
+        // pair key are the same team even if their School/Team strings differ.
+        function pairKey(log) {
+            const names = [normName(log['Debater 1']), normName(log['Debater 2'])]
+                .filter(n => n)
+                .sort();
+            return names.join('||');
+        }
+
         function openModal(type, value, year = null) {
             if(!value) return;
             
@@ -302,7 +320,16 @@
                 title = value;
                 sub = "Individual Debater History";
             } else if (type === 'team') {
-                filteredLogs = tournamentLogs.filter(log => log.Team === value);
+                // First find the specific school-registration the user clicked,
+                // then pull ITS debater pair, then match that pair across the
+                // ENTIRE dataset regardless of School. This is what combines a
+                // team's history across programs (e.g. a pair that debated for
+                // two different schools in different seasons).
+                const clickedLogs = tournamentLogs.filter(log => log.Team === value);
+                const key = clickedLogs.length > 0 ? pairKey(clickedLogs[0]) : null;
+                filteredLogs = key
+                    ? tournamentLogs.filter(log => pairKey(log) === key)
+                    : clickedLogs;
                 title = "Team History";
                 
                 if (filteredLogs.length > 0) {
@@ -314,6 +341,13 @@
                     if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\'") }')">${d2}</span>`);
                     
                     sub = "Debaters: " + links.join(' & ');
+
+                    // Note when the pair has represented more than one school,
+                    // since the rows below will mix schools together.
+                    const schools = [...new Set(filteredLogs.map(l => l.School))];
+                    if (schools.length > 1) {
+                        sub += ` <span class="text-gray-400 font-normal">(combined across ${schools.join(', ')})</span>`;
+                    }
                 }
             } else if (type === 'seasonPoints') {
                 filteredLogs = tournamentLogs.filter(log => log.Team === value && log.Year === year);
