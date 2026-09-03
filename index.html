@@ -106,7 +106,11 @@
         function initializeData() {
             const summaryMap = {};
             tournamentLogs.forEach(log => {
-                const key = log.Year + '||' + log.Team;
+                // Group by season + school + the SET of debater names (order-independent),
+                // not the raw Team string - otherwise "Keene Seiersen" and "Seiersen Keene"
+                // get treated as two different teams and their points get split instead
+                // of combined into one ranked entry.
+                const key = log.Year + '||' + log.School + '||' + pairKey(log);
                 if (!summaryMap[key]) {
                     summaryMap[key] = {
                         Year: log.Year,
