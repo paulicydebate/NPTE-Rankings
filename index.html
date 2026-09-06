@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NPTE National Rankings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" nonce="2d98435932f94fb4bce6adcf96b" src="//injections.adguard.org?ts=1788654550948&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_000000002d6081fdbece782cb2e6054d%26fn%3Dindex%25281%2529.html%26cd%3Dattachment%26ts%3D496848%26p%3Dfs%26cid%3D1%26sig%3D1492cef16c76443040ffdcc51c0703d71296455cf6f2a003a79d050e039b1d08%26v%3D0&amp;app=chrome.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="2d98435932f94fb4bce6adcf96b" src="//injections.adguard.org?ts=1788654550948&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script><script src="https://cdn.tailwindcss.com"></script>
     <style>
         .modal { display: none; background: rgba(0,0,0,0.5); }
         .modal.active { display: flex; }
@@ -110,12 +110,13 @@
                 // not the raw Team string - otherwise "Keene Seiersen" and "Seiersen Keene"
                 // get treated as two different teams and their points get split instead
                 // of combined into one ranked entry.
-                const key = log.Year + '||' + log.School + '||' + pairKey(log);
+                const school = canonicalSchool(log.School);
+                const key = log.Year + '||' + school + '||' + pairKey(log);
                 if (!summaryMap[key]) {
                     summaryMap[key] = {
                         Year: log.Year,
                         Team: log.Team,
-                        School: log.School,
+                        School: school,
                         'Debater 1': log['Debater 1'],
                         'Debater 2': log['Debater 2'],
                         logs: []
@@ -298,6 +299,62 @@
         // Normalizes a debater name for matching: trims whitespace and lowercases.
         // This is what lets us recognize "Brenna Seiersen" as the same person
         // whether she's listed at Diablo Valley College or at Berkeley.
+        // Canonicalize school/program labels so aliases are treated as one school.
+        const SCHOOL_ALIASES = {
+            'Rice': 'Rice University',
+            'Rice University': 'Rice University',
+            'Whitman': 'Whitman College',
+            'Whitman College': 'Whitman College',
+            'William Jewell': 'William Jewell College',
+            'William Jewell College': 'William Jewell College',
+            'WJC': 'William Jewell College',
+            'Jewell': 'William Jewell College',
+            'McKendree': 'McKendree University',
+            'McKendree University': 'McKendree University',
+            'Mercer': 'Mercer University',
+            'Mercer University': 'Mercer University',
+            'Tulane': 'Tulane University',
+            'Tulane University': 'Tulane University',
+            'Utah': 'University of Utah',
+            'University of Utah': 'University of Utah',
+            'Oregon': 'University of Oregon',
+            'University of Oregon': 'University of Oregon',
+            'SDSU': 'San Diego State University',
+            'San Diego State University': 'San Diego State University',
+            'App State University': 'Appalachian State University',
+            'Appalachian State University': 'Appalachian State University',
+            'KCKCC': 'Kansas City Kansas Community College',
+            'Kansas City Kansas CC': 'Kansas City Kansas Community College',
+            'Solano': 'Solano Community College',
+            'Solano Community College': 'Solano Community College',
+            'UT Tyler': 'University of Texas at Tyler',
+            'University of Texas at Tyler': 'University of Texas at Tyler',
+            "Saint Mary's College": "Saint Mary's College",
+            "St. Mary's College": "Saint Mary's College",
+            "Saint Mary's": "Saint Mary's College",
+            "Saint Mary's College SMC": "Saint Mary's College",
+            "Saint Mary's College of California": "Saint Mary's College",
+            "Saint Mary's Independent": "Saint Mary's College",
+            'City College San Francisco': 'City College of San Francisco',
+            'City College of San Francisco': 'City College of San Francisco',
+            'Diabo Valley College': 'Diablo Valley College',
+            'Diablo Valley College': 'Diablo Valley College',
+            'Debate at Davis': 'UC Davis',
+            'Debate at UC Davis': 'UC Davis',
+            'Notre Dame Debate Team': 'University of Notre Dame',
+            'University of Notre Dame': 'University of Notre Dame',
+            'Illini Forensics': 'University of Illinois Urbana-Champaign',
+            'University of Illinois at Urbana': 'University of Illinois Urbana-Champaign',
+            'Parliamentary Debate at Berkeley': 'UC Berkeley',
+            'UC Berkeley': 'UC Berkeley',
+            'SFSU-Hybrid': 'San Francisco State University',
+            'San Francisco State University': 'San Francisco State University'
+        };
+
+        function canonicalSchool(name) {
+            return SCHOOL_ALIASES[name] || name;
+        }
+
         function normName(n) {
             return (n || '').toString().trim().toLowerCase();
         }
@@ -322,7 +379,7 @@
             let pointsLabel = "Total Points";
 
             if (type === 'school') {
-                filteredLogs = tournamentLogs.filter(log => log.School === value);
+                filteredLogs = tournamentLogs.filter(log => canonicalSchool(log.School) === canonicalSchool(value));
                 title = value;
                 sub = "School Profile & History";
             } else if (type === 'debater') {
@@ -354,7 +411,7 @@
 
                     // Note when the pair has represented more than one school,
                     // since the rows below will mix schools together.
-                    const schools = [...new Set(filteredLogs.map(l => l.School))];
+                    const schools = [...new Set(filteredLogs.map(l => canonicalSchool(l.School)))];
                     if (schools.length > 1) {
                         sub += ` <span class="text-gray-400 font-normal">(combined across ${schools.join(', ')})</span>`;
                     }
