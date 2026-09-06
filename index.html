@@ -117,8 +117,8 @@
                         Year: log.Year,
                         Team: log.Team,
                         School: school,
-                        'Debater 1': log['Debater 1'],
-                        'Debater 2': log['Debater 2'],
+                        'Debater 1': canonicalName(log['Debater 1']),
+                        'Debater 2': canonicalName(log['Debater 2']),
                         logs: []
                     };
                 }
@@ -352,7 +352,9 @@
             'Parliamentary Debate at Berkeley': 'UC Berkeley',
             'UC Berkeley': 'UC Berkeley',
             'SFSU-Hybrid': 'San Francisco State University',
-            'San Francisco State University': 'San Francisco State University'
+            'San Francisco State University': 'San Francisco State University',
+            'Urban Texas': 'Urban Texas Forensics',
+            'Urban Texas Forensics': 'Urban Texas Forensics'
         };
 
         function canonicalSchool(name) {
@@ -360,8 +362,28 @@
             return SCHOOL_ALIASES[cleaned] || cleaned;
         }
 
+        // Debater name aliases: the same idea as SCHOOL_ALIASES above, but for
+        // individual debaters whose name was misspelled in some tournament
+        // entries. Without this, a typo like "Maximum Renteria" instead of
+        // "Maximus Renteria" creates a second, separate team record that never
+        // merges with the debater's real history.
+        const NAME_ALIASES = {
+            'maximum renteria': 'Maximus Renteria',
+            'max renteria': 'Maximus Renteria',
+            'kyle sandefer': 'Kyle Sanderfer',
+            'joshua smith': 'Josh Smith',
+            'ilse spiropoulous': 'Ilse Spiropoulos',
+            'ilsa spiropoulous': 'Ilse Spiropoulos',
+            'ariun surva': 'Arjun Surya'
+        };
+
+        function canonicalName(name) {
+            const cleaned = (name || '').toString().trim();
+            return NAME_ALIASES[cleaned.toLowerCase()] || cleaned;
+        }
+
         function normName(n) {
-            return (n || '').toString().trim().toLowerCase();
+            return canonicalName(n).toLowerCase();
         }
 
         // A pair key is order-independent and school-independent: it identifies
@@ -388,7 +410,8 @@
                 title = value;
                 sub = "School Profile & History";
             } else if (type === 'debater') {
-                filteredLogs = tournamentLogs.filter(log => log['Debater 1'] === value || log['Debater 2'] === value);
+                const target = canonicalName(value);
+                filteredLogs = tournamentLogs.filter(log => canonicalName(log['Debater 1']) === target || canonicalName(log['Debater 2']) === target);
                 title = value;
                 sub = "Individual Debater History";
             } else if (type === 'team') {
@@ -405,8 +428,8 @@
                 title = "Team History";
                 
                 if (filteredLogs.length > 0) {
-                    const d1 = filteredLogs[0]['Debater 1'] || '';
-                    const d2 = filteredLogs[0]['Debater 2'] || '';
+                    const d1 = canonicalName(filteredLogs[0]['Debater 1'] || '');
+                    const d2 = canonicalName(filteredLogs[0]['Debater 2'] || '');
                     
                     let links = [];
                     if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\\'") }')">${d1}</span>`);
@@ -426,8 +449,8 @@
                 title = "Season Points Breakdown (" + year + ")";
                 
                 if (filteredLogs.length > 0) {
-                    const d1 = filteredLogs[0]['Debater 1'] || '';
-                    const d2 = filteredLogs[0]['Debater 2'] || '';
+                    const d1 = canonicalName(filteredLogs[0]['Debater 1'] || '');
+                    const d2 = canonicalName(filteredLogs[0]['Debater 2'] || '');
                     let links = [];
                     if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\\'") }')">${d1}</span>`);
                     if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\\'") }')">${d2}</span>`);
