@@ -28,6 +28,8 @@
         .dark .clickable:hover { color: #93c5fd; }
         .top4-row { background-color: #fefce8; font-weight: 600; border-left: 4px solid #eab308; }
         .dark .top4-row { background-color: #422006; border-left-color: #eab308; }
+        .champion-row { background-color: #fffbeb; font-weight: 600; border-left: 4px solid #f59e0b; }
+        .dark .champion-row { background-color: #451a03; border-left-color: #f59e0b; }
         .sortable { cursor: pointer; user-select: none; }
         .sortable:hover { background-color: #e5e7eb; }
         .dark .sortable:hover { background-color: #374151; }
@@ -53,6 +55,7 @@
                 <option value="partnerships">Partnership Leaderboard (All-Time)</option>
                 <option value="schoolsAllTime">School Leaderboard (All-Time)</option>
                 <option value="schoolsBySeason">School Leaderboard (by Season)</option>
+                <option value="tournaments">Tournaments</option>
             </select>
             <select id="seasonFilter" class="p-3 border rounded-md shadow-sm w-full md:w-48 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="onSeasonChange()">
             </select>
@@ -137,6 +140,7 @@
         let partnershipData = [];
         let schoolAllTimeData = [];
         let schoolSeasonData = [];
+        let tournamentData = [];
         let allSeasons = [];
         let currentSortColumn = 'points';
         let currentSortDirection = 'desc';
@@ -217,6 +221,7 @@
             partnershipData = buildPartnershipData();
             schoolAllTimeData = buildSchoolAllTimeData();
             schoolSeasonData = buildSchoolSeasonData();
+            tournamentData = buildTournamentData();
             buildTitleLookups();
         }
 
@@ -329,6 +334,34 @@
             return list;
         }
 
+        // Groups the raw tournamentLogs rows themselves by (Year, Tournament)
+        // - unlike every other build*Data function, this doesn't go through
+        // summaryData, since each row already IS one team's appearance at a
+        // single tournament. 'Points Earned' is repurposed here as the team
+        // count so this view can reuse the same sort/rank machinery as
+        // everything else, but it's displayed as "Teams", never as points.
+        function buildTournamentData() {
+            const map = {};
+            tournamentLogs.forEach(log => {
+                const key = log.Year + '||' + log.Tournament;
+                if (!map[key]) {
+                    map[key] = { Year: log.Year, Tournament: log.Tournament, teams: [] };
+                }
+                map[key].teams.push(log);
+            });
+
+            const list = Object.values(map).map(entry => ({
+                ...entry,
+                'Points Earned': entry.teams.length
+            }));
+            allSeasons.forEach(season => {
+                const seasonItems = list.filter(item => item.Year === season);
+                seasonItems.sort((a, b) => b['Points Earned'] - a['Points Earned']);
+                seasonItems.forEach((item, index) => { item.rank = index + 1; });
+            });
+            return list;
+        }
+
         function populateSeasonDropdown() {
             const select = document.getElementById('seasonFilter');
             select.innerHTML = allSeasons.map(s => `<option value="${s}">${s}</option>`).join('')
@@ -347,13 +380,17 @@
         }
 
         function updateSortIcons() {
-            document.getElementById('sortIconPoints').innerText = '';
-            document.getElementById('sortIconWinRate').innerText = '';
-            
+            // Tournaments mode has no Win Rate column, so that icon span
+            // won't exist in the DOM - guard every lookup here.
+            const pointsIcon = document.getElementById('sortIconPoints');
+            const winRateIcon = document.getElementById('sortIconWinRate');
+            if (pointsIcon) pointsIcon.innerText = '';
+            if (winRateIcon) winRateIcon.innerText = '';
+
             if (currentSortColumn === 'points') {
-                document.getElementById('sortIconPoints').innerText = currentSortDirection === 'desc' ? '▼' : '▲';
+                if (pointsIcon) pointsIcon.innerText = currentSortDirection === 'desc' ? '▼' : '▲';
             } else if (currentSortColumn === 'winrate') {
-                document.getElementById('sortIconWinRate').innerText = currentSortDirection === 'desc' ? '▼' : '▲';
+                if (winRateIcon) winRateIcon.innerText = currentSortDirection === 'desc' ? '▼' : '▲';
             }
         }
 
@@ -366,6 +403,12 @@
             currentViewMode = document.getElementById('viewMode').value;
             const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime');
             document.getElementById('seasonFilter').disabled = isAllTime;
+            // Tournaments mode has no "Win Rate" column - fall back to
+            // sorting by size instead of leaving a stale winrate sort active.
+            if (currentViewMode === 'tournaments' && currentSortColumn === 'winrate') {
+                currentSortColumn = 'points';
+                currentSortDirection = 'desc';
+            }
             renderTableHeader();
             filterData();
         }
@@ -379,7 +422,8 @@
             const th = 'p-3 font-semibold text-sm text-gray-600 dark:text-gray-300';
 
             const rankTh = `<th id="headerRank" class="${th}" style="${showRank ? '' : 'display:none;'}">Rank</th>`;
-            const pointsLabel = isAllTime ? 'Career Points' : 'Points (Top 4)';
+            let pointsLabel = isAllTime ? 'Career Points' : 'Points (Top 4)';
+            if (currentViewMode === 'tournaments') pointsLabel = 'Teams';
             const pointsTh = `<th class="${th} sortable" onclick="handleSort('points')">${pointsLabel} <span id="sortIconPoints"></span></th>`;
             const winRateTh = `<th class="${th} sortable" onclick="handleSort('winrate')">Win Rate <span id="sortIconWinRate"></span></th>`;
 
@@ -390,8 +434,10 @@
                 cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsAllTime') {
                 cols = `<th class="${th}">School</th>${pointsTh}${winRateTh}`;
-            } else { // schoolsBySeason
+            } else if (currentViewMode === 'schoolsBySeason') {
                 cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${winRateTh}`;
+            } else { // tournaments
+                cols = `<th class="${th}">Season</th><th class="${th}">Tournament</th>${pointsTh}<th class="${th}">Champion(s)</th>`;
             }
 
             document.getElementById('tableHeaderRow').innerHTML = rankTh + cols;
@@ -458,12 +504,26 @@
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('school', '${esc(row.School)}')">${pointsValue}</span></td>
                         ${winRateHtml}
                     `;
-                } else { // schoolsBySeason
+                } else if (currentViewMode === 'schoolsBySeason') {
                     cols = `
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('schoolSeason', '${esc(row.School)}', '${row.Year}')">${pointsValue}</span></td>
                         ${winRateHtml}
+                    `;
+                } else { // tournaments
+                    const champions = row.teams.filter(t => (t['Elim Wins'] || 0) > 0 && (t['Elim Losses'] || 0) === 0);
+                    const championHtml = champions.length
+                        ? champions.map(c => {
+                            const label = (c['Debater 2'] ? `${c['Debater 1']} & ${c['Debater 2']}` : c['Debater 1']) + trophySpan(getPairTitles(c['Debater 1'], c['Debater 2']));
+                            return `<span class="clickable" onclick="openModal('team', '${esc(c.Team)}')">${label}</span>`;
+                        }).join(', ')
+                        : '<span class="text-gray-400 dark:text-gray-500">—</span>';
+                    cols = `
+                        <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
+                        <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('tournament', '${esc(row.Tournament)}', '${row.Year}')">${row.Tournament}</span></td>
+                        <td class="p-3 font-semibold text-gray-700 dark:text-gray-200">${row.teams.length}</td>
+                        <td class="p-3">${championHtml}</td>
                     `;
                 }
 
@@ -483,8 +543,10 @@
                 filtered = [...partnershipData];
             } else if (currentViewMode === 'schoolsAllTime') {
                 filtered = [...schoolAllTimeData];
-            } else { // schoolsBySeason
+            } else if (currentViewMode === 'schoolsBySeason') {
                 filtered = season !== 'All' ? schoolSeasonData.filter(row => row.Year === season) : [...schoolSeasonData];
+            } else { // tournaments
+                filtered = season !== 'All' ? tournamentData.filter(row => row.Year === season) : [...tournamentData];
             }
 
             if (search) {
@@ -492,7 +554,8 @@
                     (row.Team && row.Team.toLowerCase().includes(search)) ||
                     (row.School && row.School.toLowerCase().includes(search)) ||
                     (row['Debater 1'] && row['Debater 1'].toLowerCase().includes(search)) ||
-                    (row['Debater 2'] && row['Debater 2'].toLowerCase().includes(search))
+                    (row['Debater 2'] && row['Debater 2'].toLowerCase().includes(search)) ||
+                    (row.Tournament && row.Tournament.toLowerCase().includes(search))
                 );
             }
 
@@ -750,6 +813,10 @@
                 filteredLogs = tournamentLogs.filter(log => canonicalSchool(log.School) === canonicalSchool(value) && log.Year === year);
                 title = value;
                 sub = `School Profile — ${year} Season`;
+            } else if (type === 'tournament') {
+                filteredLogs = tournamentLogs.filter(log => log.Tournament === value && log.Year === year);
+                title = value;
+                sub = `${year} Season &middot; ${filteredLogs.length} team${filteredLogs.length === 1 ? '' : 's'}`;
             }
 
             if (type === 'seasonPoints') {
@@ -774,6 +841,7 @@
                 elimLosses += (log['Elim Losses'] || 0);
 
                 let isTop4 = (type === 'seasonPoints' && index < 4);
+                let isChampion = (type === 'tournament' && (log['Elim Wins'] || 0) > 0 && (log['Elim Losses'] || 0) === 0);
 
                 if (type === 'seasonPoints') {
                     if (isTop4) displayedPoints += (log['Points Earned'] || 0);
@@ -781,7 +849,7 @@
                     displayedPoints += (log['Points Earned'] || 0);
                 }
 
-                let rowClass = isTop4 ? "top4-row" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+                let rowClass = isTop4 ? "top4-row" : isChampion ? "champion-row" : "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
                 const elimRecord = ((log['Elim Wins'] || 0) + (log['Elim Losses'] || 0)) > 0
                     ? `${log['Elim Wins'] || 0} - ${log['Elim Losses'] || 0}`
                     : '—';
@@ -790,7 +858,7 @@
                 <tr class="${rowClass}">
                     <td class="p-2 whitespace-nowrap pl-4 border-l border-transparent">${log.Year}</td>
                     <td class="p-2 text-gray-800 dark:text-gray-100 font-medium">${log.Tournament}</td>
-                    <td class="p-2 text-gray-600 dark:text-gray-400">${log.Team}</td>
+                    <td class="p-2 text-gray-600 dark:text-gray-400">${isChampion ? '🏆 ' : ''}${log.Team}</td>
                     <td class="p-2">${log['Prelim Wins']} - ${log['Prelim Losses']}</td>
                     <td class="p-2 text-gray-600 dark:text-gray-400">${elimRecord}</td>
                     <td class="p-2 font-semibold text-right pr-4">${parseFloat(log['Points Earned']).toFixed(2)}</td>
