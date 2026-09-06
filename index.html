@@ -31,6 +31,7 @@
         .sortable { cursor: pointer; user-select: none; }
         .sortable:hover { background-color: #e5e7eb; }
         .dark .sortable:hover { background-color: #374151; }
+        .trophy { cursor: help; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 p-4 md:p-8 dark:bg-gray-900 dark:text-gray-100">
@@ -216,6 +217,7 @@
             partnershipData = buildPartnershipData();
             schoolAllTimeData = buildSchoolAllTimeData();
             schoolSeasonData = buildSchoolSeasonData();
+            buildTitleLookups();
         }
 
         // Rolls the per-team-per-season rows in summaryData up into a
@@ -432,7 +434,7 @@
                 if (currentViewMode === 'teams') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = d2 ? `${d1} & ${d2}` : d1;
+                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getSeasonTitles(row.Year, d1, d2));
                     cols = `
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
@@ -443,7 +445,7 @@
                 } else if (currentViewMode === 'partnerships') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = d2 ? `${d1} & ${d2}` : d1;
+                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getPairTitles(d1, d2));
                     cols = `
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
@@ -615,6 +617,73 @@
             return names.join('||');
         }
 
+        // National championship history - manually curated, not derived from
+        // tournamentLogs (nationals results aren't part of the regular-season
+        // ingest). Names here must match the canonical spelling used
+        // elsewhere (post NAME_ALIASES) so they line up with a pair's real
+        // record via the same pairKey() everything else uses.
+        const NATIONAL_TITLES = [
+            { year: '2021-2022', d1: 'Alex Li', d2: 'Gabe Graville', titles: ['NPTE'] },
+            { year: '2021-2022', d1: 'Maximus Renteria', d2: 'Jacob Tate', titles: ['NPDA'] },
+            { year: '2022-2023', d1: 'Brenna Seiersen', d2: 'Tristan Keene', titles: ['NPTE', 'NPDA'] },
+            { year: '2022-2023', d1: 'Holden Carrillo', d2: 'Arjun Banerjee', titles: ['NPTE'] },
+            { year: '2023-2024', d1: 'Brenna Seiersen', d2: 'Tristan Keene', titles: ['NPTE', 'NPDA'] },
+            { year: '2024-2025', d1: 'Alexa Grechishkin', d2: 'Isabel Mathy', titles: ['NPDA'] },
+            { year: '2024-2025', d1: 'Trent Dixon', d2: 'Patrick Terry', titles: ['NPTE'] },
+            { year: '2025-2026', d1: 'Adrian Lossada', d2: 'Jasper Pacheco', titles: ['NPDA'] },
+            { year: '2025-2026', d1: 'Tejas Prabhune', d2: 'Timothy Zhu', titles: ['NPTE'] }
+        ];
+
+        // pairKey -> [{year, titles}], and canonical debater name -> [{year, titles, partner}]
+        let pairTitleMap = {};
+        let debaterTitleMap = {};
+
+        function buildTitleLookups() {
+            pairTitleMap = {};
+            debaterTitleMap = {};
+            NATIONAL_TITLES.forEach(t => {
+                const pk = pairKey({ 'Debater 1': t.d1, 'Debater 2': t.d2 });
+                (pairTitleMap[pk] = pairTitleMap[pk] || []).push({ year: t.year, titles: t.titles });
+
+                [[t.d1, t.d2], [t.d2, t.d1]].forEach(([self, partner]) => {
+                    const name = canonicalName(self);
+                    (debaterTitleMap[name] = debaterTitleMap[name] || []).push({
+                        year: t.year, titles: t.titles, partner: canonicalName(partner)
+                    });
+                });
+            });
+        }
+
+        function getPairTitles(d1, d2) {
+            return pairTitleMap[pairKey({ 'Debater 1': d1, 'Debater 2': d2 })] || [];
+        }
+
+        function getSeasonTitles(year, d1, d2) {
+            return getPairTitles(d1, d2).filter(t => t.year === year);
+        }
+
+        function getDebaterTitles(name) {
+            return debaterTitleMap[canonicalName(name)] || [];
+        }
+
+        function titleTooltip(entries) {
+            return entries.map(t => `${t.year}: ${t.titles.join(' & ')} National Champion${t.titles.length > 1 ? 's' : ''}`).join('\n');
+        }
+
+        function trophySpan(entries) {
+            if (!entries || entries.length === 0) return '';
+            return ` <span class="trophy" title="${titleTooltip(entries).replace(/"/g, '&quot;')}">🏆</span>`;
+        }
+
+        function titleBannerHtml(entries, { withPartner } = {}) {
+            if (!entries || entries.length === 0) return '';
+            const parts = entries.map(t => {
+                const label = `${t.year} ${t.titles.join(' & ')} National Champion${t.titles.length > 1 ? 's' : ''}`;
+                return withPartner && t.partner ? `${label} (with ${t.partner})` : label;
+            });
+            return `<div class="mt-1 text-amber-600 dark:text-amber-400 font-semibold">🏆 ${parts.join(' &middot; ')}</div>`;
+        }
+
         function openModal(type, value, year = null) {
             if(!value) return;
             
@@ -631,7 +700,7 @@
                 const target = canonicalName(value);
                 filteredLogs = tournamentLogs.filter(log => canonicalName(log['Debater 1']) === target || canonicalName(log['Debater 2']) === target);
                 title = value;
-                sub = "Individual Debater History";
+                sub = "Individual Debater History" + titleBannerHtml(getDebaterTitles(target), { withPartner: true });
             } else if (type === 'team') {
                 // First find the specific school-registration the user clicked,
                 // then pull ITS debater pair, then match that pair across the
@@ -661,6 +730,7 @@
                     if (schools.length > 1) {
                         sub += ` <span class="text-gray-400 font-normal">(combined across ${schools.join(', ')})</span>`;
                     }
+                    sub += titleBannerHtml(getPairTitles(d1, d2));
                 }
             } else if (type === 'seasonPoints') {
                 filteredLogs = tournamentLogs.filter(log => log.Team === value && log.Year === year);
@@ -673,6 +743,7 @@
                     if(d1) links.push(`<span class="clickable" onclick="openModal('debater', '${d1.replace(/'/g, "\\'") }')">${d1}</span>`);
                     if(d2) links.push(`<span class="clickable" onclick="openModal('debater', '${d2.replace(/'/g, "\\'") }')">${d2}</span>`);
                     sub = links.join(' & ') + ` — Top 4 tournaments are highlighted in yellow.`;
+                    sub += titleBannerHtml(getSeasonTitles(year, d1, d2));
                 }
                 pointsLabel = "Top 4 Points";
             } else if (type === 'schoolSeason') {
