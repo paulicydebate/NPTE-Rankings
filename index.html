@@ -425,17 +425,18 @@
             let pointsLabel = isAllTime ? 'Career Points' : 'Points (Top 4)';
             if (currentViewMode === 'tournaments') pointsLabel = 'Teams';
             const pointsTh = `<th class="${th} sortable" onclick="handleSort('points')">${pointsLabel} <span id="sortIconPoints"></span></th>`;
+            const recordTh = `<th class="${th}">Record</th>`;
             const winRateTh = `<th class="${th} sortable" onclick="handleSort('winrate')">Win Rate <span id="sortIconWinRate"></span></th>`;
 
             let cols;
             if (currentViewMode === 'teams') {
-                cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${winRateTh}`;
+                cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'partnerships') {
-                cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${winRateTh}`;
+                cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsAllTime') {
-                cols = `<th class="${th}">School</th>${pointsTh}${winRateTh}`;
+                cols = `<th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsBySeason') {
-                cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${winRateTh}`;
+                cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
             } else { // tournaments
                 cols = `<th class="${th}">Season</th><th class="${th}">Tournament</th>${pointsTh}<th class="${th}">Champion(s)</th>`;
             }
@@ -466,6 +467,7 @@
                 const esc = (s) => (s || '').replace(/'/g, "\\'");
                 const pointsValue = parseFloat(row['Points Earned']).toFixed(2);
                 const rankHtml = `<td class="p-3 font-bold text-gray-700 dark:text-gray-200" style="${showRank ? '' : 'display:none;'}">#${row.rank || '-'}</td>`;
+                const recordHtml = `<td class="p-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">${row['Prelim Wins']}-${row['Prelim Losses']}</td>`;
                 const winRateHtml = `
                     <td class="p-3">
                         <div class="flex items-center">
@@ -486,6 +488,7 @@
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('seasonPoints', '${esc(row.Team)}', '${row.Year}')">${pointsValue}</span></td>
+                        ${recordHtml}
                         ${winRateHtml}
                     `;
                 } else if (currentViewMode === 'partnerships') {
@@ -496,12 +499,14 @@
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('team', '${esc(row.Team)}')">${pointsValue}</span></td>
+                        ${recordHtml}
                         ${winRateHtml}
                     `;
                 } else if (currentViewMode === 'schoolsAllTime') {
                     cols = `
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('school', '${esc(row.School)}')">${pointsValue}</span></td>
+                        ${recordHtml}
                         ${winRateHtml}
                     `;
                 } else if (currentViewMode === 'schoolsBySeason') {
@@ -509,6 +514,7 @@
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('schoolSeason', '${esc(row.School)}', '${row.Year}')">${pointsValue}</span></td>
+                        ${recordHtml}
                         ${winRateHtml}
                     `;
                 } else { // tournaments
