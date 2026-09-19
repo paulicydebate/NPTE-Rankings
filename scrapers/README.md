@@ -53,7 +53,28 @@ character mapping, so the embedded text can't be read directly - this script
 renders each page to an image and OCRs it instead, using the PDF's real
 vector table borders/bracket lines to know exactly where to crop. This is the
 least reliable of the three scrapers since it depends on OCR accuracy rather
-than reading real text - known issue as of writing: the standings-table
-parser can pick up the wrong 6-column table on some tournament PDFs (e.g. an
-"Individual Speakers" table SpeechWire also formats with 6 columns), and OCR
-occasionally misreads certain letters (e.g. "y" as "v").
+than reading real text.
+
+Tested against 5 real tournament PDFs across 4 distinct tournaments; the
+standings-table OCR path (debater names, schools, win-loss records) matched
+the source PDF exactly in every well-formed case, including names containing
+"y" - no instance of the "y" reading as "v" was reproduced. Two other real
+bugs were found and fixed along the way:
+- The standings-table parser could pick up the wrong table on a tournament
+  whose PDF also includes an "Individual Speakers" results table (also 6+
+  columns) instead of, or in the absence of, a real team-standings table.
+  It now OCRs the header row and requires it to actually read "Competitor"
+  before accepting a table as team data; if no such table exists in the PDF
+  at all, `parse_speechwire_pdf()` now raises a clear error instead of
+  silently returning garbage/empty rows.
+- A trailing division word some tournaments print in the school parenthetical
+  (e.g. "Rice University Senior") was bleeding into the `School` field; it's
+  now stripped.
+
+If OCR misreads are found in a future PDF, the most likely place to start
+is the elimination-bracket OCR path (`_ocr_column`/`_parse_bracket`), whose
+per-column crop is not binarized the way the standings-table cell crop
+(`_crop_and_ocr_cell`) is - though even there, name/letter misreads observed
+in testing didn't affect scraped results, since the bracket page is only
+used to resolve seed advancement (matched via uppercased, punctuation-
+stripped team codes) and never as the source of debater names.

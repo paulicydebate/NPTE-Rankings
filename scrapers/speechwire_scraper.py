@@ -151,8 +151,26 @@ def _split_debater_line(names_line):
     return result
 
 
+# A trailing division word SpeechWire sometimes bakes into the school
+# parenthetical, e.g. "Competitor (Rice University Senior)" - not part of
+# the school's actual name.
+_DIVISION_SUFFIX_RE = re.compile(
+    r'\s+(Senior|Junior|Novice|Open|Varsity|JV)$', re.IGNORECASE)
+
+
+def _is_standings_header(page, header_row):
+    """Confirms a candidate 6+ column table is the real standings table (its
+    first column header OCRs to 'Competitor') and not a same-shaped table
+    SpeechWire also renders with 6+ columns, like 'Individual Speakers in
+    order' (header 'Speaker'), which lists people but not team records."""
+    if not header_row.cells or header_row.cells[0] is None:
+        return False
+    text = _crop_and_ocr_cell(page, header_row.cells[0], psm=6).strip().lower()
+    return text.startswith('competitor')
+
+
 def _parse_standings_tables(pdf):
-    """Finds every 6-column standings table across all pages (a big field
+    """Finds every genuine standings table across all pages (a big field
     may spill onto a second page) and returns a list of team dicts in
     finish order (which IS the seed order SpeechWire prints them in)."""
     teams = []
@@ -164,6 +182,8 @@ def _parse_standings_tables(pdf):
             # second "Drop H/L") don't matter - just require the table look
             # like a standings table at all, not an exact column count.
             if not rows or len(rows[0].cells) < 6:
+                continue
+            if not _is_standings_header(page, rows[0]):
                 continue
             for row in rows[1:]:  # skip header row
                 competitor_bbox = row.cells[0]
@@ -181,6 +201,7 @@ def _parse_standings_tables(pdf):
                 m = re.match(r'^(.*?)\s*\((.*?)\)\.?\s*$', header_line.strip())
                 if m:
                     code, school = m.group(1).strip(), m.group(2).strip().rstrip('.')
+                    school = _DIVISION_SUFFIX_RE.sub('', school).strip()
                 else:
                     code, school = header_line.strip(), ""
 
@@ -339,6 +360,13 @@ def _parse_bracket(pdf, teams_by_seed):
 def parse_speechwire_pdf(pdf_path, season_year="2025-2026"):
     with pdfplumber.open(pdf_path) as pdf:
         teams = _parse_standings_tables(pdf)
+        if not teams:
+            raise ValueError(
+                "No team standings table found in this PDF (only a "
+                "results/standings page with a 'Competitor' + 'Record' "
+                "table is supported - an 'Individual Speakers' or other "
+                "export won't have team win-loss records to scrape)."
+            )
         teams_by_seed = {t['seed']: t for t in teams}
         elim_rounds_by_seed = _parse_bracket(pdf, teams_by_seed)
 
