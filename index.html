@@ -53,6 +53,7 @@
             <select id="viewMode" class="p-3 border rounded-md shadow-sm w-full md:w-64 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500" onchange="onViewModeChange()">
                 <option value="teams">Team Rankings (by Season)</option>
                 <option value="partnerships">Partnership Leaderboard (All-Time)</option>
+                <option value="debaters">Individual Debater Leaderboard (All-Time)</option>
                 <option value="schoolsAllTime">School Leaderboard (All-Time)</option>
                 <option value="schoolsBySeason">School Leaderboard (by Season)</option>
                 <option value="tournaments">Tournaments</option>
@@ -141,6 +142,7 @@
         let schoolAllTimeData = [];
         let schoolSeasonData = [];
         let tournamentData = [];
+        let debaterAllTimeData = [];
         let allSeasons = [];
         let currentSortColumn = 'points';
         let currentSortDirection = 'desc';
@@ -222,7 +224,54 @@
             schoolAllTimeData = buildSchoolAllTimeData();
             schoolSeasonData = buildSchoolSeasonData();
             tournamentData = buildTournamentData();
+            debaterAllTimeData = buildDebaterAllTimeData();
             buildTitleLookups();
+        }
+
+        // Rolls summaryData up into a per-debater career total: every
+        // season, school, and PARTNER that person has ever played with are
+        // combined into one row (unlike buildPartnershipData, which keeps a
+        // pair's two career totals separate from either debater's total with
+        // a different partner).
+        function buildDebaterAllTimeData() {
+            const map = {};
+            summaryData.forEach(row => {
+                [row['Debater 1'], row['Debater 2']].forEach(name => {
+                    if (!name) return;
+                    if (!map[name]) {
+                        map[name] = {
+                            Debater: name,
+                            schools: new Set(),
+                            'Points Earned': 0,
+                            'Prelim Wins': 0,
+                            'Prelim Losses': 0,
+                            'Elim Wins': 0,
+                            'Elim Losses': 0
+                        };
+                    }
+                    const entry = map[name];
+                    entry.schools.add(row.School);
+                    entry['Points Earned'] += row['Points Earned'];
+                    entry['Prelim Wins'] += row['Prelim Wins'];
+                    entry['Prelim Losses'] += row['Prelim Losses'];
+                    entry['Elim Wins'] += row['Elim Wins'];
+                    entry['Elim Losses'] += row['Elim Losses'];
+                });
+            });
+
+            const list = Object.values(map).map(entry => {
+                const total = entry['Prelim Wins'] + entry['Prelim Losses'];
+                const elimTotal = entry['Elim Wins'] + entry['Elim Losses'];
+                return {
+                    ...entry,
+                    School: [...entry.schools].join(', '),
+                    'Prelim Win %': total > 0 ? parseFloat(((entry['Prelim Wins'] / total) * 100).toFixed(1)) : 0,
+                    'Elim Win %': elimTotal > 0 ? parseFloat(((entry['Elim Wins'] / elimTotal) * 100).toFixed(1)) : 0
+                };
+            });
+            list.sort((a, b) => b['Points Earned'] - a['Points Earned']);
+            list.forEach((item, index) => { item.rank = index + 1; });
+            return list;
         }
 
         // Rolls the per-team-per-season rows in summaryData up into a
@@ -401,7 +450,7 @@
 
         function onViewModeChange() {
             currentViewMode = document.getElementById('viewMode').value;
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime');
+            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
             document.getElementById('seasonFilter').disabled = isAllTime;
             // Tournaments mode has no "Win Rate" column - fall back to
             // sorting by size instead of leaving a stale winrate sort active.
@@ -417,7 +466,7 @@
         // is built in JS rather than fixed in the HTML.
         function renderTableHeader() {
             const season = document.getElementById('seasonFilter').value;
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime');
+            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
             const showRank = isAllTime || season !== 'All';
             const th = 'p-3 font-semibold text-sm text-gray-600 dark:text-gray-300';
 
@@ -433,6 +482,8 @@
                 cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'partnerships') {
                 cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${recordTh}${winRateTh}`;
+            } else if (currentViewMode === 'debaters') {
+                cols = `<th class="${th}">Debater</th><th class="${th}">School(s)</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsAllTime') {
                 cols = `<th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsBySeason') {
@@ -457,7 +508,7 @@
             }
             noResults.classList.add('hidden');
 
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime');
+            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
             const showRank = isAllTime || season !== 'All';
 
             data.forEach(row => {
@@ -479,20 +530,10 @@
                     </td>`;
 
                 let cols;
-                // Individually clickable debater names inside a team-column
-                // cell: clicking a name jumps to that person's career view
-                // (all partners/schools/seasons), while clicking anywhere
-                // else in the cell (the "&", the trophy, the padding) still
-                // opens the team/partnership view. stopPropagation keeps the
-                // name click from also bubbling up to the cell's own onclick.
-                const debaterLink = (name) => name
-                    ? `<span class="clickable" onclick="event.stopPropagation(); openModal('debater', '${esc(name)}')">${name}</span>`
-                    : '';
-
                 if (currentViewMode === 'teams') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = (d2 ? `${debaterLink(d1)} & ${debaterLink(d2)}` : debaterLink(d1)) + trophySpan(getSeasonTitles(row.Year, d1, d2));
+                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getSeasonTitles(row.Year, d1, d2));
                     cols = `
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
@@ -504,11 +545,20 @@
                 } else if (currentViewMode === 'partnerships') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = (d2 ? `${debaterLink(d1)} & ${debaterLink(d2)}` : debaterLink(d1)) + trophySpan(getPairTitles(d1, d2));
+                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getPairTitles(d1, d2));
                     cols = `
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('team', '${esc(row.Team)}')">${pointsValue}</span></td>
+                        ${recordHtml}
+                        ${winRateHtml}
+                    `;
+                } else if (currentViewMode === 'debaters') {
+                    const nameDisplay = row.Debater + trophySpan(getDebaterTitles(row.Debater));
+                    cols = `
+                        <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('debater', '${esc(row.Debater)}')">${nameDisplay}</span></td>
+                        <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
+                        <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('debater', '${esc(row.Debater)}')">${pointsValue}</span></td>
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -531,7 +581,7 @@
                     const champions = row.teams.filter(t => (t['Elim Wins'] || 0) > 0 && (t['Elim Losses'] || 0) === 0);
                     const championHtml = champions.length
                         ? champions.map(c => {
-                            const label = (c['Debater 2'] ? `${debaterLink(c['Debater 1'])} & ${debaterLink(c['Debater 2'])}` : debaterLink(c['Debater 1'])) + trophySpan(getPairTitles(c['Debater 1'], c['Debater 2']));
+                            const label = (c['Debater 2'] ? `${c['Debater 1']} & ${c['Debater 2']}` : c['Debater 1']) + trophySpan(getPairTitles(c['Debater 1'], c['Debater 2']));
                             return `<span class="clickable" onclick="openModal('team', '${esc(c.Team)}')">${label}</span>`;
                         }).join(', ')
                         : '<span class="text-gray-400 dark:text-gray-500">—</span>';
@@ -557,6 +607,8 @@
                 filtered = season !== 'All' ? summaryData.filter(row => row.Year === season) : [...summaryData];
             } else if (currentViewMode === 'partnerships') {
                 filtered = [...partnershipData];
+            } else if (currentViewMode === 'debaters') {
+                filtered = [...debaterAllTimeData];
             } else if (currentViewMode === 'schoolsAllTime') {
                 filtered = [...schoolAllTimeData];
             } else if (currentViewMode === 'schoolsBySeason') {
@@ -571,6 +623,7 @@
                     (row.School && row.School.toLowerCase().includes(search)) ||
                     (row['Debater 1'] && row['Debater 1'].toLowerCase().includes(search)) ||
                     (row['Debater 2'] && row['Debater 2'].toLowerCase().includes(search)) ||
+                    (row.Debater && row.Debater.toLowerCase().includes(search)) ||
                     (row.Tournament && row.Tournament.toLowerCase().includes(search))
                 );
             }
