@@ -479,10 +479,20 @@
                     </td>`;
 
                 let cols;
+                // Individually clickable debater names inside a team-column
+                // cell: clicking a name jumps to that person's career view
+                // (all partners/schools/seasons), while clicking anywhere
+                // else in the cell (the "&", the trophy, the padding) still
+                // opens the team/partnership view. stopPropagation keeps the
+                // name click from also bubbling up to the cell's own onclick.
+                const debaterLink = (name) => name
+                    ? `<span class="clickable" onclick="event.stopPropagation(); openModal('debater', '${esc(name)}')">${name}</span>`
+                    : '';
+
                 if (currentViewMode === 'teams') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getSeasonTitles(row.Year, d1, d2));
+                    const teamDisplay = (d2 ? `${debaterLink(d1)} & ${debaterLink(d2)}` : debaterLink(d1)) + trophySpan(getSeasonTitles(row.Year, d1, d2));
                     cols = `
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
@@ -494,7 +504,7 @@
                 } else if (currentViewMode === 'partnerships') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
-                    const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getPairTitles(d1, d2));
+                    const teamDisplay = (d2 ? `${debaterLink(d1)} & ${debaterLink(d2)}` : debaterLink(d1)) + trophySpan(getPairTitles(d1, d2));
                     cols = `
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
@@ -521,7 +531,7 @@
                     const champions = row.teams.filter(t => (t['Elim Wins'] || 0) > 0 && (t['Elim Losses'] || 0) === 0);
                     const championHtml = champions.length
                         ? champions.map(c => {
-                            const label = (c['Debater 2'] ? `${c['Debater 1']} & ${c['Debater 2']}` : c['Debater 1']) + trophySpan(getPairTitles(c['Debater 1'], c['Debater 2']));
+                            const label = (c['Debater 2'] ? `${debaterLink(c['Debater 1'])} & ${debaterLink(c['Debater 2'])}` : debaterLink(c['Debater 1'])) + trophySpan(getPairTitles(c['Debater 1'], c['Debater 2']));
                             return `<span class="clickable" onclick="openModal('team', '${esc(c.Team)}')">${label}</span>`;
                         }).join(', ')
                         : '<span class="text-gray-400 dark:text-gray-500">—</span>';
