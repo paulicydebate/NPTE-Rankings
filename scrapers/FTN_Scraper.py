@@ -18,10 +18,18 @@ FULL_BRACKET_SIZE = {
 
 
 def _norm(cell):
-    """Collapse a table cell's internal line-wraps/whitespace into single spaces."""
+    """Collapse a table cell's internal line-wraps/whitespace into single spaces.
+    A hyphenated surname that happens to line-wrap right at the hyphen (e.g.
+    "Fernandez-\nMalone") is rejoined without inserting a space, so it stays
+    one name ("Fernandez-Malone") instead of splitting into two tokens."""
     if cell is None:
         return ""
-    return re.sub(r"\s+", " ", str(cell)).strip()
+    # Only rejoin a hyphen with NO space before it (a genuine mid-word line
+    # wrap like "Fernandez-\nMalone") - never touch a " - " that already has
+    # a space on both sides, which is the School/debater-names separator
+    # _is_team_header_row() and the parsing regex below both rely on.
+    text = re.sub(r"(?<!\s)-\s+", "-", str(cell))
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _is_team_header_row(row):
@@ -80,15 +88,25 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                             continue
 
                         school = m_name.group(1).strip()
-                        d1_clean = re.sub(r"\s*\(.*?\)", "", m_name.group(2)).strip()
-                        d2_clean = re.sub(r"\s*\(.*?\)", "", m_name.group(3)).strip()
+                        # Strip a trailing "(...)" annotation (pronouns, a
+                        # pronunciation note, etc.) - from the first "(" to
+                        # the end, not just a well-formed "(...)" pair, since
+                        # a tournament's own name entry can leave the closing
+                        # paren off entirely (seen on a pronunciation note).
+                        d1_clean = re.sub(r"\s*\(.*", "", m_name.group(2)).strip()
+                        d2_clean = re.sub(r"\s*\(.*", "", m_name.group(3)).strip()
                         wins = int(m_wins.group(1))
 
+                        # Last name is everything after the first token, not
+                        # just the last token - a name with a space in the
+                        # last name (rare, but "Perez Gonzalez" appears in
+                        # this same event) would otherwise get silently
+                        # truncated to just "Gonzalez".
                         d1_parts, d2_parts = d1_clean.split(), d2_clean.split()
                         d1_first = d1_parts[0] if d1_parts else ""
-                        d1_last = d1_parts[-1] if len(d1_parts) > 1 else ""
+                        d1_last = " ".join(d1_parts[1:])
                         d2_first = d2_parts[0] if d2_parts else ""
-                        d2_last = d2_parts[-1] if len(d2_parts) > 1 else ""
+                        d2_last = " ".join(d2_parts[1:])
 
                         current_key = (school.lower(), d1_last.lower(), d2_last.lower())
 
