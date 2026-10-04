@@ -397,13 +397,16 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
     per_entry_round_status: {entry_id: {round_index (0-based): 'win'|'loss'|'bye'}}
     partial_info: {'round_index': int, 'fraction': float} or None
 
-    ballots_by_entry (optional): when the event has no ballot-level
-    winloss scores at all (see event_has_ballot_scores), pass the result
-    of collect_ballots_by_entry(event) here so each debate's winner is
-    read from the tournament's own posted Ballots-text instead of scores
-    that don't exist. Round debate-counts/bye detection stay structural
-    (which entries appear in a round's sections) either way, since that
-    never depended on scores being present in the first place.
+    ballots_by_entry (optional): the result of collect_ballots_by_entry(event),
+    used per-debate whenever that specific section has no ballot-level
+    winloss scores (not just when the whole event lacks them - prelims
+    can be fully scored while elims haven't been judged yet at all, e.g.
+    an export pulled mid-tournament before outrounds happen). Round
+    debate-counts/bye detection stay structural (which entries appear in
+    a round's sections) either way, since that never depended on scores
+    being present in the first place. A debate with neither scores nor
+    Ballots-text for either entry is left undetermined rather than
+    guessed at.
     """
     elim_rounds = sorted(
         (r for r in event.get("rounds", []) if r.get("type") in ("elim", "final")),
@@ -434,7 +437,21 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
         for sec_id, seen in section_entries.items():
             if len(seen) >= 2:
                 real_debate_count += 1
-                if ballots_by_entry is not None:
+                entries = section_scores[sec_id]
+                if entries:
+                    # Scores exist for at least one side of this debate -
+                    # trust them (defaulting a scoreless entry to 0 rather
+                    # than letting it vanish from consideration, same as
+                    # analyze_prelim_rounds does).
+                    for entry_id in seen:
+                        entries.setdefault(entry_id, 0.0)
+                    winner_id = max(entries, key=entries.get)
+                    for entry_id in seen:
+                        if entry_id == winner_id:
+                            winners.add(entry_id)
+                        else:
+                            losers.add(entry_id)
+                elif ballots_by_entry:
                     round_num = rnd.get("name")
                     for entry_id in seen:
                         outcome = parse_round_letter_outcomes(
@@ -446,14 +463,10 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
                             losers.add(entry_id)
                         # unknown outcome (no Ballots text for this entry/
                         # round) is left unrecorded rather than guessed
-                else:
-                    entries = section_scores[sec_id]
-                    winner_id = max(entries, key=entries.get)
-                    for entry_id in seen:
-                        if entry_id == winner_id:
-                            winners.add(entry_id)
-                        else:
-                            losers.add(entry_id)
+                # else: no scores and no Ballots-text for this debate at
+                # all - genuinely no data yet (e.g. an elim round that
+                # hasn't been judged). Leave undetermined rather than
+                # fabricating a winner or crashing on an empty max().
             elif len(seen) == 1:
                 # only one entry recorded for this section: a bye
                 byes.add(seen[0])
@@ -670,7 +683,12 @@ def build_rows_for_event(data, category, event, year_override=None):
             eid = str(result_row.get("entry"))
             result_rows_by_entry.setdefault(eid, result_row)  # first one wins on dupes
 
-    ballots_by_entry = collect_ballots_by_entry(event) if not has_scores else None
+    # Always computed (not gated on has_scores): analyze_elim_rounds() now
+    # decides per-debate whether to trust scores or fall back to this,
+    # since prelims and elims can differ in whether they're scored yet
+    # (e.g. an export pulled mid-tournament, prelims judged but outrounds
+    # not yet entered).
+    ballots_by_entry = collect_ballots_by_entry(event)
     per_entry_status, partial_info, n_elim_rounds = analyze_elim_rounds(event, ballots_by_entry)
     year = year_override or academic_year(data.get("start", ""))
 
