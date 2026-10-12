@@ -432,6 +432,225 @@ def parse_speechwire_pdf(pdf_path, season_year="2025-2026"):
     return pd.DataFrame(records)
 
 
+# ---------------------------------------------------------------------------
+# Alternate SpeechWire export: a "tab grouping" prelim sheet (URL path
+# .../tab-grouping-print.php) plus a separate "awards assembly script" PDF
+# for elim results, instead of one combined standings+bracket PDF. Unlike
+# the format above, this one's embedded text is real (not an obfuscated
+# Type 3 font), so neither file needs OCR at all.
+# ---------------------------------------------------------------------------
+
+# Teams named under a round heading in the awards script are the ones
+# ELIMINATED there (never advanced further) - not the ones who reached it.
+# Spelling matches SpeechWire's own script text exactly ("Octafinalists",
+# not "Octofinalists") - a mismatch here silently sorts that round last
+# instead of first, corrupting every round's win count.
+TAB_GROUPING_ROUND_PRIORITY = {
+    "Octafinalists": 0, "Quarterfinalists": 1, "Semifinalists": 2, "Finalists": 3,
+}
+TAB_GROUPING_FULL_SIZE = {
+    "Octafinalists": 16, "Quarterfinalists": 8, "Semifinalists": 4, "Finalists": 2,
+}
+
+
+def _recover_split_tab_grouping_row(page_end, bottom_y, page_start, top_y):
+    """Recovers a team's header row when it fell into the gap between the
+    end of one page's detected table and the start of the next page's -
+    seen when an unusually long school name (e.g. "Parliamentary Debate at
+    Berkeley") wraps to enough lines that pdfplumber's table detection
+    can't reconstruct one coherent row spanning the page break. Crops the
+    leftover text above/below the two pages' detected table boundaries and
+    parses the team code and win-loss record directly from it (reliable);
+    the school name is a best-effort guess from the same text, since it's
+    flattened together with neighboring cells' wrapped continuations."""
+    crop_end = page_end.crop((0, bottom_y, page_end.width, page_end.height))
+    crop_start = page_start.crop((0, 0, page_start.width, top_y))
+    lines_end = (crop_end.extract_text() or '').splitlines()
+    lines_start = [l for l in (crop_start.extract_text() or '').splitlines()
+                   if 'SpeechWire Tournament Services' not in l]
+
+    line1 = lines_end[0] if lines_end else ''
+    line2 = lines_end[1] if len(lines_end) > 1 else ''
+    line3 = lines_start[0] if lines_start else ''
+
+    m = re.match(r'^(.*?)\s+(?:[LW]\s*-).*?(\d+)-(\d+)\s+(\d+\w\w)\s*$', line1)
+    if not m:
+        return None
+    code = m.group(1).strip()
+    wins, losses = int(m.group(2)), int(m.group(3))
+    school_guess = re.sub(r'\s+', ' ', (line2 + ' ' + line3).strip())
+    return {'code': code, 'school_guess': school_guess, 'wins': wins, 'losses': losses}
+
+
+def parse_tab_grouping_pdf(pdf_path):
+    """Parses a SpeechWire 'tab grouping' print sheet into one record per
+    team, in the sheet's own finish/seed order: {code, school, d1, d2,
+    wins, losses}. Each team occupies 3 table rows (a header row giving
+    code/school/record, then one row per debater's individual speaker
+    scores) - real embedded text, no OCR needed."""
+    all_rows = []
+    with pdfplumber.open(pdf_path) as pdf:
+        pages = pdf.pages
+        page_tables = [p.find_tables() for p in pages]
+        for i, page in enumerate(pages):
+            if not page_tables[i]:
+                continue
+            page_rows = page_tables[i][0].extract()
+            if page_rows and page_rows[0] and (page_rows[0][0] or '').strip() == 'Competitor':
+                page_rows = page_rows[1:]
+            # If this page doesn't open on a header row (code\nschool) and
+            # the previous page had a table, a row likely fell into the
+            # page-break gap - try to recover it before continuing.
+            if (page_rows and page_rows[0][0] and '\n' not in page_rows[0][0]
+                    and i > 0 and page_tables[i - 1]):
+                prev_table = page_tables[i - 1][0]
+                recovered = _recover_split_tab_grouping_row(
+                    pages[i - 1], prev_table.rows[-1].bbox[3], page, page_tables[i][0].rows[0].bbox[1]
+                )
+                if recovered:
+                    all_rows.append(('__RECOVERED__', recovered))
+            all_rows.extend(page_rows)
+
+    teams = []
+    i = 0
+    while i < len(all_rows):
+        row = all_rows[i]
+        if isinstance(row, tuple) and row[0] == '__RECOVERED__':
+            rec = row[1]
+            school = rec['school_guess']
+            if school.lower().startswith('parliamentary debate'):
+                school = 'Parliamentary Debate at Berkeley'
+            else:
+                print(f"  [WARNING] Recovered a team header split across a page break "
+                      f"(code '{rec['code']}') - school name is a best-effort guess "
+                      f"('{school}') and should be double-checked.")
+            d1 = (all_rows[i + 1][0] or '').strip()
+            d2 = (all_rows[i + 2][0] or '').strip()
+            teams.append({'code': rec['code'], 'school': school,
+                          'd1': d1, 'd2': d2, 'wins': rec['wins'], 'losses': rec['losses']})
+            i += 3
+            continue
+
+        c0 = row[0] or ''
+        if '\n' not in c0:
+            raise ValueError(
+                f"Expected a team header row (Code\\nSchool) at position {i}, got: {c0!r}. "
+                "This PDF's layout may not match what this parser expects - check manually."
+            )
+        code, school = c0.split('\n', 1)
+        code, school = code.strip(), re.sub(r'\s+', ' ', school).strip().rstrip('.')
+        if school.lower().startswith('parliamentary debate'):
+            school = 'Parliamentary Debate at Berkeley'
+
+        record_cell = row[6] or ''
+        m = re.match(r'(\d+)-(\d+)', record_cell.strip())
+        if not m:
+            raise ValueError(f"Could not find a W-L record in row {i}'s record cell: {record_cell!r}")
+        wins, losses = int(m.group(1)), int(m.group(2))
+
+        d1 = (all_rows[i + 1][0] or '').strip()
+        d2 = (all_rows[i + 2][0] or '').strip()
+        if '\n' in d1 or '\n' in d2:
+            raise ValueError(f"Expected plain debater-name rows after row {i}, got {d1!r} / {d2!r}")
+
+        teams.append({'code': code, 'school': school, 'd1': d1, 'd2': d2, 'wins': wins, 'losses': losses})
+        i += 3
+
+    return teams
+
+
+def parse_awards_script(pdf_path):
+    """Parses a SpeechWire 'awards assembly script' PDF into
+    {frozenset({d1, d2}): {'school': ..., 'eliminated_in': round_name,
+    'place': 1 | 2 | None}}. Teams named under a round heading are the ones
+    ELIMINATED in that round; the Final section instead gives an explicit
+    1st/2nd place for the two finalists (place=1 means they won it all)."""
+    with pdfplumber.open(pdf_path) as pdf:
+        text = '\n'.join(p.extract_text() or '' for p in pdf.pages)
+
+    results = {}
+    current_round = None
+    for line in (l.strip() for l in text.splitlines() if l.strip()):
+        m_round = re.match(r'The (\w+) in .+ were\.\.\.', line)
+        if m_round:
+            current_round = m_round.group(1)
+            continue
+        if line.startswith('In the Final round'):
+            current_round = 'Finalists'
+            continue
+        m_place = re.match(r'In (1st|2nd) place, from (.+?), (.+?) and (.+?)\.$', line)
+        if m_place:
+            place = 1 if m_place.group(1) == '1st' else 2
+            school, d1, d2 = (g.strip() for g in m_place.groups()[1:])
+            results[frozenset([d1, d2])] = {'school': school, 'eliminated_in': current_round, 'place': place}
+            continue
+        m_from = re.match(r'From (.+?), (.+?) and (.+?)\.$', line)
+        if m_from and current_round:
+            school, d1, d2 = (g.strip() for g in m_from.groups())
+            results[frozenset([d1, d2])] = {'school': school, 'eliminated_in': current_round, 'place': None}
+            continue
+    return results
+
+
+def parse_speechwire_tab_grouping_tournament(prelims_path, outs_path, season_year="2025-2026"):
+    """Combines a 'tab grouping' prelims sheet and its matching 'awards
+    assembly script' into the same row shape the other scrapers produce.
+    The earliest round named in the awards script is treated as a partial
+    first round (same meaning as elsewhere: an under-strength bracket round,
+    credited via Partial Elim rather than a numbered Full Win) whenever
+    fewer teams entered it than a full bracket at that size would hold;
+    its strength is derived from how many teams were eliminated in it
+    (each elimination there implies one real debate, i.e. two entrants),
+    matching how FTN_Scraper.py sizes a partial round."""
+    teams = parse_tab_grouping_pdf(prelims_path)
+    elim = parse_awards_script(outs_path)
+
+    rounds_present = sorted({v['eliminated_in'] for v in elim.values()} | {'Finalists'},
+                             key=lambda r: TAB_GROUPING_ROUND_PRIORITY.get(r, 99))
+    first_round = rounds_present[0] if rounds_present else None
+    full_size = TAB_GROUPING_FULL_SIZE.get(first_round, 0)
+    entrants_total = len(elim)
+    first_round_eliminated = sum(1 for v in elim.values() if v['eliminated_in'] == first_round)
+    is_partial = bool(full_size) and entrants_total < full_size
+    partial_fraction = round(2 * first_round_eliminated / full_size, 4) if is_partial else 0
+
+    col_names = ["1st Full Win", "2nd Full Win", "3rd Full Win", "4th Full Win",
+                 "5th Full win", "6th Full win", "7th Full win"]
+    records = []
+    for t in teams:
+        info = elim.get(frozenset([t['d1'], t['d2']]))
+        advanced = info is not None
+        partial_elim = 0
+        full_wins = [False] * 7
+
+        if advanced:
+            elim_idx = len(rounds_present) if info['place'] == 1 else rounds_present.index(info['eliminated_in'])
+            if is_partial:
+                partial_elim = partial_fraction if elim_idx > 0 else 0
+                full_rounds_won = max(0, elim_idx - 1)
+            else:
+                full_rounds_won = elim_idx
+            for fi in range(min(full_rounds_won, 7)):
+                full_wins[fi] = True
+
+        d1_parts, d2_parts = t['d1'].split(), t['d2'].split()
+        records.append({
+            "Year": season_year, "School": t['school'],
+            "Debater 1 First Name": d1_parts[0] if d1_parts else '',
+            "Debater 1 Last Name": ' '.join(d1_parts[1:]) if len(d1_parts) > 1 else '',
+            "Debater 2 First Name": d2_parts[0] if d2_parts else '',
+            "Debater 2 Last Name": ' '.join(d2_parts[1:]) if len(d2_parts) > 1 else '',
+            "Prelim Wins": t['wins'], "Prelim Losses": t['losses'],
+            "Advanced": advanced, "Partial Elim": partial_elim,
+            **{col_names[fi]: full_wins[fi] for fi in range(7)},
+        })
+
+    column_order = ["Year", "School", "Debater 1 First Name", "Debater 1 Last Name",
+                     "Debater 2 First Name", "Debater 2 Last Name", "Prelim Wins", "Prelim Losses",
+                     "Advanced", "Partial Elim"] + col_names
+    return pd.DataFrame(records)[column_order]
+
+
 def process_all_pdfs_to_multitab_excel(season_year="2025-2026"):
     pdf_files = glob.glob("*.pdf")
     if not pdf_files:

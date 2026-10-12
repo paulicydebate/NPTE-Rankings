@@ -78,3 +78,36 @@ per-column crop is not binarized the way the standings-table cell crop
 in testing didn't affect scraped results, since the bracket page is only
 used to resolve seed advancement (matched via uppercased, punctuation-
 stripped team codes) and never as the source of debater names.
+
+### Alternate SpeechWire export: tab-grouping sheet + awards script
+
+Some tournaments (first seen: Steve Hunt Classic 2026) export two separate
+PDFs instead of one combined standings+bracket PDF - a "tab grouping" print
+sheet (prelim results, one row per team) and an "awards assembly script"
+(elim results, as a plain-text narration naming who was eliminated in each
+round rather than a bracket diagram). Both have real embedded text, so
+neither needs OCR at all - a first for this scraper.
+
+```python
+from speechwire_scraper import parse_speechwire_tab_grouping_tournament
+df = parse_speechwire_tab_grouping_tournament("Prelims.pdf", "Outs.pdf", "2026-2027")
+```
+
+`parse_tab_grouping_pdf()` reads the prelims sheet via its real table cells
+(not OCR) - each team is 3 rows (header + 2 debaters). One known fragility:
+an unusually long school name (so far, only "Parliamentary Debate at
+Berkeley") can wrap to enough lines that a team's header row falls into the
+gap between one page's detected table and the next's; `_recover_split_tab_
+grouping_row()` reconstructs the team code and W-L record reliably from the
+leftover text on both pages, but the recovered school name is a best-effort
+guess and prints a `[WARNING]` - always double-check it by hand.
+
+`parse_awards_script()` reads the elimination results directly from the
+narration text ("The Octafinalists were... From {school}, {d1} and
+{d2}."). Round names must match SpeechWire's own spelling exactly
+(`TAB_GROUPING_ROUND_PRIORITY`/`TAB_GROUPING_FULL_SIZE`) - a mismatch
+silently sorts that round out of order instead of raising, which corrupts
+every team's elim win count. If a future tournament's script uses a round
+name not in those two dicts (e.g. "Double Octafinalists" for a 32-team
+bracket), add it there rather than assuming the existing four cover
+everything.
