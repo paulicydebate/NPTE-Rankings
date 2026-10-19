@@ -286,17 +286,25 @@
             tournamentData = buildTournamentData();
             debaterAllTimeData = buildDebaterAllTimeData();
             buildTitleLookups();
-            renderCircuitSideSplit();
         }
 
-        // Circuit-wide Aff/Neg split across every recorded debate, shown as a
-        // small always-visible line above the table regardless of view mode.
-        // Rows without recorded side data (older sources where it couldn't be
-        // extracted) simply don't contribute - this isn't gated per-row like
-        // the modal badges since it's one aggregate over the whole dataset.
+        // Circuit-wide Aff/Neg split, shown as a small always-visible line
+        // above the table. Scoped to match whatever the table itself is
+        // currently showing: a specific season when one's selected, or
+        // summed across every season for "All-Time" and for the view modes
+        // (partnerships/schoolsAllTime/debaters) that are always career
+        // totals regardless of the season dropdown. Rows without recorded
+        // side data (older sources where it couldn't be extracted) simply
+        // don't contribute - this isn't gated per-row like the modal badges
+        // since it's one aggregate over whatever set of logs is in scope.
         function renderCircuitSideSplit() {
+            const season = document.getElementById('seasonFilter').value;
+            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
+            const showAllTime = isAllTime || season === 'All';
+            const logs = showAllTime ? tournamentLogs : tournamentLogs.filter(log => log.Year === season);
+
             let affWins = 0, affLosses = 0, negWins = 0, negLosses = 0;
-            tournamentLogs.forEach(log => {
+            logs.forEach(log => {
                 affWins += (log['Aff Wins'] || 0);
                 affLosses += (log['Aff Losses'] || 0);
                 negWins += (log['Neg Wins'] || 0);
@@ -309,7 +317,8 @@
             if (affTotal === 0 && negTotal === 0) { el.textContent = ''; return; }
             const affPct = affTotal > 0 ? ((affWins / affTotal) * 100).toFixed(1) : '—';
             const negPct = negTotal > 0 ? ((negWins / negTotal) * 100).toFixed(1) : '—';
-            el.innerHTML = `Circuit-wide side split: <span class="font-semibold text-cyan-600 dark:text-cyan-400">Aff ${affWins}-${affLosses} (${affPct}%)</span> &middot; <span class="font-semibold text-rose-600 dark:text-rose-400">Neg ${negWins}-${negLosses} (${negPct}%)</span>`;
+            const label = showAllTime ? 'All-time' : season;
+            el.innerHTML = `${label} side split: <span class="font-semibold text-cyan-600 dark:text-cyan-400">Aff ${affWins}-${affLosses} (${affPct}%)</span> &middot; <span class="font-semibold text-rose-600 dark:text-rose-400">Neg ${negWins}-${negLosses} (${negPct}%)</span>`;
         }
 
         // Rolls summaryData up into a per-debater career total: every
@@ -530,6 +539,7 @@
         function onSeasonChange() {
             renderTableHeader();
             filterData();
+            renderCircuitSideSplit();
         }
 
         function onViewModeChange() {
@@ -544,6 +554,7 @@
             }
             renderTableHeader();
             filterData();
+            renderCircuitSideSplit();
         }
 
         // The table's columns depend on currentViewMode, so the header row
