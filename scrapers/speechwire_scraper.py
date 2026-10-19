@@ -482,12 +482,37 @@ def _recover_split_tab_grouping_row(page_end, bottom_y, page_start, top_y):
     return {'code': code, 'school_guess': school_guess, 'wins': wins, 'losses': losses}
 
 
+def _parse_tab_grouping_round_cell(cell_text):
+    """A prelim round cell looks like "L - Rice\\nUniversit GW -\\nAFF\\nWC1
+    Alexa\\nGrechishkin" once pdfplumber wraps the opponent's name across
+    lines - collapsing newlines to spaces gives "L - Rice Universit GW -
+    AFF WC1 Alexa Grechishkin", where the side is reliably the token right
+    after the LAST " - " before the judge info starts. Team codes never
+    contain a hyphen themselves, so this never ambiguously matches the
+    wrong "-". Returns (result, side) as ('W'|'L'|None, 'Aff'|'Neg'|None);
+    either can be None for a cell this doesn't recognize (e.g. a bye)."""
+    normalized = ' '.join((cell_text or '').split())
+    m = re.match(r'^([WL])\s*-\s*.*?-\s*(AFF|Neg|GOV|OPP)\b', normalized, re.IGNORECASE)
+    if not m:
+        return None, None
+    result = m.group(1).upper()
+    side_word = m.group(2).upper()
+    side = 'Aff' if side_word in ('AFF', 'GOV') else 'Neg'
+    return result, side
+
+
 def parse_tab_grouping_pdf(pdf_path):
     """Parses a SpeechWire 'tab grouping' print sheet into one record per
     team, in the sheet's own finish/seed order: {code, school, d1, d2,
-    wins, losses}. Each team occupies 3 table rows (a header row giving
-    code/school/record, then one row per debater's individual speaker
-    scores) - real embedded text, no OCR needed."""
+    wins, losses, aff_wins, aff_losses, neg_wins, neg_losses}. Each team
+    occupies 3 table rows (a header row giving code/school/record plus one
+    round-result cell per prelim round, then one row per debater's
+    individual speaker scores) - real embedded text, no OCR needed.
+
+    The Aff/Neg tally only covers these PRELIM rounds - the separate
+    awards-script PDF (elim rounds) names only who was eliminated where,
+    never which side they were on, so elim rounds can't contribute to the
+    split with this source."""
     all_rows = []
     with pdfplumber.open(pdf_path) as pdf:
         pages = pdf.pages
@@ -526,8 +551,12 @@ def parse_tab_grouping_pdf(pdf_path):
                       f"('{school}') and should be double-checked.")
             d1 = (all_rows[i + 1][0] or '').strip()
             d2 = (all_rows[i + 2][0] or '').strip()
+            # The page-break recovery path only reconstructs the code/
+            # school/record from cropped leftover text, not the individual
+            # round cells - Aff/Neg can't be determined for this team.
             teams.append({'code': rec['code'], 'school': school,
-                          'd1': d1, 'd2': d2, 'wins': rec['wins'], 'losses': rec['losses']})
+                          'd1': d1, 'd2': d2, 'wins': rec['wins'], 'losses': rec['losses'],
+                          'aff_wins': None, 'aff_losses': None, 'neg_wins': None, 'neg_losses': None})
             i += 3
             continue
 
@@ -548,12 +577,25 @@ def parse_tab_grouping_pdf(pdf_path):
             raise ValueError(f"Could not find a W-L record in row {i}'s record cell: {record_cell!r}")
         wins, losses = int(m.group(1)), int(m.group(2))
 
+        aff_wins = aff_losses = neg_wins = neg_losses = 0
+        for round_cell in row[1:6]:
+            result, side = _parse_tab_grouping_round_cell(round_cell)
+            if result is None or side is None:
+                continue
+            if side == 'Aff':
+                aff_wins += result == 'W'
+                aff_losses += result == 'L'
+            else:
+                neg_wins += result == 'W'
+                neg_losses += result == 'L'
+
         d1 = (all_rows[i + 1][0] or '').strip()
         d2 = (all_rows[i + 2][0] or '').strip()
         if '\n' in d1 or '\n' in d2:
             raise ValueError(f"Expected plain debater-name rows after row {i}, got {d1!r} / {d2!r}")
 
-        teams.append({'code': code, 'school': school, 'd1': d1, 'd2': d2, 'wins': wins, 'losses': losses})
+        teams.append({'code': code, 'school': school, 'd1': d1, 'd2': d2, 'wins': wins, 'losses': losses,
+                      'aff_wins': aff_wins, 'aff_losses': aff_losses, 'neg_wins': neg_wins, 'neg_losses': neg_losses})
         i += 3
 
     return teams
@@ -643,11 +685,14 @@ def parse_speechwire_tab_grouping_tournament(prelims_path, outs_path, season_yea
             "Prelim Wins": t['wins'], "Prelim Losses": t['losses'],
             "Advanced": advanced, "Partial Elim": partial_elim,
             **{col_names[fi]: full_wins[fi] for fi in range(7)},
+            "Aff Wins": t['aff_wins'], "Aff Losses": t['aff_losses'],
+            "Neg Wins": t['neg_wins'], "Neg Losses": t['neg_losses'],
         })
 
     column_order = ["Year", "School", "Debater 1 First Name", "Debater 1 Last Name",
                      "Debater 2 First Name", "Debater 2 Last Name", "Prelim Wins", "Prelim Losses",
-                     "Advanced", "Partial Elim"] + col_names
+                     "Advanced", "Partial Elim"] + col_names + [
+                     "Aff Wins", "Aff Losses", "Neg Wins", "Neg Losses"]
     return pd.DataFrame(records)[column_order]
 
 

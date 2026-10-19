@@ -130,6 +130,8 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                                 "Advanced": wins >= 3,
                                 "Partial Elim": 0,
                                 "ElimRounds": [],
+                                "Aff Wins": 0, "Aff Losses": 0,
+                                "Neg Wins": 0, "Neg Losses": 0,
                             }
                         else:
                             # Header re-appears on a page-break continuation;
@@ -145,17 +147,8 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
 
                     if current_key and _is_round_data_row(row):
                         round_label = _norm(row[0])
+                        side_cell = _norm(row[1]).lower()
                         is_prelim = round_label.upper().startswith("RD")
-                        if is_prelim:
-                            # Prelim W/L totals come from the header count, not
-                            # these rows - but the row label ("Rd 1".."Rd N")
-                            # is the only place the tournament's actual number
-                            # of prelim rounds is recorded, so track its max
-                            # instead of assuming every tournament runs 4.
-                            m_round_num = re.search(r"(\d+)", round_label)
-                            if m_round_num:
-                                max_prelim_round = max(max_prelim_round, int(m_round_num.group(1)))
-                            continue
 
                         decision = _norm(row[4]) if len(row) > 4 else ""
                         opponent = _norm(row[2]) if len(row) > 2 else ""
@@ -169,6 +162,29 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                         # round still counts as having occurred and must NOT be treated
                         # as a bye just because "bye" appears in the judge text.
                         has_bye = opponent.strip().upper() == "ZZ"
+
+                        # A bye isn't an actual contested debate on either side, so it's
+                        # excluded from the Aff/Neg split (which only counts rounds that
+                        # were genuinely debated) even though it still counts as a win
+                        # for Prelim/Elim Wins purposes elsewhere.
+                        if not has_bye:
+                            is_aff = side_cell in ("aff", "gov")
+                            is_neg = side_cell in ("neg", "opp")
+                            if is_aff:
+                                teams_dict[current_key]["Aff Wins" if team_won else "Aff Losses"] += 1
+                            elif is_neg:
+                                teams_dict[current_key]["Neg Wins" if team_won else "Neg Losses"] += 1
+
+                        if is_prelim:
+                            # Prelim W/L totals come from the header count, not
+                            # these rows - but the row label ("Rd 1".."Rd N")
+                            # is the only place the tournament's actual number
+                            # of prelim rounds is recorded, so track its max
+                            # instead of assuming every tournament runs 4.
+                            m_round_num = re.search(r"(\d+)", round_label)
+                            if m_round_num:
+                                max_prelim_round = max(max_prelim_round, int(m_round_num.group(1)))
+                            continue
 
                         teams_dict[current_key]["Advanced"] = True
                         teams_dict[current_key]["ElimRounds"].append(
@@ -246,6 +262,7 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
             "Prelim Wins", "Prelim Losses", "Advanced", "Partial Elim",
             "1st Full Win", "2nd Full Win", "3rd Full Win", "4th Full Win",
             "5th Full win", "6th Full win", "7th Full win",
+            "Aff Wins", "Aff Losses", "Neg Wins", "Neg Losses",
         ]
         df = df[column_order]
         df.sort_values(by="Advanced", ascending=False, inplace=True)
