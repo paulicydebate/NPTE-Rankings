@@ -850,10 +850,17 @@ def _page_section_ocr(page):
             if marker.lower() in line.lower():
                 return (lines[i - 1] if i > 0 else None), kind
     # A prelim table page has no such marker - any page with a real table
-    # on it (OCR title lines aside) counts as one.
+    # on it (OCR title lines aside) counts as one. A genuine title line
+    # never contains a digit and is reasonably short; a page-break
+    # continuation has no title at all, so its first OCR'd lines are just
+    # more table content (round data, scores) - checked for here so a
+    # continuation page comes back (None, None) and gets its division
+    # filled in from the preceding page instead of a garbled fake one.
     if page.find_tables():
-        division = lines[1] if len(lines) > 1 else (lines[0] if lines else None)
-        return division, 'prelim_table'
+        candidate = lines[1] if len(lines) > 1 else (lines[0] if lines else None)
+        if candidate and len(candidate) < 60 and not re.search(r'\d', candidate):
+            return candidate, 'prelim_table'
+        return None, None
     return None, None
 
 
@@ -940,8 +947,8 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
             name_idx, round_idxs, totals_idx, result_idx = cols
             name_bbox = row.cells[name_idx]
             height = name_bbox[3] - name_bbox[1]
-            if height < 10 or height > 100:
-                continue  # near-zero-height spacer row, or a giant border-column artifact
+            if height > 100:
+                continue  # a giant border-column artifact, not a real row
 
             round_texts = [
                 _crop_and_ocr_cell(page, row.cells[i], psm=6) if row.cells[i] else ''
@@ -968,7 +975,12 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
                 continue  # noise row before any header, or a 3rd+ stray row
             name_text = _crop_and_ocr_cell(page, name_bbox, psm=6)
             name_text = re.sub(r'\s+', ' ', name_text).strip()
-            if name_text:
+            # A real debater name OCRs as 2+ capitalized words - excludes a
+            # spacer/divider row's OCR garbage (fragments like "r ol" or
+            # "An An" from a thin gray gridline), which this format can
+            # insert between a team's real rows at an arbitrarily small
+            # height, so height alone can't be used to skip those rows.
+            if re.match(r"^[A-Z][a-zA-Z'.\-]*(\s+[A-Z][a-zA-Z'.\-]*)+$", name_text):
                 current['debaters'].append(name_text)
         if current:
             teams.append(current)
