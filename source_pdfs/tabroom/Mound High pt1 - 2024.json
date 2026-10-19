@@ -1,0 +1,2045 @@
+{
+   "webname" : null,
+   "timezone" : "America/Chicago",
+   "backup_created" : "2026-09-04T02:11:37",
+   "start" : "2024-01-05 14:00:00",
+   "id" : 30089,
+   "whole" : 1,
+   "categories" : [
+      {
+         "id" : "79998",
+         "events" : [
+            {
+               "fee" : "80.00",
+               "abbr" : "NPDA",
+               "id" : "279394",
+               "name" : "NPDA",
+               "type" : "debate",
+               "rounds" : [
+                  {
+                     "protocol_name" : "Debate Elims",
+                     "label" : "Octs",
+                     "id" : "1131366",
+                     "start_time" : "2024-01-05 15:30:00",
+                     "sections" : [
+                        {
+                           "id" : "7019395",
+                           "letter" : "1",
+                           "room" : "Knight101",
+                           "round" : "1131366",
+                           "ballots" : [
+                              {
+                                 "judge_first" : "Rebecca",
+                                 "judge_started" : "2024-01-06 14:47:12",
+                                 "judge_code" : "107",
+                                 "judge" : 2139061,
+                                 "started_by" : 115609,
+                                 "panel" : "7019395",
+                                 "judge_last" : "Postula",
+                                 "entry_code" : "UTTyl HS",
+                                 "entry" : 5451257,
+                                 "entry_name" : "Hurtado & Stansbery",
+                                 "judge_person" : 115609,
+                                 "side" : 1,
+                                 "id" : "40949414"
+                              },
+                              {
+                                 "judge" : 2139061,
+                                 "judge_code" : "107",
+                                 "judge_first" : "Rebecca",
+                                 "judge_started" : "2024-01-06 14:47:12",
+                                 "panel" : "7019395",
+                                 "judge_last" : "Postula",
+                                 "entry_code" : "Rice TY",
+                                 "entry" : 5458977,
+                                 "started_by" : 115609,
+                                 "side" : 2,
+                                 "judge_person" : 115609,
+                                 "entry_name" : "Trevino & Yang",
+                                 "id" : "40949415"
+                              },
+                              {
+                                 "started_by" : 6463,
+                                 "judge_last" : "Elliott",
+                                 "panel" : "7019395",
+                                 "entry_code" : "UTTyl HS",
+                                 "entry" : 5451257,
+                                 "judge_code" : "108",
+                                 "judge" : 2140304,
+                                 "judge_first" : "Darren",
+                                 "judge_started" : "2024-01-06 14:54:46",
+                                 "chair" : 1,
+                                 "id" : "40949416",
+                                 "judge_person" : 6463,
+                                 "entry_name" : "Hurtado & Stansbery",
+                                 "side" : 1
+                              },
+                              {
+                                 "judge_person" : 6463,
+                                 "entry_name" : "Trevino & Yang",
+                                 "side" : 2,
+                                 "chair" : 1,
+                                 "id" : "40949417",
+                                 "judge_code" : "108",
+                                 "judge" : 2140304,
+                                 "judge_started" : "2024-01-06 14:54:46",
+                                 "judge_first" : "Darren",
+                                 "started_by" : 6463,
+                                 "entry" : 5458977,
+                                 "entry_code" : "Rice TY",
+                                 "judge_last" : "Elliott",
+                                 "panel" : "7019395"
+                              },
+                              {
+                                 "started_by" : 95464,
+                                 "entry_code" : "UTTyl HS",
+                                 "entry" : 5451257,
+                                 "panel" : "7019395",
+                                 "judge_last" : "Dense",
+                                 "judge" : 2145292,
+                                 "judge_code" : "111",
+                                 "judge_first" : "June",
+                                 "judge_started" : "2024-01-06 15:26:37",
+                                 "id" : "40949418",
+                                 "judge_person" : 95464,
+                                 "entry_name" : "Hurtado & Stansbery",
+                                 "side" : 1
+                              },
+                              {
+                                 "side" : 2,
+                                 "judge_person" : 95464,
+                                 "entry_name" : "Trevino & Yang",
+                                 "id" : "40949419",
+                                 "judge" : 2145292,
+                                 "judge_code" : "111",
+                                 "judge_started" : "2024-01-06 15:26:37",
+                                 "judge_first" : "June",
+                                 "entry" : 5458977,
+                                 "entry_code" : "Rice TY",
+                                 "panel" : "7019395",
+                                 "judge_last" : "Dense",
+                                 "started_by" : 95464
+                              }
+                           ],
+                           "flight" : "1"
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "side" : 1,
+                                 "judge_person" : 82803,
+                                 "entry_name" : "Lapee & Campbell",
+                                 "id" : "40949420",
+                                 "judge_code" : "103",
+                                 "judge" : 2136602,
+                                 "judge_first" : "David",
+                                 "judge_started" : "2024-01-06 14:51:36",
+                                 "panel" : "7019396",
+                                 "judge_last" : "Worth",
+                                 "entry_code" : "KCKC LC",
+                                 "entry" : 5471317,
+                                 "started_by" : 82803
+                              },
+                              {
+                                 "id" : "40949421",
+                                 "judge_person" : 82803,
+                                 "entry_name" : "Brown & McIlhargie",
+                                 "side" : 2,
+                                 "started_by" : 82803,
+                                 "judge_last" : "Worth",
+                                 "panel" : "7019396",
+                                 "entry" : 5444857,
+                                 "entry_code" : "McKend BM",
+                                 "judge" : 2136602,
+                                 "judge_code" : "103",
+                                 "judge_started" : "2024-01-06 14:51:36",
+                                 "judge_first" : "David"
+                              },
+                              {
+                                 "judge_started" : "2024-01-06 14:56:39",
+                                 "judge_first" : "Mason",
+                                 "judge_code" : "110",
+                                 "judge" : 2143882,
+                                 "entry" : 5471317,
+                                 "entry_code" : "KCKC LC",
+                                 "panel" : "7019396",
+                                 "judge_last" : "Remaley",
+                                 "started_by" : 66703,
+                                 "side" : 1,
+                                 "entry_name" : "Lapee & Campbell",
+                                 "judge_person" : 66703,
+                                 "id" : "40949422"
+                              },
+                              {
+                                 "judge_person" : 66703,
+                                 "entry_name" : "Brown & McIlhargie",
+                                 "side" : 2,
+                                 "id" : "40949423",
+                                 "judge" : 2143882,
+                                 "judge_code" : "110",
+                                 "judge_first" : "Mason",
+                                 "judge_started" : "2024-01-06 14:56:39",
+                                 "started_by" : 66703,
+                                 "judge_last" : "Remaley",
+                                 "panel" : "7019396",
+                                 "entry_code" : "McKend BM",
+                                 "entry" : 5444857
+                              },
+                              {
+                                 "started_by" : 239384,
+                                 "entry" : 5471317,
+                                 "entry_code" : "KCKC LC",
+                                 "judge_last" : "Parrish",
+                                 "panel" : "7019396",
+                                 "judge" : 2147329,
+                                 "judge_code" : "112",
+                                 "judge_started" : "2024-01-06 14:46:42",
+                                 "judge_first" : "Hunter",
+                                 "chair" : 1,
+                                 "id" : "40949424",
+                                 "judge_person" : 239384,
+                                 "entry_name" : "Lapee & Campbell",
+                                 "side" : 1
+                              },
+                              {
+                                 "side" : 2,
+                                 "entry_name" : "Brown & McIlhargie",
+                                 "judge_person" : 239384,
+                                 "id" : "40949425",
+                                 "chair" : 1,
+                                 "judge_first" : "Hunter",
+                                 "judge_started" : "2024-01-06 14:46:42",
+                                 "judge_code" : "112",
+                                 "judge" : 2147329,
+                                 "entry" : 5444857,
+                                 "entry_code" : "McKend BM",
+                                 "panel" : "7019396",
+                                 "judge_last" : "Parrish",
+                                 "started_by" : 239384
+                              }
+                           ],
+                           "flight" : "1",
+                           "id" : "7019396",
+                           "round" : "1131366",
+                           "letter" : "2",
+                           "room" : "Knight304"
+                        },
+                        {
+                           "id" : "7019397",
+                           "round" : "1131366",
+                           "letter" : "3",
+                           "room" : "NONE",
+                           "ballots" : [
+                              {
+                                 "id" : "40949426",
+                                 "panel" : "7019397",
+                                 "entry" : 5484330,
+                                 "entry_code" : "PDAB SK",
+                                 "side" : 1,
+                                 "entry_name" : "Seiersen & Keene"
+                              }
+                           ],
+                           "bye" : 1,
+                           "flight" : "1"
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "entry_name" : "Stancik & Sanderfer",
+                                 "panel" : "7019398",
+                                 "id" : "40949427",
+                                 "side" : 1,
+                                 "entry" : 5458980,
+                                 "entry_code" : "Rice SS"
+                              }
+                           ],
+                           "bye" : 1,
+                           "flight" : "1",
+                           "id" : "7019398",
+                           "round" : "1131366",
+                           "letter" : "4",
+                           "room" : "NONE"
+                        },
+                        {
+                           "id" : "7019399",
+                           "letter" : "5",
+                           "room" : "NONE",
+                           "round" : "1131366",
+                           "bye" : 1,
+                           "ballots" : [
+                              {
+                                 "entry_name" : "Herrig & Smith",
+                                 "entry_code" : "UTTyl SH",
+                                 "entry" : 5451258,
+                                 "side" : 1,
+                                 "id" : "40949428",
+                                 "panel" : "7019399"
+                              }
+                           ],
+                           "flight" : "1"
+                        },
+                        {
+                           "bye" : 1,
+                           "ballots" : [
+                              {
+                                 "entry_name" : "Dixon & Terry",
+                                 "entry_code" : "WilJew DT",
+                                 "entry" : 5480957,
+                                 "side" : 1,
+                                 "id" : "40949429",
+                                 "panel" : "7019400"
+                              }
+                           ],
+                           "flight" : "1",
+                           "id" : "7019400",
+                           "letter" : "6",
+                           "room" : "NONE",
+                           "round" : "1131366"
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "entry_name" : "Renteria & Surya",
+                                 "panel" : "7019401",
+                                 "id" : "40949430",
+                                 "side" : 1,
+                                 "entry" : 5458975,
+                                 "entry_code" : "Rice RS"
+                              }
+                           ],
+                           "bye" : 1,
+                           "flight" : "1",
+                           "id" : "7019401",
+                           "round" : "1131366",
+                           "room" : "NONE",
+                           "letter" : "7"
+                        },
+                        {
+                           "letter" : "8",
+                           "room" : "NONE",
+                           "round" : "1131366",
+                           "id" : "7019402",
+                           "flight" : "1",
+                           "bye" : 1,
+                           "ballots" : [
+                              {
+                                 "entry_name" : "Banerjee & Carrillo",
+                                 "panel" : "7019402",
+                                 "id" : "40949431",
+                                 "side" : 1,
+                                 "entry" : 5484331,
+                                 "entry_code" : "PDAB BC"
+                              }
+                           ]
+                        }
+                     ],
+                     "type" : "elim",
+                     "name" : 1
+                  },
+                  {
+                     "protocol_name" : "Debate Prelims",
+                     "id" : "1131372",
+                     "start_time" : "2024-01-12 21:00:00",
+                     "sections" : [
+                        {
+                           "id" : "7019441",
+                           "round" : "1131372",
+                           "room" : "Knight303",
+                           "letter" : "1",
+                           "ballots" : [
+                              {
+                                 "id" : "40949733",
+                                 "side" : 1,
+                                 "judge_person" : 82803,
+                                 "entry_name" : "Banerjee & Carrillo",
+                                 "panel" : "7019441",
+                                 "judge_last" : "Worth",
+                                 "entry" : 5484331,
+                                 "entry_code" : "PDAB BC",
+                                 "started_by" : 82803,
+                                 "judge_code" : "103",
+                                 "judge" : 2136602,
+                                 "judge_started" : "2024-01-05 21:13:43",
+                                 "judge_first" : "David"
+                              },
+                              {
+                                 "judge_code" : "103",
+                                 "judge" : 2136602,
+                                 "judge_started" : "2024-01-05 21:13:43",
+                                 "judge_first" : "David",
+                                 "entry" : 5471317,
+                                 "entry_code" : "KCKC LC",
+                                 "panel" : "7019441",
+                                 "judge_last" : "Worth",
+                                 "started_by" : 82803,
+                                 "side" : 2,
+                                 "judge_person" : 82803,
+                                 "entry_name" : "Lapee & Campbell",
+                                 "id" : "40949734"
+                              }
+                           ],
+                           "flight" : "1"
+                        },
+                        {
+                           "round" : "1131372",
+                           "room" : "Knight203",
+                           "letter" : "2",
+                           "id" : "7019442",
+                           "flight" : "1",
+                           "ballots" : [
+                              {
+                                 "side" : 1,
+                                 "judge_code" : "102",
+                                 "judge" : 2136499,
+                                 "judge_first" : "Adeja",
+                                 "judge_person" : 93567,
+                                 "entry_name" : "Seiersen & Keene",
+                                 "entry" : 5484330,
+                                 "entry_code" : "PDAB SK",
+                                 "panel" : "7019442",
+                                 "judge_last" : "Powell",
+                                 "id" : "40949735"
+                              },
+                              {
+                                 "judge_first" : "Adeja",
+                                 "judge_code" : "102",
+                                 "judge" : 2136499,
+                                 "side" : 2,
+                                 "entry_name" : "Dixon & Terry",
+                                 "judge_person" : 93567,
+                                 "id" : "40949736",
+                                 "panel" : "7019442",
+                                 "judge_last" : "Powell",
+                                 "entry" : 5480957,
+                                 "entry_code" : "WilJew DT"
+                              }
+                           ]
+                        },
+                        {
+                           "round" : "1131372",
+                           "letter" : "3",
+                           "room" : "Knight304",
+                           "id" : "7019443",
+                           "flight" : "1",
+                           "ballots" : [
+                              {
+                                 "started_by" : 47286,
+                                 "entry" : 5444857,
+                                 "entry_code" : "McKend BM",
+                                 "panel" : "7019443",
+                                 "judge_last" : "Farias",
+                                 "judge_code" : "109",
+                                 "judge" : 2143224,
+                                 "judge_started" : "2024-01-05 21:07:23",
+                                 "judge_first" : "Steven",
+                                 "id" : "40949737",
+                                 "judge_person" : 47286,
+                                 "entry_name" : "Brown & McIlhargie",
+                                 "side" : 1
+                              },
+                              {
+                                 "entry_name" : "Patel & Owens",
+                                 "judge_person" : 47286,
+                                 "side" : 2,
+                                 "id" : "40949738",
+                                 "judge_started" : "2024-01-05 21:07:23",
+                                 "judge_first" : "Steven",
+                                 "judge_code" : "109",
+                                 "judge" : 2143224,
+                                 "started_by" : 47286,
+                                 "panel" : "7019443",
+                                 "judge_last" : "Farias",
+                                 "entry" : 5458550,
+                                 "entry_code" : "Mercer PO"
+                              }
+                           ]
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "started_by" : 239384,
+                                 "entry" : 5487452,
+                                 "entry_code" : "McKend CT",
+                                 "judge_last" : "Parrish",
+                                 "panel" : "7019444",
+                                 "judge_started" : "2024-01-05 21:48:37",
+                                 "judge_first" : "Hunter",
+                                 "judge" : 2147329,
+                                 "judge_code" : "112",
+                                 "id" : "40949739",
+                                 "entry_name" : "Crabtree & Tolbert",
+                                 "judge_person" : 239384,
+                                 "side" : 1
+                              },
+                              {
+                                 "side" : 2,
+                                 "judge_person" : 239384,
+                                 "entry_name" : "Stancik & Sanderfer",
+                                 "id" : "40949740",
+                                 "judge" : 2147329,
+                                 "judge_code" : "112",
+                                 "judge_first" : "Hunter",
+                                 "judge_started" : "2024-01-05 21:48:37",
+                                 "entry_code" : "Rice SS",
+                                 "entry" : 5458980,
+                                 "judge_last" : "Parrish",
+                                 "panel" : "7019444",
+                                 "started_by" : 239384
+                              }
+                           ],
+                           "flight" : "1",
+                           "id" : "7019444",
+                           "round" : "1131372",
+                           "room" : "Knight207",
+                           "letter" : "4"
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "id" : "40949741",
+                                 "entry_name" : "Mohammad & Headlee",
+                                 "judge_person" : 66703,
+                                 "side" : 1,
+                                 "started_by" : 66703,
+                                 "judge_last" : "Remaley",
+                                 "panel" : "7019445",
+                                 "entry" : 5462706,
+                                 "entry_code" : "McKend MH",
+                                 "judge_first" : "Mason",
+                                 "judge_started" : "2024-01-05 21:48:27",
+                                 "judge_code" : "110",
+                                 "judge" : 2143882
+                              },
+                              {
+                                 "judge_person" : 66703,
+                                 "entry_name" : "Guzman & Santillan",
+                                 "side" : 2,
+                                 "id" : "40949742",
+                                 "judge" : 2143882,
+                                 "judge_code" : "110",
+                                 "judge_started" : "2024-01-05 21:48:27",
+                                 "judge_first" : "Mason",
+                                 "started_by" : 66703,
+                                 "judge_last" : "Remaley",
+                                 "panel" : "7019445",
+                                 "entry_code" : "Pacific GS",
+                                 "entry" : 5477731
+                              }
+                           ],
+                           "flight" : "1",
+                           "id" : "7019445",
+                           "round" : "1131372",
+                           "letter" : "5",
+                           "room" : "Knight206"
+                        },
+                        {
+                           "id" : "7019446",
+                           "round" : "1131372",
+                           "room" : "Knight108",
+                           "letter" : "6",
+                           "ballots" : [
+                              {
+                                 "side" : 1,
+                                 "entry_name" : "Bartlett & Salgarkar",
+                                 "judge_person" : 113626,
+                                 "id" : "40949743",
+                                 "judge_first" : "Mitch",
+                                 "judge_started" : "2024-01-05 21:50:10",
+                                 "judge_code" : "113",
+                                 "judge" : 2146094,
+                                 "entry" : 5458552,
+                                 "entry_code" : "Mercer SB",
+                                 "judge_last" : "Deleel",
+                                 "panel" : "7019446",
+                                 "started_by" : 113626
+                              },
+                              {
+                                 "id" : "40949744",
+                                 "side" : 2,
+                                 "judge_person" : 113626,
+                                 "entry_name" : "Rebecca Wood",
+                                 "panel" : "7019446",
+                                 "judge_last" : "Deleel",
+                                 "entry_code" : "UTTyl RW",
+                                 "entry" : 5451255,
+                                 "started_by" : 113626,
+                                 "judge_code" : "113",
+                                 "judge" : 2146094,
+                                 "judge_first" : "Mitch",
+                                 "judge_started" : "2024-01-05 21:50:10"
+                              }
+                           ],
+                           "flight" : "1"
+                        },
+                        {
+                           "round" : "1131372",
+                           "room" : "Knight100",
+                           "letter" : "7",
+                           "id" : "7019447",
+                           "flight" : "1",
+                           "ballots" : [
+                              {
+                                 "judge_person" : 427778,
+                                 "entry_name" : "Lin & Schuster",
+                                 "side" : 1,
+                                 "id" : "40949745",
+                                 "judge" : 2136497,
+                                 "judge_code" : "101",
+                                 "judge_started" : "2024-01-05 21:09:07",
+                                 "judge_first" : "Fiker",
+                                 "started_by" : 427778,
+                                 "panel" : "7019447",
+                                 "judge_last" : "Tesfaye",
+                                 "entry_code" : "PDAB SL",
+                                 "entry" : 5484332
+                              },
+                              {
+                                 "id" : "40949746",
+                                 "entry_name" : "Birjandi & Rodriguez",
+                                 "judge_person" : 427778,
+                                 "side" : 2,
+                                 "started_by" : 427778,
+                                 "entry" : 5451254,
+                                 "entry_code" : "UTTyl RB",
+                                 "judge_last" : "Tesfaye",
+                                 "panel" : "7019447",
+                                 "judge_first" : "Fiker",
+                                 "judge_started" : "2024-01-05 21:09:07",
+                                 "judge" : 2136497,
+                                 "judge_code" : "101"
+                              }
+                           ]
+                        },
+                        {
+                           "flight" : "1",
+                           "ballots" : [
+                              {
+                                 "side" : 1,
+                                 "entry_name" : "Kimbrough & Ralls",
+                                 "judge_person" : 115609,
+                                 "id" : "40949747",
+                                 "judge_first" : "Rebecca",
+                                 "judge_started" : "2024-01-05 21:46:55",
+                                 "judge" : 2139061,
+                                 "judge_code" : "107",
+                                 "entry" : 5458553,
+                                 "entry_code" : "Mercer RK",
+                                 "panel" : "7019448",
+                                 "judge_last" : "Postula",
+                                 "started_by" : 115609
+                              },
+                              {
+                                 "id" : "40949748",
+                                 "entry_name" : "Gill & Brooks",
+                                 "judge_person" : 115609,
+                                 "side" : 2,
+                                 "started_by" : 115609,
+                                 "entry_code" : "WilJew GB",
+                                 "entry" : 5480958,
+                                 "panel" : "7019448",
+                                 "judge_last" : "Postula",
+                                 "judge_started" : "2024-01-05 21:46:55",
+                                 "judge_first" : "Rebecca",
+                                 "judge_code" : "107",
+                                 "judge" : 2139061
+                              }
+                           ],
+                           "round" : "1131372",
+                           "room" : "Knight104",
+                           "letter" : "8",
+                           "id" : "7019448"
+                        },
+                        {
+                           "flight" : "1",
+                           "ballots" : [
+                              {
+                                 "id" : "40949749",
+                                 "judge_person" : 95464,
+                                 "entry_name" : "Trevino & Yang",
+                                 "side" : 1,
+                                 "started_by" : 95464,
+                                 "judge_last" : "Dense",
+                                 "panel" : "7019449",
+                                 "entry_code" : "Rice TY",
+                                 "entry" : 5458977,
+                                 "judge_code" : "111",
+                                 "judge" : 2145292,
+                                 "judge_started" : "2024-01-05 21:41:08",
+                                 "judge_first" : "June"
+                              },
+                              {
+                                 "panel" : "7019449",
+                                 "judge_last" : "Dense",
+                                 "entry_code" : "UTTyl HS",
+                                 "entry" : 5451257,
+                                 "started_by" : 95464,
+                                 "judge_first" : "June",
+                                 "judge_started" : "2024-01-05 21:41:08",
+                                 "judge_code" : "111",
+                                 "judge" : 2145292,
+                                 "id" : "40949750",
+                                 "side" : 2,
+                                 "entry_name" : "Hurtado & Stansbery",
+                                 "judge_person" : 95464
+                              }
+                           ],
+                           "letter" : "9",
+                           "room" : "Knight101",
+                           "round" : "1131372",
+                           "id" : "7019449"
+                        },
+                        {
+                           "ballots" : [
+                              {
+                                 "id" : "40949751",
+                                 "side" : 1,
+                                 "judge_person" : 36061,
+                                 "entry_name" : "Renteria & Surya",
+                                 "judge_last" : "Nicholson",
+                                 "panel" : "7019450",
+                                 "entry" : 5458975,
+                                 "entry_code" : "Rice RS",
+                                 "started_by" : 36061,
+                                 "judge" : 2129689,
+                                 "judge_code" : "100",
+                                 "judge_first" : "Brent",
+                                 "judge_started" : "2024-01-05 21:09:24"
+                              },
+                              {
+                                 "side" : 2,
+                                 "judge_person" : 36061,
+                                 "entry_name" : "Herrig & Smith",
+                                 "id" : "40949752",
+                                 "judge" : 2129689,
+                                 "judge_code" : "100",
+                                 "judge_first" : "Brent",
+                                 "judge_started" : "2024-01-05 21:09:24",
+                                 "judge_last" : "Nicholson",
+                                 "panel" : "7019450",
+                                 "entry_code" : "UTTyl SH",
+                                 "entry" : 5451258,
+                                 "started_by" : 36061
+                              }
+                           ],
+                           "flight" : "1",
+                           "id" : "7019450",
+                           "round" : "1131372",
+                           "letter" : "10",
+                           "room" : "Knight210"
+                        }
+                     ],
+                     "name" : 4,
+                     "type" : "highlow"
+                  }
+               ]
+            }
+         ],
+         "abbr" : "NPDA",
+         "name" : "NPDA",
+         "judges" : [
+            {
+               "chapter_judge" : 91279,
+               "obligation" : 6,
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "tag" : "registered_by",
+                     "value" : "36712"
+                  }
+               ],
+               "id" : "2129689",
+               "school" : "656241",
+               "registered_by" : 36712,
+               "last" : "Nicholson",
+               "active" : 1,
+               "first" : "Brent"
+            },
+            {
+               "active" : 1,
+               "first" : "Fiker",
+               "id" : "2136497",
+               "registered_by" : 427778,
+               "last" : "Tesfaye",
+               "school" : "657774",
+               "settings" : [
+                  {
+                     "value" : "427778",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "chapter_judge" : 357014,
+               "obligation" : 4
+            },
+            {
+               "chapter_judge" : 383468,
+               "obligation" : 5,
+               "settings" : [
+                  {
+                     "tag" : "registered_by",
+                     "value" : "427778"
+                  }
+               ],
+               "id" : "2136499",
+               "school" : "657774",
+               "last" : "Powell",
+               "registered_by" : 427778,
+               "first" : "Adeja",
+               "active" : 1
+            },
+            {
+               "obligation" : 6,
+               "chapter_judge" : 122637,
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "value" : "82803",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "last" : "Worth",
+               "school" : "657832",
+               "registered_by" : 82803,
+               "id" : "2136602",
+               "active" : 1,
+               "first" : "David"
+            },
+            {
+               "obligation" : 6,
+               "chapter_judge" : 122388,
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "value" : "36712",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "last" : "Allen",
+               "school" : "656241",
+               "registered_by" : 36712,
+               "id" : "2137306",
+               "active" : 1,
+               "first" : "Lance"
+            },
+            {
+               "chapter_judge" : 405213,
+               "obligation" : 1,
+               "settings" : [
+                  {
+                     "value" : "36712",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "id" : "2139059",
+               "registered_by" : 36712,
+               "school" : "656241",
+               "last" : "Owens",
+               "active" : 1,
+               "first" : "Caden"
+            },
+            {
+               "id" : "2139060",
+               "school" : "656241",
+               "last" : "Smith",
+               "registered_by" : 36712,
+               "first" : "Kyle",
+               "active" : 1,
+               "chapter_judge" : 405212,
+               "obligation" : 1,
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "value" : "36712",
+                     "tag" : "registered_by"
+                  }
+               ]
+            },
+            {
+               "settings" : [
+                  {
+                     "meta" : "text",
+                     "tag" : "qual_history",
+                     "value" : null
+                  },
+                  {
+                     "tag" : "registered_by",
+                     "value" : "36712"
+                  }
+               ],
+               "obligation" : 2,
+               "chapter_judge" : 294630,
+               "active" : 1,
+               "first" : "Rebecca",
+               "school" : "656241",
+               "last" : "Postula",
+               "registered_by" : 36712,
+               "covers" : 79998,
+               "id" : "2139061"
+            },
+            {
+               "last" : "Elliott",
+               "registered_by" : 6463,
+               "school" : "657382",
+               "id" : "2140304",
+               "first" : "Darren",
+               "active" : 1,
+               "obligation" : 3,
+               "chapter_judge" : 20664,
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "tag" : "registered_by",
+                     "value" : "6463"
+                  }
+               ]
+            },
+            {
+               "first" : "Steven",
+               "active" : 1,
+               "id" : "2143224",
+               "registered_by" : 47286,
+               "last" : "Farias",
+               "school" : "659882",
+               "settings" : [
+                  {
+                     "value" : "M",
+                     "tag" : "gender"
+                  },
+                  {
+                     "tag" : "registered_by",
+                     "value" : "47286"
+                  }
+               ],
+               "chapter_judge" : 81939,
+               "obligation" : 6
+            },
+            {
+               "school" : "660196",
+               "last" : "Remaley",
+               "registered_by" : 66703,
+               "id" : "2143882",
+               "first" : "Mason",
+               "active" : 1,
+               "obligation" : 6,
+               "chapter_judge" : 396237,
+               "settings" : [
+                  {
+                     "value" : "66703",
+                     "tag" : "registered_by"
+                  }
+               ]
+            },
+            {
+               "settings" : [
+                  {
+                     "tag" : "registered_by",
+                     "value" : "7970"
+                  }
+               ],
+               "obligation" : 6,
+               "chapter_judge" : 259998,
+               "active" : 1,
+               "first" : "June",
+               "registered_by" : 7970,
+               "school" : "660480",
+               "last" : "Dense",
+               "id" : "2145292"
+            },
+            {
+               "chapter_judge" : 304690,
+               "obligation" : 6,
+               "settings" : [
+                  {
+                     "tag" : "gender",
+                     "value" : "M"
+                  },
+                  {
+                     "value" : "36712",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "id" : "2146094",
+               "last" : "Deleel",
+               "school" : "656241",
+               "registered_by" : 36712,
+               "active" : 1,
+               "first" : "Mitch"
+            },
+            {
+               "school" : "656883",
+               "last" : "Parrish",
+               "id" : "2147329",
+               "covers" : 79998,
+               "first" : "Hunter",
+               "active" : 1,
+               "obligation" : 6,
+               "chapter_judge" : 381849
+            },
+            {
+               "chapter_judge" : 205079,
+               "covers" : 79998,
+               "id" : "2147330",
+               "last" : "Provencher",
+               "school" : "656883",
+               "active" : 1,
+               "first" : "Joe"
+            },
+            {
+               "active" : 1,
+               "first" : "Joseph",
+               "last" : "Blasdel",
+               "registered_by" : 36712,
+               "school" : "656241",
+               "id" : "2147331",
+               "settings" : [
+                  {
+                     "tag" : "gender",
+                     "value" : "M"
+                  },
+                  {
+                     "value" : "36712",
+                     "tag" : "registered_by"
+                  }
+               ],
+               "obligation" : 1,
+               "chapter_judge" : 91280
+            }
+         ],
+         "settings" : [
+            {
+               "value" : "twice",
+               "meta" : "string",
+               "tag" : "audit_method"
+            },
+            {
+               "value" : "1",
+               "tag" : "conflicts",
+               "meta" : "string"
+            },
+            {
+               "value" : "2024-01-02T02:00:00Z",
+               "meta" : "date",
+               "tag" : "deadline"
+            },
+            {
+               "tag" : "default_mjp",
+               "meta" : "string",
+               "value" : "1"
+            },
+            {
+               "value" : "5",
+               "meta" : "string",
+               "tag" : "diverse_judge_weight"
+            },
+            {
+               "tag" : "entry_strikes",
+               "meta" : "string",
+               "value" : "2"
+            },
+            {
+               "value" : "1",
+               "meta" : "string",
+               "tag" : "field_report"
+            },
+            {
+               "meta" : "string",
+               "tag" : "judge_event_twice",
+               "value" : "1"
+            },
+            {
+               "tag" : "max_rounds",
+               "meta" : "string",
+               "value" : "6"
+            },
+            {
+               "value" : "10",
+               "tag" : "mjp_prefer_hireds",
+               "meta" : "string"
+            },
+            {
+               "meta" : "string",
+               "tag" : "mutuality",
+               "value" : "40"
+            },
+            {
+               "meta" : "string",
+               "tag" : "panel_mutuality",
+               "value" : "40"
+            },
+            {
+               "meta" : "string",
+               "tag" : "paradigm_before_strikes",
+               "value" : "1"
+            },
+            {
+               "meta" : "string",
+               "tag" : "preference",
+               "value" : "22"
+            },
+            {
+               "value" : "3",
+               "meta" : "string",
+               "tag" : "rounds_per"
+            },
+            {
+               "value" : "5",
+               "tag" : "round_burn_avoid",
+               "meta" : "string"
+            },
+            {
+               "meta" : "date",
+               "tag" : "strike_end",
+               "value" : "2024-01-04T23:00:00Z"
+            },
+            {
+               "tag" : "strike_start",
+               "meta" : "date",
+               "value" : "2023-12-31T06:00:00Z"
+            },
+            {
+               "tag" : "sucktastic_judge_weight",
+               "meta" : "string",
+               "value" : "12"
+            }
+         ]
+      }
+   ],
+   "creator" : "Public",
+   "name" : "2024 Mound High Swing Part One",
+   "state" : "IL",
+   "country" : "US",
+   "reg_end" : "2024-01-02 12:00:00",
+   "city" : "Lebanon",
+   "hidden" : 0,
+   "end" : "2024-01-09 02:00:00",
+   "public" : "true",
+   "timeslots" : [
+      {
+         "id" : "326007",
+         "start" : "2024-01-06T15:00:00",
+         "end" : "2024-01-06T17:00:00",
+         "name" : "Octs"
+      },
+      {
+         "id" : "329805",
+         "start" : "2024-01-12T21:00:00",
+         "end" : "2024-01-12T22:55:00",
+         "name" : "Round four"
+      },
+      {
+         "end" : "2024-01-13T01:00:00",
+         "start" : "2024-01-12T23:00:00",
+         "id" : "329804",
+         "name" : "Round five"
+      }
+   ],
+   "reg_start" : "2023-12-05 23:10:00",
+   "schools" : [
+      {
+         "code" : "McKend",
+         "entries" : [
+            {
+               "students" : [
+                  "1081481",
+                  "1167885"
+               ],
+               "active" : 1,
+               "ada" : null,
+               "id" : "5444857",
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "event" : 279394,
+               "registered_by" : 36712,
+               "created_at" : "2023-12-05 23:37:04",
+               "name" : "Brown & McIlhargie",
+               "code" : "McKend BM",
+               "hybrid" : null,
+               "school" : "656241",
+               "waitlist" : 0,
+               "settings" : []
+            },
+            {
+               "waitlist" : 0,
+               "settings" : [],
+               "school" : "656241",
+               "hybrid" : null,
+               "code" : "McKend MH",
+               "name" : "Mohammad & Headlee",
+               "id" : "5462706",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "created_at" : "2023-12-12 01:15:02",
+               "registered_by" : 36712,
+               "students" : [
+                  "1375189",
+                  "1375191"
+               ],
+               "active" : 1,
+               "ada" : null
+            },
+            {
+               "students" : [
+                  "1375192",
+                  "1375195"
+               ],
+               "ada" : null,
+               "active" : 1,
+               "id" : "5487452",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "registered_by" : 36712,
+               "created_at" : "2023-12-22 23:47:38",
+               "name" : "Crabtree & Tolbert",
+               "code" : "McKend CT",
+               "hybrid" : null,
+               "school" : "656241",
+               "waitlist" : 0,
+               "settings" : []
+            }
+         ],
+         "settings" : [
+            {
+               "value" : "36712",
+               "meta" : "string",
+               "tag" : "contact"
+            },
+            {
+               "meta" : "string",
+               "tag" : "contact_name",
+               "value" : "Joseph Blasdel"
+            },
+            {
+               "value" : "2023-12-05T23:36:54Z",
+               "meta" : "date",
+               "tag" : "entered_on"
+            }
+         ],
+         "name" : "McKendree University",
+         "id" : "656241",
+         "created_at" : "2023-12-05 23:36:54",
+         "registered_by" : 36712,
+         "chapter" : 19248,
+         "students" : [
+            {
+               "id" : "1081481",
+               "chapter" : 19248,
+               "last" : "Brown",
+               "first" : "Aaron"
+            },
+            {
+               "first" : "Emma",
+               "id" : "1167885",
+               "chapter" : 19248,
+               "last" : "McIlhargie"
+            },
+            {
+               "first" : "Meera",
+               "id" : "1375189",
+               "last" : "Mohammad",
+               "chapter" : 19248
+            },
+            {
+               "chapter" : 19248,
+               "last" : "Headlee",
+               "id" : "1375191",
+               "first" : "Elan"
+            },
+            {
+               "chapter" : 19248,
+               "last" : "Crabtree",
+               "id" : "1375192",
+               "first" : "Garrett"
+            },
+            {
+               "id" : "1375195",
+               "last" : "Tolbert",
+               "chapter" : 19248,
+               "first" : "Jada"
+            }
+         ]
+      },
+      {
+         "students" : [
+            {
+               "id" : "1378024",
+               "chapter" : 46462,
+               "last" : "Rodriguez",
+               "first" : "Anthony"
+            },
+            {
+               "chapter" : 46462,
+               "last" : "Birjandi",
+               "id" : "1378037",
+               "first" : "Aidan"
+            },
+            {
+               "chapter" : 46462,
+               "last" : "Wood",
+               "id" : "1378035",
+               "first" : "Rebecca"
+            },
+            {
+               "id" : "1378017",
+               "last" : "Hurtado",
+               "chapter" : 46462,
+               "first" : "Leilani"
+            },
+            {
+               "first" : "Zachary",
+               "chapter" : 46462,
+               "last" : "Stansbery",
+               "id" : "1378038"
+            },
+            {
+               "id" : "1088993",
+               "last" : "Smith",
+               "chapter" : 46462,
+               "first" : "Joshua"
+            },
+            {
+               "first" : "Anna",
+               "id" : "1378039",
+               "last" : "Herrig",
+               "chapter" : 46462
+            }
+         ],
+         "id" : "656883",
+         "chapter" : 46462,
+         "created_at" : "2023-12-07 18:31:13",
+         "registered_by" : 55230,
+         "settings" : [
+            {
+               "value" : "55230",
+               "tag" : "contact",
+               "meta" : "string"
+            },
+            {
+               "value" : "Joe Provencher",
+               "tag" : "contact_name",
+               "meta" : "string"
+            },
+            {
+               "meta" : "date",
+               "tag" : "entered_on",
+               "value" : "2023-12-07T18:31:13Z"
+            }
+         ],
+         "name" : "UT Tyler",
+         "entries" : [
+            {
+               "school" : "656883",
+               "hybrid" : null,
+               "settings" : [],
+               "waitlist" : 0,
+               "registered_by" : 55230,
+               "created_at" : "2023-12-07 18:31:23",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "id" : "5451254",
+               "ada" : null,
+               "active" : 1,
+               "students" : [
+                  "1378024",
+                  "1378037"
+               ],
+               "code" : "UTTyl RB",
+               "name" : "Birjandi & Rodriguez"
+            },
+            {
+               "settings" : [],
+               "waitlist" : 0,
+               "hybrid" : null,
+               "school" : "656883",
+               "name" : "Rebecca Wood",
+               "code" : "UTTyl RW",
+               "active" : 1,
+               "ada" : null,
+               "students" : [
+                  "1378035"
+               ],
+               "created_at" : "2023-12-07 18:31:29",
+               "registered_by" : 55230,
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "id" : "5451255"
+            },
+            {
+               "hybrid" : null,
+               "school" : "656883",
+               "waitlist" : 0,
+               "settings" : [],
+               "students" : [
+                  "1378017",
+                  "1378038"
+               ],
+               "ada" : null,
+               "active" : 1,
+               "id" : "5451257",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "created_at" : "2023-12-07 18:31:36",
+               "registered_by" : 55230,
+               "name" : "Hurtado & Stansbery",
+               "code" : "UTTyl HS"
+            },
+            {
+               "settings" : [],
+               "waitlist" : 0,
+               "hybrid" : null,
+               "school" : "656883",
+               "name" : "Herrig & Smith",
+               "code" : "UTTyl SH",
+               "ada" : null,
+               "active" : 1,
+               "students" : [
+                  "1088993",
+                  "1378039"
+               ],
+               "created_at" : "2023-12-07 18:31:43",
+               "registered_by" : 55230,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "event" : 279394,
+               "id" : "5451258"
+            }
+         ],
+         "code" : "UTTyl"
+      },
+      {
+         "name" : "Mercer University",
+         "settings" : [
+            {
+               "value" : "427778",
+               "tag" : "contact",
+               "meta" : "string"
+            },
+            {
+               "value" : "Fiker Tesfaye",
+               "meta" : "string",
+               "tag" : "contact_name"
+            },
+            {
+               "tag" : "entered_on",
+               "meta" : "date",
+               "value" : "2023-12-11T15:14:10Z"
+            }
+         ],
+         "code" : "Mercer",
+         "entries" : [
+            {
+               "name" : "Patel & Owens",
+               "code" : "Mercer PO",
+               "students" : [
+                  "1154575",
+                  "1411037"
+               ],
+               "active" : 1,
+               "ada" : null,
+               "id" : "5458550",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "registered_by" : 427778,
+               "created_at" : "2023-12-11 15:15:51",
+               "waitlist" : 0,
+               "settings" : [],
+               "hybrid" : null,
+               "school" : "657774"
+            },
+            {
+               "hybrid" : null,
+               "school" : "657774",
+               "settings" : [],
+               "waitlist" : 0,
+               "students" : [
+                  "1154576",
+                  "1411036"
+               ],
+               "active" : 1,
+               "ada" : null,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "event" : 279394,
+               "id" : "5458552",
+               "created_at" : "2023-12-11 15:15:56",
+               "registered_by" : 427778,
+               "name" : "Bartlett & Salgarkar",
+               "code" : "Mercer SB"
+            },
+            {
+               "school" : "657774",
+               "hybrid" : null,
+               "waitlist" : 0,
+               "settings" : [],
+               "registered_by" : 427778,
+               "created_at" : "2023-12-11 15:16:00",
+               "id" : "5458553",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "active" : 1,
+               "ada" : null,
+               "students" : [
+                  "1450340",
+                  "1450341"
+               ],
+               "code" : "Mercer RK",
+               "name" : "Kimbrough & Ralls"
+            }
+         ],
+         "students" : [
+            {
+               "first" : "Niyati",
+               "last" : "Patel",
+               "chapter" : 10063,
+               "id" : "1154575"
+            },
+            {
+               "chapter" : 10063,
+               "last" : "Owens",
+               "id" : "1411037",
+               "first" : "Jayla"
+            },
+            {
+               "id" : "1154576",
+               "last" : "Salgarkar",
+               "chapter" : 10063,
+               "first" : "Chirayu"
+            },
+            {
+               "first" : "Thomas",
+               "last" : "Bartlett",
+               "chapter" : 10063,
+               "id" : "1411036"
+            },
+            {
+               "chapter" : 10063,
+               "last" : "Ralls",
+               "id" : "1450340",
+               "first" : "Nolan"
+            },
+            {
+               "first" : "Mya",
+               "last" : "Kimbrough",
+               "chapter" : 10063,
+               "id" : "1450341"
+            }
+         ],
+         "registered_by" : 427778,
+         "created_at" : "2023-12-11 15:14:10",
+         "chapter" : 10063,
+         "id" : "657774"
+      },
+      {
+         "students" : [
+            {
+               "first" : "Maximus",
+               "chapter" : 34961,
+               "last" : "Renteria",
+               "id" : "966894"
+            },
+            {
+               "chapter" : 34961,
+               "last" : "Surya",
+               "id" : "1224452",
+               "first" : "Arjun"
+            },
+            {
+               "first" : "Manna",
+               "id" : "1094403",
+               "chapter" : 34961,
+               "last" : "Trevino"
+            },
+            {
+               "id" : "1283360",
+               "chapter" : 34961,
+               "last" : "Yang",
+               "first" : "Kelly"
+            },
+            {
+               "first" : "Nikki",
+               "last" : "Stancik",
+               "chapter" : 34961,
+               "id" : "1224464"
+            },
+            {
+               "first" : "Kyle",
+               "id" : "1293568",
+               "last" : "Sanderfer",
+               "chapter" : 34961
+            }
+         ],
+         "registered_by" : 82803,
+         "created_at" : "2023-12-11 16:21:54",
+         "chapter" : 34961,
+         "id" : "657832",
+         "name" : "Rice University",
+         "settings" : [
+            {
+               "value" : "82803",
+               "tag" : "contact",
+               "meta" : "string"
+            },
+            {
+               "value" : "David Worth",
+               "meta" : "string",
+               "tag" : "contact_name"
+            },
+            {
+               "value" : "2023-12-11T16:21:54Z",
+               "tag" : "entered_on",
+               "meta" : "date"
+            }
+         ],
+         "code" : "Rice",
+         "entries" : [
+            {
+               "code" : "Rice RS",
+               "name" : "Renteria & Surya",
+               "id" : "5458975",
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "event" : 279394,
+               "created_at" : "2023-12-11 16:22:10",
+               "registered_by" : 82803,
+               "students" : [
+                  "966894",
+                  "1224452"
+               ],
+               "ada" : null,
+               "active" : 1,
+               "waitlist" : 0,
+               "settings" : [],
+               "school" : "657832",
+               "hybrid" : null
+            },
+            {
+               "school" : "657832",
+               "hybrid" : null,
+               "settings" : [],
+               "waitlist" : 0,
+               "created_at" : "2023-12-11 16:22:22",
+               "registered_by" : 82803,
+               "dropped" : 0,
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "id" : "5458977",
+               "active" : 1,
+               "ada" : null,
+               "students" : [
+                  "1094403",
+                  "1283360"
+               ],
+               "code" : "Rice TY",
+               "name" : "Trevino & Yang"
+            },
+            {
+               "id" : "5458980",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "registered_by" : 82803,
+               "created_at" : "2023-12-11 16:22:31",
+               "students" : [
+                  "1224464",
+                  "1293568"
+               ],
+               "ada" : null,
+               "active" : 1,
+               "code" : "Rice SS",
+               "name" : "Stancik & Sanderfer",
+               "school" : "657832",
+               "hybrid" : null,
+               "waitlist" : 0,
+               "settings" : []
+            }
+         ]
+      },
+      {
+         "name" : "Kansas City Kansas CC",
+         "settings" : [
+            {
+               "tag" : "contact",
+               "meta" : "string",
+               "value" : "6463"
+            },
+            {
+               "value" : "Darren Elliott",
+               "tag" : "contact_name",
+               "meta" : "string"
+            },
+            {
+               "meta" : "date",
+               "tag" : "entered_on",
+               "value" : "2023-12-09T03:46:09Z"
+            }
+         ],
+         "entries" : [
+            {
+               "waitlist" : 0,
+               "settings" : [],
+               "school" : "657382",
+               "hybrid" : null,
+               "code" : "KCKC LC",
+               "name" : "Lapee & Campbell",
+               "id" : "5471317",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "registered_by" : 6463,
+               "created_at" : "2023-12-14 02:43:31",
+               "students" : [
+                  "1091781",
+                  "1439515"
+               ],
+               "active" : 1,
+               "ada" : null
+            }
+         ],
+         "code" : "KCKC",
+         "students" : [
+            {
+               "first" : "Christopher",
+               "last" : "LaPee",
+               "chapter" : 6298,
+               "id" : "1091781"
+            },
+            {
+               "id" : "1439515",
+               "chapter" : 6298,
+               "last" : "Campbell",
+               "first" : "Baikey"
+            }
+         ],
+         "chapter" : 6298,
+         "created_at" : "2023-12-09 03:46:09",
+         "registered_by" : 6463,
+         "id" : "657382"
+      },
+      {
+         "name" : "University of the Pacific",
+         "onsite" : 1,
+         "settings" : [
+            {
+               "meta" : "string",
+               "tag" : "contact",
+               "value" : "47286"
+            },
+            {
+               "value" : "Steven Farias",
+               "tag" : "contact_name",
+               "meta" : "string"
+            },
+            {
+               "value" : "2023-12-18T02:04:15Z",
+               "tag" : "entered_on",
+               "meta" : "date"
+            },
+            {
+               "value" : "47286",
+               "meta" : "string",
+               "tag" : "registered_by"
+            },
+            {
+               "tag" : "registered_on",
+               "meta" : "date",
+               "value" : "2023-12-18T02:07:54Z"
+            }
+         ],
+         "entries" : [
+            {
+               "hybrid" : null,
+               "school" : "659882",
+               "waitlist" : 0,
+               "settings" : [],
+               "active" : 1,
+               "ada" : null,
+               "students" : [
+                  "966632",
+                  "1223133"
+               ],
+               "created_at" : "2023-12-18 02:04:43",
+               "registered_by" : 47286,
+               "id" : "5477731",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "name" : "Guzman & Santillan",
+               "code" : "Pacific GS"
+            }
+         ],
+         "code" : "thePac",
+         "students" : [
+            {
+               "last" : "Guzman",
+               "chapter" : 6724,
+               "id" : "966632",
+               "first" : "Angelica"
+            },
+            {
+               "last" : "Santillan",
+               "chapter" : 6724,
+               "id" : "1223133",
+               "first" : "Daneli"
+            }
+         ],
+         "chapter" : 6724,
+         "registered_by" : 47286,
+         "created_at" : "2023-12-18 02:04:15",
+         "id" : "659882"
+      },
+      {
+         "code" : "WilJew",
+         "entries" : [
+            {
+               "settings" : [],
+               "waitlist" : 0,
+               "school" : "660196",
+               "hybrid" : null,
+               "code" : "WilJew DT",
+               "name" : "Dixon & Terry",
+               "registered_by" : 66703,
+               "created_at" : "2023-12-19 14:42:48",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "id" : "5480957",
+               "active" : 1,
+               "ada" : null,
+               "students" : [
+                  "1222484",
+                  "1406220"
+               ]
+            },
+            {
+               "code" : "WilJew GB",
+               "name" : "Gill & Brooks",
+               "registered_by" : 66703,
+               "created_at" : "2023-12-19 14:43:40",
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "dropped" : 0,
+               "id" : "5480958",
+               "ada" : null,
+               "active" : 1,
+               "students" : [
+                  "1222485",
+                  "1453399"
+               ],
+               "settings" : [],
+               "waitlist" : 0,
+               "school" : "660196",
+               "hybrid" : null
+            }
+         ],
+         "settings" : [
+            {
+               "value" : "eNqrrgUAAXUA+Q==",
+               "meta" : "text",
+               "tag" : "category_contacts"
+            },
+            {
+               "value" : "66703",
+               "tag" : "contact",
+               "meta" : "string"
+            },
+            {
+               "tag" : "contact_name",
+               "meta" : "string",
+               "value" : "Mason Remaley"
+            },
+            {
+               "value" : "2023-12-19T14:41:51Z",
+               "tag" : "entered_on",
+               "meta" : "date"
+            },
+            {
+               "meta" : "string",
+               "tag" : "registered_by",
+               "value" : "66703"
+            },
+            {
+               "value" : "2023-12-19T14:44:41Z",
+               "meta" : "date",
+               "tag" : "registered_on"
+            }
+         ],
+         "name" : "William Jewell College",
+         "onsite" : 1,
+         "id" : "660196",
+         "created_at" : "2023-12-19 14:41:51",
+         "registered_by" : 66703,
+         "chapter" : 120787,
+         "students" : [
+            {
+               "first" : "Trent",
+               "id" : "1222484",
+               "last" : "Dixon",
+               "chapter" : 120787
+            },
+            {
+               "first" : "Patrick",
+               "last" : "Terry",
+               "chapter" : 120787,
+               "id" : "1406220"
+            },
+            {
+               "first" : "Kandace-Rose",
+               "last" : "Gill",
+               "chapter" : 120787,
+               "id" : "1222485"
+            },
+            {
+               "last" : "Brooks",
+               "chapter" : 120787,
+               "id" : "1453399",
+               "first" : "Mekhi"
+            }
+         ]
+      },
+      {
+         "students" : [
+            {
+               "id" : "1282372",
+               "chapter" : 6815,
+               "last" : "Seiersen",
+               "first" : "Brenna"
+            },
+            {
+               "first" : "Tristan",
+               "id" : "1293492",
+               "last" : "Keene",
+               "chapter" : 6815
+            },
+            {
+               "first" : "Arjun",
+               "id" : "1283837",
+               "chapter" : 6815,
+               "last" : "Banerjee"
+            },
+            {
+               "first" : "Holden",
+               "last" : "Carrillo",
+               "chapter" : 6815,
+               "id" : "1283838"
+            },
+            {
+               "id" : "1280600",
+               "chapter" : 6815,
+               "last" : "Schuster",
+               "first" : "Scott"
+            },
+            {
+               "id" : "1413303",
+               "last" : "Lin",
+               "chapter" : 6815,
+               "first" : "Kyleen"
+            }
+         ],
+         "id" : "660480",
+         "chapter" : 6815,
+         "registered_by" : 7970,
+         "created_at" : "2023-12-20 20:55:05",
+         "settings" : [
+            {
+               "tag" : "contact",
+               "meta" : "string",
+               "value" : "7970"
+            },
+            {
+               "value" : "Trevor Greenan",
+               "tag" : "contact_name",
+               "meta" : "string"
+            },
+            {
+               "value" : "2023-12-20T20:55:05Z",
+               "meta" : "date",
+               "tag" : "entered_on"
+            }
+         ],
+         "name" : "Parliamentary Debate at Berkeley",
+         "entries" : [
+            {
+               "code" : "PDAB SK",
+               "name" : "Seiersen & Keene",
+               "id" : "5484330",
+               "event" : 279394,
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "created_at" : "2023-12-20 20:55:38",
+               "registered_by" : 7970,
+               "students" : [
+                  "1282372",
+                  "1293492"
+               ],
+               "active" : 1,
+               "ada" : null,
+               "waitlist" : 0,
+               "settings" : [],
+               "school" : "660480",
+               "hybrid" : null
+            },
+            {
+               "dropped" : 0,
+               "unconfirmed" : 0,
+               "event" : 279394,
+               "id" : "5484331",
+               "created_at" : "2023-12-20 20:55:46",
+               "registered_by" : 7970,
+               "students" : [
+                  "1283837",
+                  "1283838"
+               ],
+               "active" : 1,
+               "ada" : null,
+               "code" : "PDAB BC",
+               "name" : "Banerjee & Carrillo",
+               "school" : "660480",
+               "hybrid" : null,
+               "settings" : [],
+               "waitlist" : 0
+            },
+            {
+               "waitlist" : 0,
+               "settings" : [],
+               "hybrid" : null,
+               "school" : "660480",
+               "name" : "Lin & Schuster",
+               "code" : "PDAB SL",
+               "students" : [
+                  "1280600",
+                  "1413303"
+               ],
+               "ada" : null,
+               "active" : 1,
+               "id" : "5484332",
+               "unconfirmed" : 0,
+               "dropped" : 0,
+               "event" : 279394,
+               "registered_by" : 7970,
+               "created_at" : "2023-12-20 20:56:12"
+            }
+         ],
+         "code" : "PDAB"
+      }
+   ]
+}
