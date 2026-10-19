@@ -17,6 +17,19 @@ FULL_BRACKET_SIZE = {
 }
 
 
+def _strip_parens(s):
+    """Removes a "(...)" annotation from a name - a nickname in the middle
+    ("William (Liam) Ward"), pronouns at the end ("Omer Syed (he/him)"), or
+    a tournament's own data-entry error that left the closing paren off
+    entirely ("Valerie Mulure (pronounced moo-loo-ray", no ")" anywhere).
+    Well-formed pairs are removed first so a nickname never takes the real
+    name after it with it; only a genuinely unclosed "(" then falls back to
+    stripping to the end of the string."""
+    s = re.sub(r"\s*\([^()]*\)", "", s)
+    s = re.sub(r"\s*\(.*", "", s)
+    return s.strip()
+
+
 def _norm(cell):
     """Collapse a table cell's internal line-wraps/whitespace into single spaces.
     A hyphenated surname that happens to line-wrap right at the hyphen (e.g.
@@ -88,13 +101,8 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                             continue
 
                         school = m_name.group(1).strip()
-                        # Strip a trailing "(...)" annotation (pronouns, a
-                        # pronunciation note, etc.) - from the first "(" to
-                        # the end, not just a well-formed "(...)" pair, since
-                        # a tournament's own name entry can leave the closing
-                        # paren off entirely (seen on a pronunciation note).
-                        d1_clean = re.sub(r"\s*\(.*", "", m_name.group(2)).strip()
-                        d2_clean = re.sub(r"\s*\(.*", "", m_name.group(3)).strip()
+                        d1_clean = _strip_parens(m_name.group(2))
+                        d2_clean = _strip_parens(m_name.group(3))
                         wins = int(m_wins.group(1))
 
                         # Last name is everything after the first token, not
