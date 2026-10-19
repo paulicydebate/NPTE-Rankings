@@ -967,6 +967,13 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
                     # same treatment as a bye: skipped in the Aff/Neg tally,
                     # doesn't block the team's other rounds from counting.
                     pairs.append(('FORFEIT', None))
+                elif not t.strip():
+                    # A genuinely blank cell (not an OCR failure on real
+                    # content - a failed OCR read still returns garbage
+                    # text, an empty crop returns nothing at all) means this
+                    # team didn't play that round at all (withdrew, joined
+                    # late, etc.) - same treatment as a bye/forfeit.
+                    pairs.append(('BLANK', None))
                 else:
                     pairs.append((None, None))
 
@@ -1016,7 +1023,7 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
         if not corrupted:
             aff_wins = aff_losses = neg_wins = neg_losses = 0
             for result, side in t['pairs']:
-                if result in ('BYE', 'FORFEIT'):
+                if result in ('BYE', 'FORFEIT', 'BLANK'):
                     continue
                 if side == 'Aff':
                     aff_wins += result == 'W'
