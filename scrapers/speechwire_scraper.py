@@ -954,17 +954,23 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
                 _crop_and_ocr_cell(page, row.cells[i], psm=6) if row.cells[i] else ''
                 for i in round_idxs
             ]
-            pairs = []  # (result, side) per round, or ('BYE', None)
+            pairs = []  # (result, side) per round, or ('BYE'|'FORFEIT', None)
             for t in round_texts:
                 result, side = _parse_tab_grouping_round_cell(t)
                 if result is not None and side is not None:
                     pairs.append((result, side))
                 elif 'bye' in t.lower():
                     pairs.append(('BYE', None))
+                elif 'forfeit' in t.lower():
+                    # No side to report for a forfeited round (no debate
+                    # happened), but it's not missing/corrupted data either -
+                    # same treatment as a bye: skipped in the Aff/Neg tally,
+                    # doesn't block the team's other rounds from counting.
+                    pairs.append(('FORFEIT', None))
                 else:
                     pairs.append((None, None))
 
-            is_header = any(r == 'BYE' or (r is not None and s is not None) for r, s in pairs)
+            is_header = any(r in ('BYE', 'FORFEIT') or (r is not None and s is not None) for r, s in pairs)
             if is_header:
                 if current:
                     teams.append(current)
@@ -1010,7 +1016,7 @@ def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
         if not corrupted:
             aff_wins = aff_losses = neg_wins = neg_losses = 0
             for result, side in t['pairs']:
-                if result == 'BYE':
+                if result in ('BYE', 'FORFEIT'):
                     continue
                 if side == 'Aff':
                     aff_wins += result == 'W'
