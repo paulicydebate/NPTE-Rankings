@@ -8,6 +8,7 @@ import re
 import glob
 import shutil
 import sys
+import difflib
 from collections import defaultdict
 
 # ============================================================================
@@ -817,6 +818,245 @@ def _parse_complete_doc_elim_sides(text, teams):
             else:
                 tally[(d1, d2)][2 if won else 3] += 1
     return tally
+
+
+def _ocr_page_text(page, resolution=300):
+    """Whole-page OCR, used only for the "complete doc" format's obfuscated-
+    font exports - real text extraction returns (cid:N) garbage on these,
+    so section titles and elim-results prose need OCR same as the table
+    cells do."""
+    im = page.to_image(resolution=resolution)
+    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as f:
+        path = f.name
+    im.save(path)
+    try:
+        return _ocr_text(path, psm=6)
+    finally:
+        os.unlink(path)
+
+
+def _page_section_ocr(page):
+    """Same idea as _page_section, but for a page whose embedded text is
+    obfuscated (OCR needed) rather than real."""
+    text = _ocr_page_text(page)
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    for marker, kind in (
+        ('Individual speakers in order', 'individual_speakers'),
+        ('Competitors in order', 'individual_speakers'),
+        ('Elimination round results', 'elim_results'),
+        ('Elimination round bracket', 'elim_bracket'),
+    ):
+        for i, line in enumerate(lines):
+            if marker.lower() in line.lower():
+                return (lines[i - 1] if i > 0 else None), kind
+    # A prelim table page has no such marker - any page with a real table
+    # on it (OCR title lines aside) counts as one.
+    if page.find_tables():
+        division = lines[1] if len(lines) > 1 else (lines[0] if lines else None)
+        return division, 'prelim_table'
+    return None, None
+
+
+def _real_table_columns(row):
+    """(name_idx, [round_idxs], totals_idx, result_idx) from a table row's
+    real (non-None-bbox) cells - some exports pad the table with a blank
+    border cell on each side, some don't, so column count/position isn't
+    fixed; what's constant is the shape (one wide name column, several
+    equal-ish-width round columns, then Totals and Result). Returns None
+    if the row doesn't have enough real cells to make sense of."""
+    real = [i for i, c in enumerate(row.cells) if c is not None]
+    if len(real) < 4:
+        return None
+    return real[0], real[1:-2], real[-2], real[-1]
+
+
+def _name_similarity(a, b):
+    return difflib.SequenceMatcher(None, a.lower().strip(), b.lower().strip()).ratio()
+
+
+def _best_team_match(d1_ocr, d2_ocr, candidates):
+    """Identifies a team by fuzzy-matching its two OCR'd debater names
+    against a small list of candidate (school, d1, d2) tuples already
+    known for this tournament from the live dataset - a per-name pairwise
+    comparison (checking both possible pairings, since OCR'd row order
+    doesn't necessarily match the dataset's Debater 1/2 order), which is
+    far more discriminating than matching a combined text blob: two
+    different teams from the same school share most of a blob match's
+    content (the school name) but share almost none of a per-name match.
+    Returns (candidate, score) for the best match, or (None, 0) if
+    d1_ocr/d2_ocr are missing."""
+    if not candidates or not d1_ocr or not d2_ocr:
+        return None, 0
+    best, best_score = None, 0
+    for cand in candidates:
+        _, d1, d2 = cand
+        score = max(
+            (_name_similarity(d1_ocr, d1) + _name_similarity(d2_ocr, d2)) / 2,
+            (_name_similarity(d1_ocr, d2) + _name_similarity(d2_ocr, d1)) / 2,
+        )
+        if score > best_score:
+            best, best_score = cand, score
+    return best, best_score
+
+
+def _parse_complete_doc_prelim_pages_ocr(pages, known_teams):
+    """OCR equivalent of _parse_complete_doc_prelim_pages, for the
+    obfuscated-font "complete doc" exports. These DO draw real table/cell
+    borders (unlike the readable-text exports, where pdfplumber's table
+    detection collapses the page into one blob), so each round is read as
+    its own cell with _crop_and_ocr_cell + the same
+    _parse_tab_grouping_round_cell regex already validated on real text.
+
+    Row grouping is noisy - some exports insert near-zero-height spacer
+    rows between a team's real rows, which OCR to garbage - so rows are
+    classified by content instead of position: a row whose round cells
+    contain W/L-dash-side or "BYE" patterns starts a new team (its own
+    code+school text is read too, but only as a sanity check - OCR on a
+    short, cramped header cell is the least reliable text on the page);
+    a row that isn't a header is read as a debater name instead (reliably
+    OCR'd, one clean name per cell) and attached to whichever team is
+    currently open, up to two per team. Team identity comes from fuzzy-
+    matching those two debater names against the known roster for this
+    tournament (known_teams) - far more discriminating than matching the
+    header's code+school text alone, since two different teams from the
+    same school share almost nothing in a per-name comparison.
+
+    known_teams: list of (school, d1, d2) from the tournament's existing
+    tournamentLogs rows."""
+    teams = []
+    for page in pages:
+        tables = page.find_tables()
+        if not tables:
+            continue
+        rows = tables[0].rows
+        if len(rows) < 2:
+            continue
+
+        current = None
+        for row in rows[1:]:
+            cols = _real_table_columns(row)
+            if cols is None:
+                continue
+            name_idx, round_idxs, totals_idx, result_idx = cols
+            name_bbox = row.cells[name_idx]
+            height = name_bbox[3] - name_bbox[1]
+            if height < 10 or height > 100:
+                continue  # near-zero-height spacer row, or a giant border-column artifact
+
+            round_texts = [
+                _crop_and_ocr_cell(page, row.cells[i], psm=6) if row.cells[i] else ''
+                for i in round_idxs
+            ]
+            pairs = []  # (result, side) per round, or ('BYE', None)
+            for t in round_texts:
+                result, side = _parse_tab_grouping_round_cell(t)
+                if result is not None and side is not None:
+                    pairs.append((result, side))
+                elif 'bye' in t.lower():
+                    pairs.append(('BYE', None))
+                else:
+                    pairs.append((None, None))
+
+            is_header = any(r == 'BYE' or (r is not None and s is not None) for r, s in pairs)
+            if is_header:
+                if current:
+                    teams.append(current)
+                current = {'debaters': [], 'pairs': pairs, 'expected_rounds': len(round_idxs)}
+                continue
+
+            if current is None or len(current['debaters']) >= 2:
+                continue  # noise row before any header, or a 3rd+ stray row
+            name_text = _crop_and_ocr_cell(page, name_bbox, psm=6)
+            name_text = re.sub(r'\s+', ' ', name_text).strip()
+            if name_text:
+                current['debaters'].append(name_text)
+        if current:
+            teams.append(current)
+
+    MATCH_THRESHOLD = 0.6
+    results = []
+    used_candidates = set()
+    for t in teams:
+        d1_ocr, d2_ocr = (t['debaters'] + ['', ''])[:2]
+        matched, score = _best_team_match(d1_ocr, d2_ocr, known_teams)
+        # A candidate already claimed by an earlier, better-scoring team in
+        # this same document can't be this team too - two different OCR'd
+        # blocks matching the same known team means at least one is wrong,
+        # so neither is trusted.
+        ambiguous = matched is not None and matched in used_candidates
+        corrupted = (
+            len(t['debaters']) != 2
+            or any(r is None for r, s in t['pairs'])
+            or matched is None
+            or score < MATCH_THRESHOLD
+            or ambiguous
+        )
+        if matched is not None and not ambiguous:
+            used_candidates.add(matched)
+
+        aff_wins = aff_losses = neg_wins = neg_losses = None
+        if not corrupted:
+            aff_wins = aff_losses = neg_wins = neg_losses = 0
+            for result, side in t['pairs']:
+                if result == 'BYE':
+                    continue
+                if side == 'Aff':
+                    aff_wins += result == 'W'
+                    aff_losses += result == 'L'
+                else:
+                    neg_wins += result == 'W'
+                    neg_losses += result == 'L'
+        school, d1, d2 = matched if matched else ('', '', '')
+        results.append({'school': school, 'd1': d1, 'd2': d2,
+                        'ocr_debaters': t['debaters'], 'match_score': score,
+                        'aff_wins': aff_wins, 'aff_losses': aff_losses,
+                        'neg_wins': neg_wins, 'neg_losses': neg_losses})
+    return results
+
+
+def parse_complete_speechwire_doc_ocr(pdf_path, known_teams,
+                                       division_names=('Parli Novice Division', 'Parli Open Division')):
+    """OCR counterpart to parse_complete_speechwire_doc, for a "complete
+    doc" export using SpeechWire's obfuscated Type 3 font (real text
+    extraction returns (cid:N) garbage). Same output shape and same
+    side-data-only scope (doesn't recompute Prelim Wins/Losses, Advanced,
+    etc. - those are already correct from this tournament's original
+    ingest). known_teams: list of (school, d1, d2) tuples from the
+    tournament's existing tournamentLogs rows, used to identify each OCR'd
+    team by fuzzy name match rather than trusting OCR'd names outright."""
+    with pdfplumber.open(pdf_path) as pdf:
+        sections = [_page_section_ocr(p) for p in pdf.pages]
+        for i in range(1, len(sections)):
+            if sections[i] == (None, None):
+                sections[i] = sections[i - 1]
+
+        records = []
+        for division in division_names:
+            prelim_pages = [pdf.pages[i] for i, (d, k) in enumerate(sections)
+                             if d == division and k == 'prelim_table']
+            elim_pages = [pdf.pages[i] for i, (d, k) in enumerate(sections)
+                          if d == division and k == 'elim_results']
+            if not prelim_pages:
+                continue
+
+            teams = _parse_complete_doc_prelim_pages_ocr(prelim_pages, known_teams)
+            elim_text = '\n'.join(_ocr_page_text(p) for p in elim_pages)
+            elim_sides = _parse_complete_doc_elim_sides(elim_text, [(t['d1'], t['d2']) for t in teams if t['d1']])
+
+            for t in teams:
+                if t['aff_wins'] is None:
+                    records.append({'division': division, 'school': t['school'], 'd1': t['d1'], 'd2': t['d2'],
+                                    'ocr_debaters': t['ocr_debaters'], 'match_score': t['match_score'],
+                                    'aff_wins': None, 'aff_losses': None, 'neg_wins': None, 'neg_losses': None})
+                    continue
+                ew, el, nw, nl = elim_sides.get((t['d1'], t['d2']), [0, 0, 0, 0])
+                records.append({
+                    'division': division, 'school': t['school'], 'd1': t['d1'], 'd2': t['d2'],
+                    'ocr_debaters': t['ocr_debaters'], 'match_score': t['match_score'],
+                    'aff_wins': t['aff_wins'] + ew, 'aff_losses': t['aff_losses'] + el,
+                    'neg_wins': t['neg_wins'] + nw, 'neg_losses': t['neg_losses'] + nl,
+                })
+    return records
 
 
 def parse_complete_speechwire_doc(pdf_path, division_names=('Parli Novice Division', 'Parli Open Division')):
