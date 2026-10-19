@@ -655,6 +655,52 @@ def analyze_prelim_rounds(event):
     return wins_losses, sides
 
 
+def prelim_round_sides(event):
+    """{entry_id: {round_number: side}} - the Tabroom ballot "side" field
+    captured structurally from prelim/power-matched round sections,
+    independent of whether any ballot in the event carries a winloss
+    score. Side assignment happens at pairing time, before ballots are
+    judged, so it survives in exactly the situation where win/loss has to
+    fall back to the tournament's posted Ballots-text (see
+    event_has_ballot_scores) - this lets Aff/Neg still be recovered there
+    instead of silently going to zero for the whole event."""
+    sides = defaultdict(dict)
+    for rnd in event.get("rounds", []):
+        if rnd.get("type") not in ("prelim", "highlow", "highhigh"):
+            continue
+        try:
+            round_num = int(rnd.get("name"))
+        except (TypeError, ValueError):
+            continue
+        for section in rnd.get("sections", []):
+            for ballot in section.get("ballots", []):
+                entry_id = str(ballot.get("entry"))
+                if ballot.get("side") is not None and round_num not in sides[entry_id]:
+                    sides[entry_id][round_num] = ballot.get("side")
+    return dict(sides)
+
+
+def prelim_side_tally_from_text(entry_id, ballots_by_entry, round_sides, prelim_round_nums):
+    """[aff_w, aff_l, neg_w, neg_l] for one entry's prelim rounds, used when
+    the event has no ballot-level winloss scores at all and win/loss comes
+    from parse_round_letter_outcomes(Ballots-text) instead. A round with no
+    recorded side, or no determined win/loss outcome, is skipped rather
+    than guessed at."""
+    tally = [0, 0, 0, 0]
+    outcomes = parse_round_letter_outcomes(ballots_by_entry.get(entry_id, ""))
+    sides = round_sides.get(entry_id, {})
+    for round_num, outcome in outcomes.items():
+        if prelim_round_nums and round_num not in prelim_round_nums:
+            continue
+        side = sides.get(round_num)
+        won = outcome == "win"
+        if side == SIDE_AFF:
+            tally[0 if won else 1] += 1
+        elif side == SIDE_NEG:
+            tally[2 if won else 3] += 1
+    return tally
+
+
 def collect_event_entries(event):
     """Every entry_id that appears anywhere in the event's round data.
     Used when there's no result_set to enumerate entries from at all."""
@@ -725,7 +771,26 @@ def build_rows_for_event(data, category, event, year_override=None):
     # picking the right one. Skipped entirely when there's no score data
     # to compute it from (see above) so the Ballots-text fallback below
     # is used for every entry instead of a fabricated tally.
+    # Always computed (not gated on has_scores): analyze_elim_rounds() now
+    # decides per-debate whether to trust scores or fall back to this,
+    # since prelims and elims can differ in whether they're scored yet
+    # (e.g. an export pulled mid-tournament, prelims judged but outrounds
+    # not yet entered). Also needed below for the has_scores=False Aff/Neg
+    # fallback.
+    ballots_by_entry = collect_ballots_by_entry(event)
+    prelim_round_nums = prelim_round_numbers(event)
+
     prelim_tally, prelim_sides = analyze_prelim_rounds(event) if has_scores else ({}, {})
+    if not has_scores:
+        # Win/loss falls back to Ballots-text (below, via result_rows_by_entry),
+        # but side assignment doesn't depend on scores at all - recover it
+        # from the raw ballot structure instead of losing it for the whole
+        # event (see prelim_round_sides' docstring).
+        round_sides = prelim_round_sides(event)
+        prelim_sides = {
+            eid: prelim_side_tally_from_text(eid, ballots_by_entry, round_sides, prelim_round_nums)
+            for eid in round_sides
+        }
 
     result_set = find_prelim_result_set(event)
     result_keys_by_id = {}
@@ -733,17 +798,11 @@ def build_rows_for_event(data, category, event, year_override=None):
     result_rows_by_entry = {}
     if result_set is not None:
         result_keys_by_id = {k["id"]: k for k in result_set.get("result_keys", [])}
-        prelim_rounds = prelim_round_numbers(event)
+        prelim_rounds = prelim_round_nums
         for result_row in result_set.get("results", []):
             eid = str(result_row.get("entry"))
             result_rows_by_entry.setdefault(eid, result_row)  # first one wins on dupes
 
-    # Always computed (not gated on has_scores): analyze_elim_rounds() now
-    # decides per-debate whether to trust scores or fall back to this,
-    # since prelims and elims can differ in whether they're scored yet
-    # (e.g. an export pulled mid-tournament, prelims judged but outrounds
-    # not yet entered).
-    ballots_by_entry = collect_ballots_by_entry(event)
     per_entry_status, partial_info, n_elim_rounds, per_entry_side = analyze_elim_rounds(event, ballots_by_entry)
     year = year_override or academic_year(data.get("start", ""))
 
