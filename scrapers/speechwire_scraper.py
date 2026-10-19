@@ -777,9 +777,15 @@ def _parse_complete_doc_prelim_pages(pages):
                         neg_wins += result == 'W'
                         neg_losses += result == 'L'
 
+            prelim_wins = prelim_losses = None
+            if not corrupted:
+                prelim_wins = aff_wins + neg_wins + side_tokens.count('BYE')
+                prelim_losses = aff_losses + neg_losses
+
             teams.append({'school': '', 'd1': d1, 'd2': d2,
                           'aff_wins': aff_wins, 'aff_losses': aff_losses,
-                          'neg_wins': neg_wins, 'neg_losses': neg_losses})
+                          'neg_wins': neg_wins, 'neg_losses': neg_losses,
+                          'prelim_wins': prelim_wins, 'prelim_losses': prelim_losses})
 
     return teams
 
@@ -818,6 +824,105 @@ def _parse_complete_doc_elim_sides(text, teams):
             else:
                 tally[(d1, d2)][2 if won else 3] += 1
     return tally
+
+
+# Round priority/size for the "Elimination round results" text format (full
+# ingest only - "Octafinal round", "Quarterfinal round", etc., distinct from
+# the awards-script format's "Octafinalists"/TAB_GROUPING_* dicts).
+COMPLETE_DOC_ROUND_PRIORITY = {"Octafinal": 0, "Quarterfinal": 1, "Semifinal": 2, "Final": 3}
+COMPLETE_DOC_ROUND_SIZE = {"Octafinal": 16, "Quarterfinal": 8, "Semifinal": 4, "Final": 2}
+
+
+def _parse_complete_doc_elim_bracket(text, teams):
+    """Parses a "complete doc"'s "Elimination round results" page text into
+    full elim-round data per team: Advanced, Partial Elim, 1st-7th Full Win,
+    Elim Wins, Elim Losses - the fields _parse_complete_doc_elim_sides
+    doesn't produce (that one only needs side, since every other historical
+    tournament this scraper has handled already has these fields correct
+    from its original ingest; this function exists only for ingesting a
+    tournament that was never entered at all).
+
+    Same name-search strategy as _parse_complete_doc_elim_sides (far more
+    robust than parsing the line's own school/seed text, which is
+    ambiguous). A BYE line still marks a round reached (just not won by a
+    real debate), tracked the same as a win for every purpose except the
+    Aff/Neg tally (handled separately, by _parse_complete_doc_elim_sides).
+
+    Partial Elim follows the same convention as every other scraper here:
+    the earliest round any team reached is checked against its "full"
+    bracket size for a round with that name; if fewer teams entered it than
+    a full bracket would hold, it's a partial round, and the fraction
+    (real-debate entrants / full bracket size) is credited to whoever won
+    their real debate there OR received a bye into the next round, with
+    that round then excluded from the 1st-7th Full Win numbering entirely.
+    teams: list of (d1, d2) tuples from the prelim parse.
+    Returns {(d1, d2): {'advanced', 'partial_elim', 'full_wins' (7 bools),
+    'elim_wins', 'elim_losses'}}."""
+    per_team_rounds = {t: [] for t in teams}  # (d1,d2) -> [(round_name, 'win'|'loss'|'bye'), ...]
+    current_round = None
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        m_round = re.match(r'^(\w+) round$', line, re.IGNORECASE)
+        if m_round:
+            current_round = m_round.group(1).capitalize()
+            continue
+        if not current_round or line.lower().startswith('champion:'):
+            continue
+        def_idx = line.find(' def.')
+        is_bye = 'BYE' in line
+        for (d1, d2) in teams:
+            if d1 not in line or d2 not in line:
+                continue
+            if is_bye:
+                per_team_rounds[(d1, d2)].append((current_round, 'bye'))
+                continue
+            if def_idx == -1:
+                continue
+            d1_pos, d2_pos = line.find(d1), line.find(d2)
+            won = min(d1_pos, d2_pos) < def_idx
+            per_team_rounds[(d1, d2)].append((current_round, 'win' if won else 'loss'))
+
+    rounds_present = sorted(
+        {rnd for rounds in per_team_rounds.values() for rnd, _ in rounds},
+        key=lambda r: COMPLETE_DOC_ROUND_PRIORITY.get(r, 99),
+    )
+    first_round = rounds_present[0] if rounds_present else None
+    full_size = COMPLETE_DOC_ROUND_SIZE.get(first_round, 0)
+    first_round_entries = [rounds[0] for rounds in per_team_rounds.values()
+                            if rounds and rounds[0][0] == first_round]
+    first_round_total = len(first_round_entries)
+    first_round_byes = sum(1 for _, r in first_round_entries if r == 'bye')
+    is_partial = bool(full_size) and first_round_total < full_size
+    partial_fraction = round((first_round_total - first_round_byes) / full_size, 4) if is_partial else 0
+
+    results = {}
+    elim_wins_by_team = {}
+    for t, rounds in per_team_rounds.items():
+        advanced = bool(rounds)
+        partial_elim = 0
+        full_wins = [False] * 7
+        if advanced:
+            if is_partial and rounds[0][0] == first_round:
+                partial_elim = partial_fraction if rounds[0][1] in ('win', 'bye') else 0
+                full_rounds = rounds[1:]
+            else:
+                full_rounds = rounds
+            for i, (_, r) in enumerate(full_rounds[:7]):
+                full_wins[i] = r in ('win', 'bye')
+        elim_wins = (1 if partial_elim > 0 else 0) + sum(full_wins)
+        elim_wins_by_team[t] = elim_wins
+        results[t] = {'advanced': advanced, 'partial_elim': partial_elim, 'full_wins': full_wins,
+                      'elim_wins': elim_wins}
+
+    max_wins = max(elim_wins_by_team.values()) if elim_wins_by_team else 0
+    for t, r in results.items():
+        if not r['advanced']:
+            r['elim_losses'] = 0
+        else:
+            r['elim_losses'] = 0 if r['elim_wins'] == max_wins else 1
+    return results
 
 
 def _ocr_page_text(page, resolution=300):
@@ -1081,6 +1186,57 @@ def parse_complete_speechwire_doc_ocr(pdf_path, known_teams,
                     'aff_wins': t['aff_wins'] + ew, 'aff_losses': t['aff_losses'] + el,
                     'neg_wins': t['neg_wins'] + nw, 'neg_losses': t['neg_losses'] + nl,
                 })
+    return records
+
+
+def parse_complete_speechwire_doc_full(pdf_path, division_names=('Parli Novice Division', 'Parli Open Division')):
+    """Full ingest parse of a "complete doc" (real text, no OCR) - unlike
+    parse_complete_speechwire_doc (side-data-only, for backfilling a
+    tournament that's already live), this also computes Prelim Wins/
+    Losses, Advanced, Partial Elim, and 1st-7th Full Win/Elim Wins/Elim
+    Losses, for ingesting a tournament that was never entered at all.
+    Returns one dict per team with school='' (not reliably recoverable
+    from this layout - see _parse_complete_doc_prelim_pages), d1, d2, and
+    every other ingest-template field except Points Earned (computed
+    separately from these). A team whose prelim side data was
+    unrecoverable (garbled text) is still included with prelim/elim
+    fields filled in but aff/neg fields None - same per-team-partial-
+    failure handling as everywhere else in this file."""
+    with pdfplumber.open(pdf_path) as pdf:
+        sections = [_page_section(p) for p in pdf.pages]
+        for i in range(1, len(sections)):
+            if sections[i] == (None, None):
+                sections[i] = sections[i - 1]
+        records = []
+        for division in division_names:
+            prelim_pages = [pdf.pages[i] for i, (d, t) in enumerate(sections)
+                             if d == division and t == 'prelim_table']
+            elim_pages = [pdf.pages[i] for i, (d, t) in enumerate(sections)
+                          if d == division and t == 'elim_results']
+            if not prelim_pages:
+                continue
+
+            teams = _parse_complete_doc_prelim_pages(prelim_pages)
+            elim_text = '\n'.join(p.extract_text() or '' for p in elim_pages)
+            team_pairs = [(t['d1'], t['d2']) for t in teams]
+            elim_sides = _parse_complete_doc_elim_sides(elim_text, team_pairs)
+            elim_bracket = _parse_complete_doc_elim_bracket(elim_text, team_pairs)
+
+            for t in teams:
+                eb = elim_bracket[(t['d1'], t['d2'])]
+                record = {
+                    'division': division, 'school': t['school'], 'd1': t['d1'], 'd2': t['d2'],
+                    'prelim_wins': t['prelim_wins'], 'prelim_losses': t['prelim_losses'],
+                    'advanced': eb['advanced'], 'partial_elim': eb['partial_elim'],
+                    'full_wins': eb['full_wins'], 'elim_wins': eb['elim_wins'], 'elim_losses': eb['elim_losses'],
+                }
+                if t['aff_wins'] is None:
+                    record.update(aff_wins=None, aff_losses=None, neg_wins=None, neg_losses=None)
+                else:
+                    ew, el, nw, nl = elim_sides.get((t['d1'], t['d2']), [0, 0, 0, 0])
+                    record.update(aff_wins=t['aff_wins'] + ew, aff_losses=t['aff_losses'] + el,
+                                  neg_wins=t['neg_wins'] + nw, neg_losses=t['neg_losses'] + nl)
+                records.append(record)
     return records
 
 
