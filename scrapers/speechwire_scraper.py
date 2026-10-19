@@ -634,6 +634,247 @@ def parse_awards_script(pdf_path):
     return results
 
 
+def _find_prelim_header_line(lines):
+    """Index of the "Competitor Round 1 ... Totals Results" column-header
+    line, or None. Looked up by content, not position, since how many lines
+    precede it (tournament name only, or a timestamp + tournament name)
+    varies by export."""
+    for i, line in enumerate(lines):
+        if line.startswith('Competitor') and 'Results' in line:
+            return i
+    return None
+
+
+def _page_section(page):
+    """Classifies one page of a "complete" multi-event SpeechWire tournament
+    report (every event in the tournament printed to one PDF, real text, no
+    OCR needed) by its own title lines: (division_name, section_type), where
+    section_type is one of 'prelim_table', 'individual_speakers',
+    'elim_results', 'elim_bracket', or None if the page doesn't look like a
+    per-division report page at all (e.g. the school-codes cover page).
+
+    The division name always sits on the line right before whichever marker
+    identifies the page - but how many lines come before THAT (just the
+    tournament name, or a timestamp line plus the tournament name) differs
+    between exports, so this searches by content instead of assuming a
+    fixed line index."""
+    text = page.extract_text() or ''
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    for marker, kind in (
+        ('Individual speakers in order', 'individual_speakers'),
+        ('Competitors in order', 'individual_speakers'),
+        ('Elimination round results', 'elim_results'),
+        ('Elimination round bracket', 'elim_bracket'),
+    ):
+        if marker in lines:
+            i = lines.index(marker)
+            return (lines[i - 1] if i > 0 else None), kind
+    i = _find_prelim_header_line(lines)
+    if i is not None:
+        return (lines[i - 1] if i > 0 else None), 'prelim_table'
+    return None, None
+
+
+def _parse_complete_doc_prelim_pages(pages):
+    """Parses the "Competitor | Round 1...N | Totals | Results" team table
+    from a list of already-selected pdfplumber Page objects (all belonging
+    to one division) into per-team Aff/Neg tallies.
+
+    pdfplumber's table-geometry detection (find_tables) doesn't work on this
+    layout - it collapses the whole page into one or two giant cells, since
+    this report style apparently doesn't draw the same column-separator
+    lines the "tab grouping" single-division PDFs do. Reading the page as
+    plain text instead, each team is a fixed shape regardless of its exact
+    line count (which varies: a long opponent name can wrap the header onto
+    an extra line): one or more "header" lines giving [W/L] per round
+    (opponent text interleaved - ignored, not needed) followed by one or
+    more "side" lines giving [Aff/Neg/BYE] per round (also carrying the
+    placement ordinal), then exactly two "score" lines (one per debater -
+    the only lines matching a bare decimal score, e.g. "29.00 (2.00)",
+    which no header/side/judge line ever contains), unambiguously marking
+    where one team's data ends and the next begins.
+
+    Round order is recovered by reading the [W/L] tokens and the
+    [Aff/Neg/BYE] tokens as two separate ordered streams and zipping them -
+    a BYE consumes a position in the side stream but has no corresponding
+    [W/L] token at all (no opponent to report), so it's paired with None
+    instead of advancing the win/loss stream. Validated against this
+    format's own already-known correct records (e.g. a team showing "4-1"
+    whose recovered round-by-round sequence sums to 4 wins/byes and 1 loss)
+    before being trusted for every historical tournament this is used on.
+
+    pdfplumber's reading order can scramble into individual interleaved
+    letters (e.g. "L - R R ic S e - U N n e iv g ersit BYE") for a team
+    whose SCHOOL name wraps across its own header line - seen only for
+    schools with long names ("University of Texas - Tyler", "University of
+    the Pacific"), not a general problem with this parser. Rather than risk
+    silently extracting wrong win/loss or side data from garbled text, each
+    team's token counts are checked against the page's own declared round
+    count (from the "Round 1 Round 2 ... Round N" column header) and
+    against each other (every non-BYE side token must pair with a real W/L
+    token); a mismatch means this team's data is unusable here and its
+    tally comes back as None rather than a partial or wrong one."""
+    teams = []
+    expected_rounds = None
+    for page in pages:
+        text = page.extract_text() or ''
+        lines = [l.strip() for l in text.splitlines() if l.strip()]
+        header_idx = _find_prelim_header_line(lines)
+        if header_idx is not None:
+            expected_rounds = len(re.findall(r'\bRound\s+\d+\b', lines[header_idx]))
+            body = lines[header_idx + 1:]
+        else:
+            # A page-break continuation: the table carries on with no
+            # repeated title or column header, so the whole page is body -
+            # expected_rounds comes from whichever earlier page in this same
+            # call last had a real header.
+            body = lines
+        body = [l for l in body if not l.startswith('This tournament')
+                and not l.startswith('©') and not l.startswith('https://')]
+
+        # A debater's own score line - detected by shape (2+ decimal scores,
+        # ends in a placement ordinal) rather than requiring the "(rank)"
+        # parenthetical some exports omit per-score. Excludes AFF/Neg/BYE
+        # so it never matches the side line, which also ends in an ordinal.
+        def _is_score_line(l):
+            if re.search(r'\bAFF\b|\bNeg\b|\bBYE\b', l):
+                return False
+            if not re.search(r'\d+(st|nd|rd|th)$', l):
+                return False
+            return len(re.findall(r'\d+\.\d{2}', l)) >= 2
+        score_idxs = [i for i, l in enumerate(body) if _is_score_line(l)]
+        start = 0
+        for k in range(0, len(score_idxs) - 1, 2):
+            si1, si2 = score_idxs[k], score_idxs[k + 1]
+            header_text = ' '.join(body[start:si1])
+            wl_tokens = re.findall(r'\b([WL])(?=\s*-)', header_text)
+            side_tokens = re.findall(r'\b(AFF|Neg|BYE)\b', header_text)
+
+            m1 = re.match(r'^(.+?)\s+\d', body[si1])
+            m2 = re.match(r'^(.+?)\s+\d', body[si2])
+            start = si2 + 1
+            if not m1 or not m2:
+                continue
+            d1, d2 = m1.group(1).strip(), m2.group(1).strip()
+
+            non_bye = sum(1 for t in side_tokens if t != 'BYE')
+            corrupted = (len(side_tokens) != expected_rounds) or (non_bye != len(wl_tokens))
+
+            aff_wins = aff_losses = neg_wins = neg_losses = None
+            if not corrupted:
+                aff_wins = aff_losses = neg_wins = neg_losses = 0
+                wl_iter = iter(wl_tokens)
+                for side_tok in side_tokens:
+                    if side_tok == 'BYE':
+                        continue
+                    result = next(wl_iter)
+                    side = 'Aff' if side_tok == 'AFF' else 'Neg'
+                    if side == 'Aff':
+                        aff_wins += result == 'W'
+                        aff_losses += result == 'L'
+                    else:
+                        neg_wins += result == 'W'
+                        neg_losses += result == 'L'
+
+            teams.append({'school': '', 'd1': d1, 'd2': d2,
+                          'aff_wins': aff_wins, 'aff_losses': aff_losses,
+                          'neg_wins': neg_wins, 'neg_losses': neg_losses})
+
+    return teams
+
+
+def _parse_complete_doc_elim_sides(text, teams):
+    """Tallies elim-round Aff/Neg from a "complete doc"'s "Elimination round
+    results" page text, e.g. "5 San Joaquin De HT Ashan Herath and Joshua
+    Turnbull (Neg) def. 4 Diablo Valley BF Tawny Fischer and Teo Buegeleisen
+    (AFF) 3-0" - unlike the "awards assembly script" format, this one DOES
+    carry side for elim rounds. Rather than fully parsing the line's school/
+    seed structure (ambiguous, since both share the literal word "and"),
+    this looks up each known team by searching for both debaters' names
+    together and reading the side out of the parenthetical right after -
+    far more robust against the format's own ambiguity. A BYE line is
+    skipped (not a contested round on either side, same reasoning as
+    elsewhere). teams: list of (d1, d2) tuples from the prelim parse.
+    Returns {(d1, d2): [aff_w, aff_l, neg_w, neg_l]}."""
+    tally = {t: [0, 0, 0, 0] for t in teams}
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or 'BYE' in line or ' def.' not in line:
+            continue
+        def_idx = line.find(' def.')
+        for (d1, d2) in teams:
+            if d1 not in line or d2 not in line:
+                continue
+            d1_pos, d2_pos = line.find(d1), line.find(d2)
+            name_end = max(d1_pos + len(d1), d2_pos + len(d2))
+            m = re.search(r'\((Neg|AFF)\)', line[name_end:name_end + 15])
+            if not m:
+                continue
+            side = 'Aff' if m.group(1) == 'AFF' else 'Neg'
+            won = min(d1_pos, d2_pos) < def_idx
+            if side == 'Aff':
+                tally[(d1, d2)][0 if won else 1] += 1
+            else:
+                tally[(d1, d2)][2 if won else 3] += 1
+    return tally
+
+
+def parse_complete_speechwire_doc(pdf_path, division_names=('Parli Novice Division', 'Parli Open Division')):
+    """Parses a "complete" multi-event SpeechWire tournament report (every
+    event printed into one PDF - IPDA, LD, individual speech events, AND
+    Parli - with real embedded text, no OCR needed) for just the named Parli
+    division(s)' Aff/Neg data, prelim and elim combined. Unlike the other
+    SpeechWire formats, this one's elim results DO carry side, so nothing is
+    left out.
+
+    This is a side-data-only parse: it does NOT recompute Prelim Wins/
+    Losses, Advanced, Partial Elim, or Elim Wins/Losses - those come from
+    this tournament's original ingest (built from a different, standings-
+    only export) and are already correct, so this only returns
+    {school, d1, d2, aff_wins, aff_losses, neg_wins, neg_losses} per team,
+    meant to be matched against the existing dataset by name rather than
+    merged as new rows."""
+    with pdfplumber.open(pdf_path) as pdf:
+        sections = [_page_section(p) for p in pdf.pages]
+        # A page whose table/section continues from the previous page (no
+        # repeated title after a page break) classifies as (None, None) -
+        # attribute it to whatever section immediately precedes it, since a
+        # genuinely new section is never missing its own title.
+        for i in range(1, len(sections)):
+            if sections[i] == (None, None):
+                sections[i] = sections[i - 1]
+        records = []
+        for division in division_names:
+            prelim_pages = [pdf.pages[i] for i, (d, t) in enumerate(sections)
+                             if d == division and t == 'prelim_table']
+            elim_pages = [pdf.pages[i] for i, (d, t) in enumerate(sections)
+                          if d == division and t == 'elim_results']
+            if not prelim_pages:
+                continue
+
+            teams = _parse_complete_doc_prelim_pages(prelim_pages)
+            elim_text = '\n'.join(p.extract_text() or '' for p in elim_pages)
+            elim_sides = _parse_complete_doc_elim_sides(elim_text, [(t['d1'], t['d2']) for t in teams])
+
+            for t in teams:
+                if t['aff_wins'] is None:
+                    # Prelim side data was unrecoverable (garbled text) for
+                    # this team - don't layer elim data on top of an already
+                    # unusable prelim tally.
+                    records.append({
+                        'division': division, 'school': t['school'], 'd1': t['d1'], 'd2': t['d2'],
+                        'aff_wins': None, 'aff_losses': None, 'neg_wins': None, 'neg_losses': None,
+                    })
+                    continue
+                ew, el, nw, nl = elim_sides.get((t['d1'], t['d2']), [0, 0, 0, 0])
+                records.append({
+                    'division': division, 'school': t['school'], 'd1': t['d1'], 'd2': t['d2'],
+                    'aff_wins': t['aff_wins'] + ew, 'aff_losses': t['aff_losses'] + el,
+                    'neg_wins': t['neg_wins'] + nw, 'neg_losses': t['neg_losses'] + nl,
+                })
+    return records
+
+
 def parse_speechwire_tab_grouping_tournament(prelims_path, outs_path, season_year="2025-2026"):
     """Combines a 'tab grouping' prelims sheet and its matching 'awards
     assembly script' into the same row shape the other scrapers produce.
