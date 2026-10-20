@@ -213,6 +213,11 @@
         let currentViewMode = 'teams';
 
         function initializeData() {
+            // Needed before summaryData is built below, since a national
+            // championship is folded into each team-season's own Titles
+            // count via getSeasonTitles().
+            buildTitleLookups();
+
             const summaryMap = {};
             tournamentLogs.forEach(log => {
                 // Group by season + school + the SET of debater names (order-independent),
@@ -257,6 +262,17 @@
                     }
                 });
 
+                // A national championship (NPTE/NPDA) counts toward this same
+                // Titles total alongside regular-season tournament wins - it's
+                // credited to whichever (Year, School, pair) row this is, so
+                // it flows into every downstream rollup (partnership/debater/
+                // school) the exact same way a regular-season title already
+                // does, with no extra wiring needed there. A season with a
+                // "double" (both NPTE and NPDA) counts as 2 titles, not 1.
+                getSeasonTitles(group.Year, group['Debater 1'], group['Debater 2']).forEach(t => {
+                    titles += t.titles.length;
+                });
+
                 const winPct = (totalWins + totalLosses) > 0
                     ? ((totalWins / (totalWins + totalLosses)) * 100).toFixed(1)
                     : 0;
@@ -294,7 +310,6 @@
             schoolSeasonData = buildSchoolSeasonData();
             tournamentData = buildTournamentData();
             debaterAllTimeData = buildDebaterAllTimeData();
-            buildTitleLookups();
         }
 
         // Circuit-wide Aff/Neg split, shown as a small always-visible line
@@ -1055,6 +1070,29 @@
                 sub = `${year} Season &middot; ${filteredLogs.length} team${filteredLogs.length === 1 ? '' : 's'}`;
             }
 
+            // National championships (NPTE/NPDA) for whatever's being shown,
+            // folded into the Championships badge alongside regular-season
+            // tournament wins - same combined definition initializeData()
+            // uses for the main table's Titles column, so the badge always
+            // matches that column for the same entity. Computed from the
+            // distinct (Year, pair) combinations actually present in
+            // filteredLogs, so it naturally covers every modal type (a
+            // debater's other partners, a school's other teams, etc.)
+            // without type-specific logic. Not applied to 'tournament',
+            // which lists many different teams' one-event appearance rather
+            // than a single entity's career/season.
+            let natTitleCount = 0;
+            if (type !== 'tournament') {
+                const seenPairSeasons = new Set();
+                filteredLogs.forEach(log => {
+                    const comboKey = log.Year + '||' + pairKey(log);
+                    if (seenPairSeasons.has(comboKey)) return;
+                    seenPairSeasons.add(comboKey);
+                    natTitleCount += getSeasonTitles(log.Year, log['Debater 1'], log['Debater 2'])
+                        .reduce((sum, t) => sum + t.titles.length, 0);
+                });
+            }
+
             if (type === 'seasonPoints') {
                 filteredLogs.sort((a,b) => (b['Points Earned'] || 0) - (a['Points Earned'] || 0));
             } else {
@@ -1135,7 +1173,7 @@
             document.getElementById('modalElimWinPct').innerText = elimWinPct + '%';
             document.getElementById('modalAffWinPct').innerText = affWinPct;
             document.getElementById('modalNegWinPct').innerText = negWinPct;
-            document.getElementById('modalTitles').innerText = titles;
+            document.getElementById('modalTitles').innerText = titles + natTitleCount;
 
             document.getElementById('modalHistory').innerHTML = historyHtml;
 
