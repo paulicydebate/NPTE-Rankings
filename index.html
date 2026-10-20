@@ -92,7 +92,7 @@
             <h2 id="modalTitle" class="text-2xl font-bold mb-1">Details</h2>
             <div id="modalSub" class="text-gray-600 dark:text-gray-400 mb-6 font-medium text-sm"></div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 text-center">
                 <div class="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border border-blue-100 dark:border-blue-900">
                     <div class="text-3xl font-bold text-blue-700 dark:text-blue-400" id="modalWins">0</div>
                     <div class="text-xs font-semibold tracking-wide text-blue-500 dark:text-blue-400 uppercase mt-1">Prelim Wins</div>
@@ -128,6 +128,10 @@
                 <div class="bg-rose-50 dark:bg-rose-950 p-4 rounded-lg border border-rose-100 dark:border-rose-900">
                     <div class="text-3xl font-bold text-rose-700 dark:text-rose-400" id="modalNegWinPct">—</div>
                     <div class="text-xs font-semibold tracking-wide text-rose-500 dark:text-rose-400 uppercase mt-1">Neg Win Rate</div>
+                </div>
+                <div class="bg-amber-50 dark:bg-amber-950 p-4 rounded-lg border border-amber-100 dark:border-amber-900">
+                    <div class="text-3xl font-bold text-amber-700 dark:text-amber-400" id="modalTitles">0</div>
+                    <div class="text-xs font-semibold tracking-wide text-amber-500 dark:text-amber-400 uppercase mt-1">🏆 Championships</div>
                 </div>
             </div>
 
@@ -238,12 +242,16 @@
                 let top4Points = 0;
                 let elimWins = 0;
                 let elimLosses = 0;
+                let titles = 0;
 
                 group.logs.forEach((log, index) => {
                     totalWins += (log['Prelim Wins'] || 0);
                     totalLosses += (log['Prelim Losses'] || 0);
                     elimWins += (log['Elim Wins'] || 0);
                     elimLosses += (log['Elim Losses'] || 0);
+                    if ((log['Elim Wins'] || 0) > 0 && (log['Elim Losses'] || 0) === 0) {
+                        titles++;
+                    }
                     if (index < 4) {
                         top4Points += (log['Points Earned'] || 0);
                     }
@@ -264,7 +272,8 @@
                     'Prelim Win %': parseFloat(winPct),
                     'Elim Wins': elimWins,
                     'Elim Losses': elimLosses,
-                    'Elim Win %': parseFloat(elimWinPct)
+                    'Elim Win %': parseFloat(elimWinPct),
+                    'Titles': titles
                 };
             });
 
@@ -339,7 +348,8 @@
                             'Prelim Wins': 0,
                             'Prelim Losses': 0,
                             'Elim Wins': 0,
-                            'Elim Losses': 0
+                            'Elim Losses': 0,
+                            'Titles': 0
                         };
                     }
                     const entry = map[name];
@@ -349,6 +359,7 @@
                     entry['Prelim Losses'] += row['Prelim Losses'];
                     entry['Elim Wins'] += row['Elim Wins'];
                     entry['Elim Losses'] += row['Elim Losses'];
+                    entry['Titles'] += row['Titles'] || 0;
                 });
             });
 
@@ -384,7 +395,8 @@
                         'Prelim Wins': 0,
                         'Prelim Losses': 0,
                         'Elim Wins': 0,
-                        'Elim Losses': 0
+                        'Elim Losses': 0,
+                        'Titles': 0
                     };
                 }
                 const entry = map[key];
@@ -394,6 +406,7 @@
                 entry['Prelim Losses'] += row['Prelim Losses'];
                 entry['Elim Wins'] += row['Elim Wins'];
                 entry['Elim Losses'] += row['Elim Losses'];
+                entry['Titles'] += row['Titles'] || 0;
             });
 
             const list = Object.values(map).map(entry => {
@@ -417,7 +430,7 @@
             const map = {};
             summaryData.forEach(row => {
                 if (!map[row.School]) {
-                    map[row.School] = { School: row.School, 'Points Earned': 0, 'Prelim Wins': 0, 'Prelim Losses': 0, 'Elim Wins': 0, 'Elim Losses': 0 };
+                    map[row.School] = { School: row.School, 'Points Earned': 0, 'Prelim Wins': 0, 'Prelim Losses': 0, 'Elim Wins': 0, 'Elim Losses': 0, 'Titles': 0 };
                 }
                 const entry = map[row.School];
                 entry['Points Earned'] += row['Points Earned'];
@@ -425,6 +438,7 @@
                 entry['Prelim Losses'] += row['Prelim Losses'];
                 entry['Elim Wins'] += row['Elim Wins'];
                 entry['Elim Losses'] += row['Elim Losses'];
+                entry['Titles'] += row['Titles'] || 0;
             });
 
             const list = Object.values(map).map(entry => {
@@ -449,7 +463,7 @@
             summaryData.forEach(row => {
                 const key = row.Year + '||' + row.School;
                 if (!map[key]) {
-                    map[key] = { Year: row.Year, School: row.School, 'Points Earned': 0, 'Prelim Wins': 0, 'Prelim Losses': 0, 'Elim Wins': 0, 'Elim Losses': 0 };
+                    map[key] = { Year: row.Year, School: row.School, 'Points Earned': 0, 'Prelim Wins': 0, 'Prelim Losses': 0, 'Elim Wins': 0, 'Elim Losses': 0, 'Titles': 0 };
                 }
                 const entry = map[key];
                 entry['Points Earned'] += row['Points Earned'];
@@ -457,6 +471,7 @@
                 entry['Prelim Losses'] += row['Prelim Losses'];
                 entry['Elim Wins'] += row['Elim Wins'];
                 entry['Elim Losses'] += row['Elim Losses'];
+                entry['Titles'] += row['Titles'] || 0;
             });
 
             const list = Object.values(map).map(entry => {
@@ -522,17 +537,21 @@
         }
 
         function updateSortIcons() {
-            // Tournaments mode has no Win Rate column, so that icon span
-            // won't exist in the DOM - guard every lookup here.
+            // Tournaments mode has no Win Rate/Titles column, so those icon
+            // spans won't exist in the DOM - guard every lookup here.
             const pointsIcon = document.getElementById('sortIconPoints');
             const winRateIcon = document.getElementById('sortIconWinRate');
+            const titlesIcon = document.getElementById('sortIconTitles');
             if (pointsIcon) pointsIcon.innerText = '';
             if (winRateIcon) winRateIcon.innerText = '';
+            if (titlesIcon) titlesIcon.innerText = '';
 
             if (currentSortColumn === 'points') {
                 if (pointsIcon) pointsIcon.innerText = currentSortDirection === 'desc' ? '▼' : '▲';
             } else if (currentSortColumn === 'winrate') {
                 if (winRateIcon) winRateIcon.innerText = currentSortDirection === 'desc' ? '▼' : '▲';
+            } else if (currentSortColumn === 'titles') {
+                if (titlesIcon) titlesIcon.innerText = currentSortDirection === 'desc' ? '▼' : '▲';
             }
         }
 
@@ -546,9 +565,9 @@
             currentViewMode = document.getElementById('viewMode').value;
             const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
             document.getElementById('seasonFilter').disabled = isAllTime;
-            // Tournaments mode has no "Win Rate" column - fall back to
-            // sorting by size instead of leaving a stale winrate sort active.
-            if (currentViewMode === 'tournaments' && currentSortColumn === 'winrate') {
+            // Tournaments mode has no "Win Rate"/"Titles" column - fall back
+            // to sorting by size instead of leaving a stale sort active.
+            if (currentViewMode === 'tournaments' && (currentSortColumn === 'winrate' || currentSortColumn === 'titles')) {
                 currentSortColumn = 'points';
                 currentSortDirection = 'desc';
             }
@@ -569,20 +588,21 @@
             let pointsLabel = isAllTime ? 'Career Points' : 'Points (Top 4)';
             if (currentViewMode === 'tournaments') pointsLabel = 'Teams';
             const pointsTh = `<th class="${th} sortable" onclick="handleSort('points')">${pointsLabel} <span id="sortIconPoints"></span></th>`;
+            const titlesTh = `<th class="${th} sortable" onclick="handleSort('titles')">🏆 Titles <span id="sortIconTitles"></span></th>`;
             const recordTh = `<th class="${th}">Record</th>`;
             const winRateTh = `<th class="${th} sortable" onclick="handleSort('winrate')">Win Rate <span id="sortIconWinRate"></span></th>`;
 
             let cols;
             if (currentViewMode === 'teams') {
-                cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
+                cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'partnerships') {
-                cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${recordTh}${winRateTh}`;
+                cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'debaters') {
-                cols = `<th class="${th}">Debater</th><th class="${th}">School(s)</th>${pointsTh}${recordTh}${winRateTh}`;
+                cols = `<th class="${th}">Debater</th><th class="${th}">School(s)</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsAllTime') {
-                cols = `<th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
+                cols = `<th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else if (currentViewMode === 'schoolsBySeason') {
-                cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${recordTh}${winRateTh}`;
+                cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else { // tournaments
                 cols = `<th class="${th}">Season</th><th class="${th}">Tournament</th>${pointsTh}<th class="${th}">Champion(s)</th>`;
             }
@@ -613,6 +633,7 @@
                 const esc = (s) => (s || '').replace(/'/g, "\\'");
                 const pointsValue = parseFloat(row['Points Earned']).toFixed(2);
                 const rankHtml = `<td class="p-3 font-bold text-gray-700 dark:text-gray-200" style="${showRank ? '' : 'display:none;'}">#${row.rank || '-'}</td>`;
+                const titlesHtml = `<td class="p-3 text-center text-amber-600 dark:text-amber-400 font-semibold">${row['Titles'] ? `🏆 ${row['Titles']}` : '—'}</td>`;
                 const recordHtml = `<td class="p-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">${row['Prelim Wins']}-${row['Prelim Losses']}</td>`;
                 const winRateHtml = `
                     <td class="p-3">
@@ -634,6 +655,7 @@
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('seasonPoints', '${esc(row.Team)}', '${row.Year}')">${pointsValue}</span></td>
+                        ${titlesHtml}
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -645,6 +667,7 @@
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('team', '${esc(row.Team)}')">${teamDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('team', '${esc(row.Team)}')">${pointsValue}</span></td>
+                        ${titlesHtml}
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -654,6 +677,7 @@
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('debater', '${esc(row.Debater)}')">${nameDisplay}</span></td>
                         <td class="p-3 text-gray-700 dark:text-gray-300">${row.School}</td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('debater', '${esc(row.Debater)}')">${pointsValue}</span></td>
+                        ${titlesHtml}
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -661,6 +685,7 @@
                     cols = `
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('school', '${esc(row.School)}')">${pointsValue}</span></td>
+                        ${titlesHtml}
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -669,6 +694,7 @@
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('schoolSeason', '${esc(row.School)}', '${row.Year}')">${pointsValue}</span></td>
+                        ${titlesHtml}
                         ${recordHtml}
                         ${winRateHtml}
                     `;
@@ -731,8 +757,11 @@
                 } else if (currentSortColumn === 'winrate') {
                     valA = a['Prelim Win %'];
                     valB = b['Prelim Win %'];
+                } else if (currentSortColumn === 'titles') {
+                    valA = a['Titles'] || 0;
+                    valB = b['Titles'] || 0;
                 }
-                
+
                 if (currentSortDirection === 'desc') {
                     return valB - valA;
                 } else {
@@ -1044,6 +1073,7 @@
             let affLosses = 0;
             let negWins = 0;
             let negLosses = 0;
+            let titles = 0;
 
             const historyHtml = filteredLogs.map((log, index) => {
                 totalWins += (log['Prelim Wins'] || 0);
@@ -1056,7 +1086,8 @@
                 negLosses += (log['Neg Losses'] || 0);
 
                 let isTop4 = (type === 'seasonPoints' && index < 4);
-                let isChampion = (type === 'tournament' && (log['Elim Wins'] || 0) > 0 && (log['Elim Losses'] || 0) === 0);
+                let isChampion = (log['Elim Wins'] || 0) > 0 && (log['Elim Losses'] || 0) === 0;
+                if (isChampion) titles++;
 
                 if (type === 'seasonPoints') {
                     if (isTop4) displayedPoints += (log['Points Earned'] || 0);
@@ -1104,6 +1135,7 @@
             document.getElementById('modalElimWinPct').innerText = elimWinPct + '%';
             document.getElementById('modalAffWinPct').innerText = affWinPct;
             document.getElementById('modalNegWinPct').innerText = negWinPct;
+            document.getElementById('modalTitles').innerText = titles;
 
             document.getElementById('modalHistory').innerHTML = historyHtml;
 

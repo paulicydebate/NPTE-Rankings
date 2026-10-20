@@ -81,10 +81,32 @@ def _is_round_data_row(row):
     return side in ("aff", "neg", "gov", "opp") and row[0] is not None
 
 
+def _parse_team_cell(cell_text):
+    """Parses a 'School - D1 & D2' cell (team header OR opponent column -
+    FTN prints the opponent using the exact same format) into the same
+    (school.lower(), d1_last.lower(), d2_last.lower()) key teams_dict is
+    keyed by. Returns None if it doesn't parse (e.g. "ZZ" bye placeholder)."""
+    cell_text = _norm(cell_text)
+    m = re.match(r"^(.+?)\s*-\s*(.+?)\s*&\s*(.+)$", cell_text)
+    if not m:
+        return None
+    school = m.group(1).strip()
+    d1_clean = _strip_parens(m.group(2))
+    d2_clean = _strip_parens(m.group(3))
+    d1_parts, d2_parts = d1_clean.split(), d2_clean.split()
+    d1_last = " ".join(d1_parts[1:]) if d1_parts else ""
+    d2_last = " ".join(d2_parts[1:]) if d2_parts else ""
+    return (school.lower(), d1_last.lower(), d2_last.lower())
+
+
 def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
     teams_dict = {}
     current_key = None
     max_prelim_round = 0  # discovered from "Rd N" labels - NOT assumed to be 4
+    # Raw per-round rows, resolved into real matchups only after teams_dict
+    # is fully built (an opponent's own header row may appear later in the
+    # PDF than the row that names them, so this can't be resolved inline).
+    round_records = []  # (current_key, round_label, side_cell, opponent_cell, decision, has_bye, is_prelim)
 
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
@@ -174,6 +196,10 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                                 teams_dict[current_key]["Aff Wins" if team_won else "Aff Losses"] += 1
                             elif is_neg:
                                 teams_dict[current_key]["Neg Wins" if team_won else "Neg Losses"] += 1
+
+                        round_records.append(
+                            (current_key, round_label, side_cell, opponent, team_won, has_bye, is_prelim)
+                        )
 
                         if is_prelim:
                             # Prelim W/L totals come from the header count, not
@@ -271,7 +297,47 @@ def parse_ftn_pdf_dynamic(pdf_path, season_year="2025-2026"):
                     "Debater 2 First Name", "Debater 2 Last Name"],
             keep="first",
         )
-    return df
+
+    def _display_name(team_data):
+        d1 = f"{team_data['Debater 1 First Name']} {team_data['Debater 1 Last Name']}".strip()
+        d2 = f"{team_data['Debater 2 First Name']} {team_data['Debater 2 Last Name']}".strip()
+        return f"{d1} & {d2}" if d2 else d1
+
+    # Resolve each round row's opponent cell ("School - D1 & D2", same
+    # format as a team header row) against teams_dict now that it's fully
+    # built - an opponent's own header can appear later in the PDF than
+    # the row that names them, so this can't be done inline during the
+    # main parse. Each real debate appears twice in round_records (once
+    # from each team's own row) with independently-computed team_won
+    # flags that must agree on who won - seen_pairs dedupes to one record.
+    _SIDE_LABEL = {"aff": "Aff", "gov": "Aff", "neg": "Neg", "opp": "Opp"}
+    _OPPOSITE_SIDE = {"Aff": "Neg", "Neg": "Aff", "Opp": "Aff"}
+    matchups = []
+    seen_pairs = set()
+    for key, round_label, side_cell, opponent_cell, team_won, has_bye, is_prelim in round_records:
+        if has_bye or key not in teams_dict:
+            continue
+        opp_key = _parse_team_cell(opponent_cell)
+        if opp_key is None or opp_key not in teams_dict or opp_key == key:
+            continue
+        pair_id = (round_label, frozenset((key, opp_key)))
+        if pair_id in seen_pairs:
+            continue
+        seen_pairs.add(pair_id)
+        side_a = _SIDE_LABEL.get(side_cell)
+        winner_key = key if team_won else opp_key
+        matchups.append({
+            "Year": season_year,
+            "Round Type": "prelim" if is_prelim else "elim",
+            "Round": round_label,
+            "Team A": _display_name(teams_dict[key]),
+            "Team B": _display_name(teams_dict[opp_key]),
+            "Winner": _display_name(teams_dict[winner_key]),
+            "Side A": side_a,
+            "Side B": _OPPOSITE_SIDE.get(side_a),
+        })
+
+    return df, matchups
 
 
 def process_all_pdfs_to_multitab_excel(season_year="2025-2026"):
@@ -285,7 +351,7 @@ def process_all_pdfs_to_multitab_excel(season_year="2025-2026"):
         for pdf in pdf_files:
             sheet_name = os.path.splitext(os.path.basename(pdf))[0][:31]
             print(f"Scraping '{pdf}' -> writing to Excel sheet tab '{sheet_name}'...")
-            df_pdf = parse_ftn_pdf_dynamic(pdf, season_year)
+            df_pdf, _matchups = parse_ftn_pdf_dynamic(pdf, season_year)
             df_pdf.to_excel(writer, sheet_name=sheet_name, index=False)
 
     print(f"Success! Multi-data workbook saved to: {os.path.abspath(output_excel)}")
