@@ -61,6 +61,12 @@
                 <option value="schoolsAllTime">School Leaderboard (All-Time)</option>
                 <option value="schoolsBySeason">School Leaderboard (by Season)</option>
                 <option value="tournaments">Tournaments</option>
+                <option value="titles">🏆 Titles Leaderboard (All-Time)</option>
+            </select>
+            <select id="titlesEntityFilter" class="p-3 border rounded-md shadow-sm w-full md:w-48 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 hidden" onchange="onTitlesEntityChange()">
+                <option value="partnerships">By Partnership</option>
+                <option value="debaters">By Debater</option>
+                <option value="schoolsAllTime">By School</option>
             </select>
             <select id="seasonFilter" class="p-3 border rounded-md shadow-sm w-full md:w-48 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="onSeasonChange()">
             </select>
@@ -211,6 +217,12 @@
         let currentSortColumn = 'points';
         let currentSortDirection = 'desc';
         let currentViewMode = 'teams';
+        // Which underlying entity the "🏆 Titles Leaderboard" view shows -
+        // reuses partnershipData/debaterAllTimeData/schoolAllTimeData and
+        // their existing column layouts wholesale, just ranked by Titles
+        // instead of Points (see the effectiveMode pattern in
+        // renderTableHeader/renderTable/filterData).
+        let currentTitlesEntity = 'partnerships';
 
         function initializeData() {
             // Needed before summaryData is built below, since a national
@@ -578,12 +590,19 @@
 
         function onViewModeChange() {
             currentViewMode = document.getElementById('viewMode').value;
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
+            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters' || currentViewMode === 'titles');
             document.getElementById('seasonFilter').disabled = isAllTime;
+            document.getElementById('titlesEntityFilter').classList.toggle('hidden', currentViewMode !== 'titles');
             // Tournaments mode has no "Win Rate"/"Titles" column - fall back
             // to sorting by size instead of leaving a stale sort active.
             if (currentViewMode === 'tournaments' && (currentSortColumn === 'winrate' || currentSortColumn === 'titles')) {
                 currentSortColumn = 'points';
+                currentSortDirection = 'desc';
+            }
+            // The whole point of this view is ranking by Titles, so default
+            // straight to that instead of whatever sort was active before.
+            if (currentViewMode === 'titles') {
+                currentSortColumn = 'titles';
                 currentSortDirection = 'desc';
             }
             renderTableHeader();
@@ -591,32 +610,46 @@
             renderCircuitSideSplit();
         }
 
+        // The entity sub-selector shown only in the Titles Leaderboard view
+        // (Partnership/Debater/School) - reuses the same build*Data arrays
+        // and column layouts the dedicated Partnerships/Debaters/School
+        // All-Time views already use, just ranked by Titles.
+        function onTitlesEntityChange() {
+            currentTitlesEntity = document.getElementById('titlesEntityFilter').value;
+            renderTableHeader();
+            filterData();
+        }
+
         // The table's columns depend on currentViewMode, so the header row
         // is built in JS rather than fixed in the HTML.
         function renderTableHeader() {
             const season = document.getElementById('seasonFilter').value;
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
+            // The Titles Leaderboard reuses whichever entity's column layout
+            // is selected (always one of the 3 all-time ones) rather than
+            // having its own - only the rank/sort default differs.
+            const effectiveMode = currentViewMode === 'titles' ? currentTitlesEntity : currentViewMode;
+            const isAllTime = (effectiveMode === 'partnerships' || effectiveMode === 'schoolsAllTime' || effectiveMode === 'debaters');
             const showRank = isAllTime || season !== 'All';
             const th = 'p-3 font-semibold text-sm text-gray-600 dark:text-gray-300';
 
             const rankTh = `<th id="headerRank" class="${th}" style="${showRank ? '' : 'display:none;'}">Rank</th>`;
             let pointsLabel = isAllTime ? 'Career Points' : 'Points (Top 4)';
-            if (currentViewMode === 'tournaments') pointsLabel = 'Teams';
+            if (effectiveMode === 'tournaments') pointsLabel = 'Teams';
             const pointsTh = `<th class="${th} sortable" onclick="handleSort('points')">${pointsLabel} <span id="sortIconPoints"></span></th>`;
             const titlesTh = `<th class="${th} sortable" onclick="handleSort('titles')">🏆 Titles <span id="sortIconTitles"></span></th>`;
             const recordTh = `<th class="${th}">Record</th>`;
             const winRateTh = `<th class="${th} sortable" onclick="handleSort('winrate')">Win Rate <span id="sortIconWinRate"></span></th>`;
 
             let cols;
-            if (currentViewMode === 'teams') {
+            if (effectiveMode === 'teams') {
                 cols = `<th class="${th}">Season</th><th class="${th}">Team</th><th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
-            } else if (currentViewMode === 'partnerships') {
+            } else if (effectiveMode === 'partnerships') {
                 cols = `<th class="${th}">Team</th><th class="${th}">School(s)</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
-            } else if (currentViewMode === 'debaters') {
+            } else if (effectiveMode === 'debaters') {
                 cols = `<th class="${th}">Debater</th><th class="${th}">School(s)</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
-            } else if (currentViewMode === 'schoolsAllTime') {
+            } else if (effectiveMode === 'schoolsAllTime') {
                 cols = `<th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
-            } else if (currentViewMode === 'schoolsBySeason') {
+            } else if (effectiveMode === 'schoolsBySeason') {
                 cols = `<th class="${th}">Season</th><th class="${th}">School</th>${pointsTh}${titlesTh}${recordTh}${winRateTh}`;
             } else { // tournaments
                 cols = `<th class="${th}">Season</th><th class="${th}">Tournament</th>${pointsTh}<th class="${th}">Champion(s)</th>`;
@@ -638,7 +671,8 @@
             }
             noResults.classList.add('hidden');
 
-            const isAllTime = (currentViewMode === 'partnerships' || currentViewMode === 'schoolsAllTime' || currentViewMode === 'debaters');
+            const effectiveMode = currentViewMode === 'titles' ? currentTitlesEntity : currentViewMode;
+            const isAllTime = (effectiveMode === 'partnerships' || effectiveMode === 'schoolsAllTime' || effectiveMode === 'debaters');
             const showRank = isAllTime || season !== 'All';
 
             data.forEach(row => {
@@ -661,7 +695,7 @@
                     </td>`;
 
                 let cols;
-                if (currentViewMode === 'teams') {
+                if (effectiveMode === 'teams') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
                     const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getSeasonTitles(row.Year, d1, d2));
@@ -674,7 +708,7 @@
                         ${recordHtml}
                         ${winRateHtml}
                     `;
-                } else if (currentViewMode === 'partnerships') {
+                } else if (effectiveMode === 'partnerships') {
                     const d1 = row['Debater 1'] || '';
                     const d2 = row['Debater 2'] || '';
                     const teamDisplay = (d2 ? `${d1} & ${d2}` : d1) + trophySpan(getPairTitles(d1, d2));
@@ -686,7 +720,7 @@
                         ${recordHtml}
                         ${winRateHtml}
                     `;
-                } else if (currentViewMode === 'debaters') {
+                } else if (effectiveMode === 'debaters') {
                     const nameDisplay = row.Debater + trophySpan(getDebaterTitles(row.Debater));
                     cols = `
                         <td class="p-3"><span class="clickable text-blue-700" onclick="openModal('debater', '${esc(row.Debater)}')">${nameDisplay}</span></td>
@@ -696,7 +730,7 @@
                         ${recordHtml}
                         ${winRateHtml}
                     `;
-                } else if (currentViewMode === 'schoolsAllTime') {
+                } else if (effectiveMode === 'schoolsAllTime') {
                     cols = `
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
                         <td class="p-3 font-semibold text-gray-700 dark:text-gray-200"><span class="clickable text-purple-700" onclick="openModal('school', '${esc(row.School)}')">${pointsValue}</span></td>
@@ -704,7 +738,7 @@
                         ${recordHtml}
                         ${winRateHtml}
                     `;
-                } else if (currentViewMode === 'schoolsBySeason') {
+                } else if (effectiveMode === 'schoolsBySeason') {
                     cols = `
                         <td class="p-3 whitespace-nowrap text-gray-500 dark:text-gray-400">${row.Year}</td>
                         <td class="p-3"><span class="clickable" onclick="openModal('school', '${esc(row.School)}')">${row.School}</span></td>
@@ -749,6 +783,18 @@
                 filtered = [...schoolAllTimeData];
             } else if (currentViewMode === 'schoolsBySeason') {
                 filtered = season !== 'All' ? schoolSeasonData.filter(row => row.Year === season) : [...schoolSeasonData];
+            } else if (currentViewMode === 'titles') {
+                // Reuses whichever entity's all-time data the sub-selector
+                // picked, but ranked by Titles instead of that entity's own
+                // (Points-based) rank - a fresh clone so this never mutates
+                // the shared partnershipData/debaterAllTimeData/
+                // schoolAllTimeData arrays the other views still rely on.
+                const source = currentTitlesEntity === 'debaters' ? debaterAllTimeData
+                    : currentTitlesEntity === 'schoolsAllTime' ? schoolAllTimeData
+                    : partnershipData;
+                filtered = [...source]
+                    .sort((a, b) => (b['Titles'] || 0) - (a['Titles'] || 0))
+                    .map((row, i) => ({ ...row, rank: i + 1 }));
             } else { // tournaments
                 filtered = season !== 'All' ? tournamentData.filter(row => row.Year === season) : [...tournamentData];
             }
