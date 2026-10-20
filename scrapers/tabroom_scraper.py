@@ -211,6 +211,54 @@ def build_entry_and_student_maps(data):
     return entry_map, student_map
 
 
+def entry_display_name(entry_id, entry_map, student_map):
+    """'First Last' or 'First Last & First Last' for an entry_id, same name
+    shape used everywhere else in this scraper's output rows."""
+    entry = entry_map.get(entry_id)
+    if entry is None:
+        return None
+    names = []
+    for sid in entry["student_ids"][:2]:
+        s = student_map.get(sid, {})
+        full = f"{s.get('first', '')} {s.get('last', '')}".strip()
+        if full:
+            names.append(full)
+    return " & ".join(names) if names else entry.get("name") or entry.get("code")
+
+
+def resolve_matchups(matchups, entry_map, student_map, year, tournament_name):
+    """Turns raw entry_id-keyed matchup dicts (from analyze_prelim_rounds /
+    analyze_elim_rounds) into the real per-debate records the Elo pipeline
+    consumes: who debated whom, who won, what side each was on. A matchup
+    whose winner is still undetermined (round not yet judged) is kept with
+    Winner=None rather than dropped, so a later consumer can decide how to
+    treat it instead of silently losing the round."""
+    side_label = {SIDE_AFF: "Aff", SIDE_NEG: "Neg", None: None}
+    resolved = []
+    for m in matchups:
+        name_a = entry_display_name(m["entry_a"], entry_map, student_map)
+        name_b = entry_display_name(m["entry_b"], entry_map, student_map)
+        if not name_a or not name_b:
+            continue
+        winner_name = None
+        if m["winner"] == m["entry_a"]:
+            winner_name = name_a
+        elif m["winner"] == m["entry_b"]:
+            winner_name = name_b
+        resolved.append({
+            "Year": year,
+            "Tournament": tournament_name,
+            "Round Type": m["round_type"],
+            "Round": m["round"],
+            "Team A": name_a,
+            "Team B": name_b,
+            "Winner": winner_name,
+            "Side A": side_label.get(m.get("side_a")),
+            "Side B": side_label.get(m.get("side_b")),
+        })
+    return resolved
+
+
 def academic_year(start_str):
     try:
         dt = datetime.strptime(start_str.split(" ")[0], "%Y-%m-%d")
@@ -399,7 +447,7 @@ def collect_ballots_by_entry(event):
 
 
 def analyze_elim_rounds(event, ballots_by_entry=None):
-    """Returns (per_entry_round_status, partial_info, n_rounds, per_entry_round_side)
+    """Returns (per_entry_round_status, partial_info, n_rounds, per_entry_round_side, matchups)
 
     per_entry_round_status: {entry_id: {round_index (0-based): 'win'|'loss'|'bye'}}
     partial_info: {'round_index': int, 'fraction': float} or None
@@ -429,6 +477,7 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
     per_entry_status = defaultdict(dict)
     per_entry_side = defaultdict(dict)
     round_debate_counts = []  # actual number of real (2-sided) debates per round
+    matchups = []
 
     for round_idx, rnd in enumerate(elim_rounds):
         section_scores = defaultdict(lambda: defaultdict(float))  # section_id -> entry_id -> summed winloss
@@ -456,6 +505,7 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
                 real_debate_count += 1
                 for entry_id, side in section_sides[sec_id].items():
                     per_entry_side[entry_id][round_idx] = side
+                section_winner = None
                 entries = section_scores[sec_id]
                 if entries:
                     # Scores exist for at least one side of this debate -
@@ -465,6 +515,7 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
                     for entry_id in seen:
                         entries.setdefault(entry_id, 0.0)
                     winner_id = max(entries, key=entries.get)
+                    section_winner = winner_id
                     for entry_id in seen:
                         if entry_id == winner_id:
                             winners.add(entry_id)
@@ -478,6 +529,7 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
                         ).get(round_num)
                         if outcome == "win":
                             winners.add(entry_id)
+                            section_winner = entry_id
                         elif outcome == "loss":
                             losers.add(entry_id)
                         # unknown outcome (no Ballots text for this entry/
@@ -486,6 +538,22 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
                 # all - genuinely no data yet (e.g. an elim round that
                 # hasn't been judged). Leave undetermined rather than
                 # fabricating a winner or crashing on an empty max().
+                # Matchup record only for genuine 2-entry debates (rare
+                # multi-team sections are skipped, same reasoning as
+                # analyze_prelim_rounds); winner is None when the debate
+                # has no determinable outcome yet rather than guessed.
+                if len(seen) == 2:
+                    entry_a, entry_b = seen
+                    matchups.append({
+                        "round_type": rnd.get("type"),
+                        "round": rnd.get("name"),
+                        "round_index": round_idx,
+                        "entry_a": entry_a,
+                        "entry_b": entry_b,
+                        "winner": section_winner,
+                        "side_a": section_sides[sec_id].get(entry_a),
+                        "side_b": section_sides[sec_id].get(entry_b),
+                    })
             elif len(seen) == 1:
                 # only one entry recorded for this section: a bye
                 byes.add(seen[0])
@@ -522,7 +590,7 @@ def analyze_elim_rounds(event, ballots_by_entry=None):
             partial_info = {"round_index": round_idx, "fraction": fraction}
             # keep scanning; if multiple rounds are short we keep the last one
 
-    return per_entry_status, partial_info, n_rounds, per_entry_side
+    return per_entry_status, partial_info, n_rounds, per_entry_side, matchups
 
 
 def full_win_flags(entry_id, per_entry_status, partial_round_idx=None):
@@ -586,7 +654,7 @@ def elim_side_tally(entry_id, per_entry_status, per_entry_side):
 # --------------------------------------------------------------- assembly --
 
 def analyze_prelim_rounds(event):
-    """Returns ({entry_id: (wins, losses)}, {entry_id: [aff_w, aff_l, neg_w, neg_l]})
+    """Returns ({entry_id: (wins, losses)}, {entry_id: [aff_w, aff_l, neg_w, neg_l]}, matchups)
     computed directly from ballot winloss scores in prelim/power-matched
     rounds - "highlow" AND "highhigh" both occur across real tournaments
     depending on how a given round was paired, and both are prelim rounds,
@@ -598,12 +666,19 @@ def analyze_prelim_rounds(event):
 
     The Aff/Neg tally only counts sections with a real 2-entry debate - a
     bye isn't a contested round on either side, so it's excluded there
-    even though it still counts as a win in the main wins/losses tally."""
+    even though it still counts as a win in the main wins/losses tally.
+
+    matchups: [{round_type, round, entry_a, entry_b, winner, side_a, side_b}, ...]
+    - one record per real (2-entry) debate, in the same opponent-identity
+    the win/loss tallies above are computed from but otherwise discarded.
+    A bye has no matchup record (nobody to pair it against)."""
     tallies = defaultdict(lambda: [0, 0])  # entry_id -> [wins, losses]
     side_tallies = defaultdict(lambda: [0, 0, 0, 0])  # entry_id -> [aff_w, aff_l, neg_w, neg_l]
+    matchups = []
     for rnd in event.get("rounds", []):
         if rnd.get("type") not in ("prelim", "highlow", "highhigh"):
             continue
+        round_label = rnd.get("name")
         for section in rnd.get("sections", []):
             entry_ids_here = []  # every entry with a ballot in this section,
             entry_scores = defaultdict(float)  # regardless of whether it carries a score
@@ -639,6 +714,21 @@ def analyze_prelim_rounds(event):
                         side_tallies[entry_id][0 if won else 1] += 1
                     elif side == SIDE_NEG:
                         side_tallies[entry_id][2 if won else 3] += 1
+                # Parli sections are 2-entry; a section with more than 2
+                # (seen in rare multi-team formats) is skipped for matchup
+                # purposes rather than guessing who debated whom - the
+                # win/loss tallies above still work since they're per-entry.
+                if len(entry_ids_here) == 2:
+                    entry_a, entry_b = entry_ids_here
+                    matchups.append({
+                        "round_type": rnd.get("type"),
+                        "round": round_label,
+                        "entry_a": entry_a,
+                        "entry_b": entry_b,
+                        "winner": winner_id,
+                        "side_a": entry_sides.get(entry_a),
+                        "side_b": entry_sides.get(entry_b),
+                    })
             elif len(entry_ids_here) == 1:
                 # A prelim bye: only one entry has a ballot in this section
                 # at all - whether or not that ballot happens to carry an
@@ -652,7 +742,7 @@ def analyze_prelim_rounds(event):
                 tallies[entry_ids_here[0]][0] += 1
     wins_losses = {eid: (int(w), int(l)) for eid, (w, l) in tallies.items()}
     sides = {eid: [int(v) for v in vals] for eid, vals in side_tallies.items()}
-    return wins_losses, sides
+    return wins_losses, sides, matchups
 
 
 def prelim_round_sides(event):
@@ -780,7 +870,7 @@ def build_rows_for_event(data, category, event, year_override=None):
     ballots_by_entry = collect_ballots_by_entry(event)
     prelim_round_nums = prelim_round_numbers(event)
 
-    prelim_tally, prelim_sides = analyze_prelim_rounds(event) if has_scores else ({}, {})
+    prelim_tally, prelim_sides, prelim_matchups = analyze_prelim_rounds(event) if has_scores else ({}, {}, [])
     if not has_scores:
         # Win/loss falls back to Ballots-text (below, via result_rows_by_entry),
         # but side assignment doesn't depend on scores at all - recover it
@@ -791,6 +881,8 @@ def build_rows_for_event(data, category, event, year_override=None):
             eid: prelim_side_tally_from_text(eid, ballots_by_entry, round_sides, prelim_round_nums)
             for eid in round_sides
         }
+        # prelim_matchups stays empty here - opponent identity isn't backfilled
+        # from Ballots-text yet, only from scored ballot sections above.
 
     result_set = find_prelim_result_set(event)
     result_keys_by_id = {}
@@ -803,7 +895,7 @@ def build_rows_for_event(data, category, event, year_override=None):
             eid = str(result_row.get("entry"))
             result_rows_by_entry.setdefault(eid, result_row)  # first one wins on dupes
 
-    per_entry_status, partial_info, n_elim_rounds, per_entry_side = analyze_elim_rounds(event, ballots_by_entry)
+    per_entry_status, partial_info, n_elim_rounds, per_entry_side, elim_matchups = analyze_elim_rounds(event, ballots_by_entry)
     year = year_override or academic_year(data.get("start", ""))
 
     # Entries to output: prefer whatever a result_set enumerates (keeps the
@@ -883,7 +975,13 @@ def build_rows_for_event(data, category, event, year_override=None):
         return (1, rank) if isinstance(rank, tuple) else (0, rank)
 
     rows.sort(key=_sort_key)
-    return rows, category, event, partial_info, n_elim_rounds
+
+    tournament_name = data.get("name") or event.get("name") or "Tournament"
+    matchups = resolve_matchups(
+        prelim_matchups + elim_matchups, entry_map, student_map, year, tournament_name
+    )
+
+    return rows, category, event, partial_info, n_elim_rounds, matchups
 
 
 # ------------------------------------------------------------------ xlsx --
@@ -1019,7 +1117,7 @@ def run_batch_folder(folder, category_name=None, event_name=None, year_override=
 
         for label, category, event in plan:
             try:
-                rows, category, event, partial_info, n_elim_rounds = build_rows_for_event(
+                rows, category, event, partial_info, n_elim_rounds, _matchups = build_rows_for_event(
                     data, category, event, year_override
                 )
             except Exception as exc:  # noqa: BLE001 - keep batch going on a bad file
@@ -1090,7 +1188,7 @@ def main():
 
     sheets = []
     for label, category, event in plan:
-        rows, category, event, partial_info, n_elim_rounds = build_rows_for_event(
+        rows, category, event, partial_info, n_elim_rounds, _matchups = build_rows_for_event(
             data, category, event, args.year
         )
 
