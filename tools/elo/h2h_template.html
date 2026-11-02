@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPTE Rankings · Head-to-Head &amp; ELO</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--head:#f9fafb;--link:#2563eb;--hover:#f3f4f6;--win:#15803d;--loss:#b91c1c;--accent:#eab308}
+.dark{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--border:#374151;--head:#111827;--link:#60a5fa;--hover:#374151;--win:#4ade80;--loss:#f87171}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+h1{font-size:1.6rem;margin:0;font-weight:800}.sub{color:var(--muted);font-size:.9rem}
+.btn{padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;font-weight:600;font-size:.9rem}
+.btn.on{background:#2563eb;color:#fff;border-color:#2563eb}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.05);padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}label{font-size:.8rem;color:var(--muted);display:block;margin-bottom:4px;font-weight:600}
+input,select{padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-size:.95rem}
+input.name{width:340px;max-width:100%}
+table{width:100%;border-collapse:collapse;font-size:.88rem}th{background:var(--head);text-align:left;padding:8px;border-bottom:2px solid var(--border);position:sticky;top:0;cursor:pointer;white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:top}tr:hover td{background:var(--hover)}
+.W{color:var(--win);font-weight:700}.L{color:var(--loss);font-weight:700}.tag{font-size:.72rem;padding:1px 6px;border-radius:10px;border:1px solid var(--border);color:var(--muted)}
+.big{font-size:1.4rem;font-weight:800}.muted{color:var(--muted)}.clickable{color:var(--link);cursor:pointer;font-weight:600}.clickable:hover{text-decoration:underline}
+.top{border-left:4px solid var(--accent)}.scroll{max-height:70vh;overflow:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><h1>NPTE Rankings · Head-to-Head &amp; ELO</h1><div class="sub" id="sub"></div></div>
+<div><button class="btn on" id="tabH">Head-to-Head</button> <button class="btn" id="tabL">ELO Leaderboard</button> <button class="btn" id="dark">🌙</button></div></header>
+
+<div id="paneH">
+<div class="card"><div class="row">
+<div><label>Search by</label><select id="mode"><option value="d">Debater</option><option value="p">Partnership</option></select></div>
+<div><label>Competitor A</label><input class="name" id="qa" list="dl" placeholder="Type a name…"></div>
+<div><label>Competitor B (optional, leave blank for all of A's debates)</label><input class="name" id="qb" list="dl" placeholder="Type a name…"></div>
+<div><label>Season</label><select id="hs"></select></div>
+<button class="btn" id="swap">⇄</button>
+</div><datalist id="dl"></datalist></div>
+<div class="card" id="h2hOut"><span class="muted">Pick a debater or partnership. Names follow the rankings site's canonical spelling.</span></div>
+</div>
+
+<div id="paneL" style="display:none">
+<div class="card"><div class="row">
+<div><label>Season</label><select id="ls"></select></div>
+<div><label>Type</label><select id="lt"><option value="p">Partnerships</option><option value="d">Debaters</option></select></div>
+<div><label>Min. debates</label><input id="lmin" type="number" value="5" style="width:90px"></div>
+<div><label>Filter</label><input id="lf" placeholder="name or school"></div>
+</div><div class="sub" id="cfg" style="margin-top:8px"></div></div>
+<div class="card scroll"><table id="lb"></table></div>
+</div>
+</div>
+<script>
+const DATA=/*__DATA__*/null;
+const M=DATA.m; // [season,tourn,round,type,aNames,aSchool,bNames,bSchool,sideA,winner,ballots,judges,status,note,torder,rorder,aPid,bPid]
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COUNT={CONFIRMED:1,INFERRED:1};
+const seasons=[...new Set(M.map(r=>r[0]))].sort();
+$('sub').textContent=`${M.length.toLocaleString()} debates/meetings · ${seasons[0]} to ${seasons[seasons.length-1]} · byes excluded`;
+const c=DATA.cfg;$('cfg').textContent=`ELO: start ${c.start}, K ${c.k} (elims ${c.kelim}), ballot weighting ${c.ballot_weight?'on':'off'}. Season ratings carry over with regression to the mean: start = ${c.start} + ${c.carry} × (last season's end − ${c.start}); a partnership starts each season at its debaters' average. Only CONFIRMED and INFERRED debates count; walkovers, byes, forfeits and unknown results do not.`;
+if(localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark');
+$('dark').onclick=()=>{const d=document.documentElement.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light')};
+function tab(h){$('paneH').style.display=h?'':'none';$('paneL').style.display=h?'none':'';$('tabH').classList.toggle('on',h);$('tabL').classList.toggle('on',!h)}
+$('tabH').onclick=()=>tab(true);$('tabL').onclick=()=>{tab(false);renderLB()};
+// name lists
+const debaters=new Set(),pships=new Set();
+M.forEach(r=>{r[4].forEach(n=>debaters.add(n));r[6].forEach(n=>debaters.add(n));if(r[4].length)pships.add(r[16]);if(r[6].length)pships.add(r[17])});
+function fillDL(){const set=$('mode').value==='d'?debaters:pships;$('dl').innerHTML=[...set].sort().map(n=>`<option value="${esc(n)}">`).join('')}
+['hs','ls'].forEach(id=>{$(id).innerHTML=(id==='ls'?'<option value="all-time">All-time (continuous)</option>':'<option value="">All seasons</option>')+seasons.slice().reverse().map(s=>`<option>${s}</option>`).join('')});
+$('ls').value=seasons[seasons.length-1];
+const norm=s=>s.toLowerCase().normalize('NFKD').replace(/[^a-z& ]/g,'').replace(/\s+/g,' ').trim();
+function sideOf(r,q,mode){ // returns 'a','b' or null
+ if(mode==='d'){const qn=norm(q);if(r[4].some(n=>norm(n)===qn))return 'a';if(r[6].some(n=>norm(n)===qn))return 'b';return null}
+ const qn=norm(q);if(norm(r[16])===qn)return 'a';if(norm(r[17])===qn)return 'b';
+ const parts=qn.split('&').map(x=>x.trim()).filter(Boolean).sort().join('&');
+ const pk=a=>a.map(norm).sort().join('&');if(pk(r[4])===parts)return 'a';if(pk(r[6])===parts)return 'b';return null}
+function renderH2H(){
+ const mode=$('mode').value,A=$('qa').value.trim(),B=$('qb').value.trim(),S=$('hs').value;
+ if(!A){$('h2hOut').innerHTML='<span class="muted">Pick a debater or partnership.</span>';return}
+ const rows=[];
+ for(const r of M){if(S&&r[0]!==S)continue;const sa=sideOf(r,A,mode);if(!sa)continue;
+  if(B){const sb=sideOf(r,B,mode);if(!sb||sb===sa)continue}rows.push([r,sa])}
+ let w=0,l=0,other=0;rows.forEach(([r,s])=>{if(COUNT[r[12]]&&r[9]){r[9]===s?w++:l++}else other++});
+ const opp=(r,s)=>s==='a'?[r[6],r[7],r[17]]:[r[4],r[5],r[16]], me=(r,s)=>s==='a'?[r[4],r[5]]:[r[6],r[7]];
+ let h=`<div class="row" style="justify-content:space-between"><div><div class="big">${esc(A)}${B?' <span class="muted">vs</span> '+esc(B):''}</div>
+ <div class="muted">${rows.length} meeting(s)${S?' in '+S:''}</div></div><div class="big"><span class="W">${w}</span> – <span class="L">${l}</span>${other?` <span class="tag">${other} not counted (walkover / unknown / forfeit)</span>`:''}</div></div>`;
+ if(!rows.length){h+='<p class="muted">No meetings found. Check spelling (use the suggestions) or switch Debater/Partnership.</p>'}
+ else{h+=`<div class="scroll" style="margin-top:12px"><table><thead><tr><th>Season</th><th>Tournament</th><th>Round</th>${mode==='d'?'<th>Partner / team</th>':''}<th>Opponent</th><th>Side</th><th>Result</th><th>Ballots</th><th>Judges</th><th>Status</th></tr></thead><tbody>`;
+  rows.sort((x,y)=>y[0][14]-x[0][14]||y[0][15]-x[0][15]);
+  for(const [r,s] of rows){const o=opp(r,s),m=me(r,s);const side=r[8]?(s==='a'?r[8]:(r[8]==='Aff'?'Neg':'Aff')):'—';
+   const res=r[9]?(r[9]===s?'W':'L'):'?';const counted=COUNT[r[12]];
+   h+=`<tr><td>${r[0]}</td><td>${esc(r[1])}</td><td>${r[2]}</td>${mode==='d'?`<td>${esc(m[0].join(' & '))}<div class="muted">${esc(m[1])}</div></td>`:''}
+   <td><span class="clickable" data-p="${esc(o[2])}">${esc(o[0].join(' & ')||o[2])}</span><div class="muted">${esc(o[1])}</div></td><td>${side}</td>
+   <td class="${counted?res:''}">${res}${counted?'':' <span class="tag">not a debate</span>'}</td><td>${esc(r[10])}</td><td>${esc(r[11])}</td>
+   <td><span class="tag" title="${esc(r[13])}">${r[12]}</span></td></tr>`}
+  h+='</tbody></table></div>'}
+ $('h2hOut').innerHTML=h;
+ $('h2hOut').querySelectorAll('[data-p]').forEach(e=>e.onclick=()=>{$('mode').value='p';fillDL();$('qb').value=e.dataset.p;if(mode==='d'){const r=rows[0];}renderH2H()});
+}
+['qa','qb','hs'].forEach(id=>$(id).addEventListener('input',renderH2H));
+$('mode').onchange=()=>{fillDL();renderH2H()};$('swap').onclick=()=>{const t=$('qa').value;$('qa').value=$('qb').value;$('qb').value=t;renderH2H()};
+let lbSort=[2,-1];
+function renderLB(){const S=$('ls').value,T=$('lt').value,min=+$('lmin').value||0,f=norm($('lf').value||'');
+ let L=S==='all-time'?(T==='p'?DATA.ap:DATA.ad):((T==='p'?DATA.bp:DATA.bd)[S]||[]);
+ L=L.filter(x=>x[4]>=min&&(!f||norm(x[0]+' '+x[1]).includes(f)));
+ const [k,dir]=lbSort;L=L.slice().sort((a,b)=>(a[k]>b[k]?1:a[k]<b[k]?-1:0)*dir);
+ const hd=['#',T==='p'?'Partnership':'Debater','School(s)','Rating','Peak','Debates','W','L'];
+ let h='<thead><tr>'+hd.map((x,i)=>`<th data-k="${i-1}">${x}</th>`).join('')+'</tr></thead><tbody>';
+ L.forEach((x,i)=>{h+=`<tr class="${i<4&&lbSort[0]===2&&dir<0?'top':''}"><td>${i+1}</td><td><span class="clickable" data-n="${esc(x[0])}">${esc(x[0])}</span></td><td class="muted">${esc(x[1])}</td><td><b>${x[2].toFixed(1)}</b></td><td>${x[3].toFixed(1)}</td><td>${x[4]}</td><td class="W">${x[5]}</td><td class="L">${x[6]}</td></tr>`});
+ $('lb').innerHTML=h+'</tbody>';
+ $('lb').querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=+th.dataset.k;if(k<0)return;lbSort=[k,lbSort[0]===k?-lbSort[1]:(k<=1?1:-1)];renderLB()});
+ $('lb').querySelectorAll('[data-n]').forEach(e=>e.onclick=()=>{$('mode').value=T;fillDL();$('qa').value=e.dataset.n;$('qb').value='';$('hs').value=S==='all-time'?'':S;tab(true);renderH2H()});
+}
+['ls','lt','lmin','lf'].forEach(id=>$(id).addEventListener('input',renderLB));
+fillDL();
+</script>
+</body>
+</html>

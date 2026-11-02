@@ -1,0 +1,90 @@
+season,order_in_season,tournament,start_date,end_date,platform,date_source,confidence
+2021-2022,1,GGO - 2021,2021-09-24,2021-09-25,FTN,https://forensicstournament.net/GoldenGateOpener/21,confirmed
+2021-2022,2,Rice University Classic - 2021,2021-09-25,2021-09-26,Tabroom,source_pdfs/tabroom/Rice University Classic - 2021.json,confirmed
+2021-2022,3,Norene Hockett - 2021,2021-10-02,2021-10-02,FTN,https://forensicstournament.net/NoreneHokett/21,confirmed
+2021-2022,4,Steve Hunt - 2021,2021-10-08,2021-10-10,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=14&viewmode=opensonly,confirmed
+2021-2022,5,Crossman - 2021,2021-10-15,2021-10-16,FTN,https://forensicstournament.net/crossmaninvitational/21,confirmed
+2021-2022,6,Missouri Mule - 2021,2021-10-15,2021-10-16,FTN,https://forensicstournament.net/MissouriMule/21,confirmed
+2021-2022,7,Sunset Cliffs - 2021,2021-10-22,2021-10-24,FTN,https://forensicstournament.net/SunsetCliffsClassic/21,confirmed
+2021-2022,8,Grossmont Griffin - 2021,2021-11-12,2021-11-14,FTN,https://forensicstournament.net/Griffin/21,confirmed
+2021-2022,9,DVC Thing - 2021,2021-11-21,2021-11-21,FTN,https://forensicstournament.net/TheDVCThingSunday/21,confirmed
+2021-2022,10,PSCFA Fall Champs - 2021,2021-12-03,2021-12-05,FTN,https://forensicstournament.net/PSCFAFallChamps/22,confirmed
+2021-2022,11,Mile High pt 1 - 2022,2022-01-06,2022-01-07,Tabroom,source_pdfs/tabroom/Mile High pt 1 - 2022.json,confirmed
+2021-2022,12,Mile High pt 2 - 2022,2022-01-08,2022-01-09,Tabroom,source_pdfs/tabroom/Mile High pt 2 - 2022.json,confirmed
+2021-2022,13,Gorlock Gala - 2022,2022-01-28,2022-01-30,FTN,https://forensicstournament.net/GorlokGala/22,confirmed
+2021-2022,14,Jannese Davidson - 2022Jan,2022-01-29,2022-01-30,FTN,https://forensicstournament.net/JanesseDavidsonMemorial/22,confirmed
+2021-2022,15,NCFA Spring Champs - 2022,2022-02-18,2022-02-20,FTN,https://forensicstournament.net/NCFAChamps/22,confirmed
+2021-2022,16,Tabor Venitsky - 2022,2022-02-18,2022-02-20,FTN,https://forensicstournament.net/taborvenitsky/22,confirmed
+2021-2022,17,PSCFA Spring Champs - 2022,2022-02-25,2022-02-27,FTN,https://forensicstournament.net/PSCFASpringChamps/22,confirmed
+2022-2023,1,Rice University Classic - 2022,2022-09-24,2022-09-25,Tabroom,source_pdfs/tabroom/Rice University Classic - 2022.json,confirmed
+2022-2023,2,GGO - 2022,2022-09-30,2022-10-01,FTN,https://forensicstournament.net/GGO/22,confirmed
+2022-2023,3,Steve Hunt - 2022,2022-10-07,2022-10-09,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=15&viewmode=opensonly,confirmed
+2022-2023,4,Sunset Cliffs - 2022,2022-10-21,2022-10-23,FTN,https://forensicstournament.net/SunsetCliffsClassic/22,confirmed
+2022-2023,5,Paul Winters - 2022,2022-11-04,2022-11-06,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=15&viewmode=opensonly,confirmed
+2022-2023,6,Crossman - 2022,2022-11-05,2022-11-05,FTN,https://forensicstournament.net/crossmaninvitational/22,confirmed
+2022-2023,7,DVC Thing - 2022,2022-11-19,2022-11-19,FTN,https://forensicstournament.net/TheDVCThingSunday/22,confirmed
+2022-2023,8,Big Tent - 2022,2022-12-02,2022-12-04,Tabroom,source_pdfs/tabroom/Big Tent - 2022.json,confirmed
+2022-2023,9,Mile High pt 1 - 2023,2023-01-06,2023-01-08,Tabroom,https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=25893,confirmed
+2022-2023,10,Mile High pt 2 - 2023,2023-01-07,2023-01-08,Tabroom,source_pdfs/tabroom/Mile High pt2 - 2023.json,confirmed
+2022-2023,11,Gorlock Gala - 2023,2023-01-27,2023-01-29,FTN,https://forensicstournament.net/GorlokGala/23,confirmed
+2022-2023,12,Jannese Davidson - 2023,2023-01-28,2023-01-29,FTN,https://forensicstournament.net/JanesseDavidsonMemorial/23,confirmed
+2022-2023,13,Talk Hawk - 2023,2023-02-03,2023-02-05,FTN,https://forensicstournament.net/TalkHawk/23,confirmed
+2022-2023,14,Gaske - 2023,2023-02-04,2023-02-05,FTN,https://forensicstournament.net/GaskeInvitational/23,confirmed
+2022-2023,15,NCFA Spring Champs - 2023,2023-02-17,2023-02-19,FTN,https://forensicstournament.net/NCFASpringChamps/23,confirmed
+2023-2024,1,GGO - 2023,2023-09-29,2023-09-29,FTN,https://forensicstournament.net/FridayGGO/23,confirmed
+2023-2024,2,Rice University Classic - 2023,2023-09-30,2023-10-01,Tabroom,source_pdfs/tabroom/Rice University Classic - 2023.json,confirmed
+2023-2024,3,Steve Hunt - 2023,2023-10-13,2023-10-15,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=16&viewmode=opensonly,confirmed
+2023-2024,4,BLCC - 2023,2023-10-21,2023-10-22,FTN,https://forensicstournament.net/BLCC/23,confirmed
+2023-2024,5,Mercer Macke - 2023,2023-10-21,2023-10-22,Tabroom,source_pdfs/tabroom/Mercer Macke - 2023.json,confirmed
+2023-2024,6,Paul Winters - 2023,2023-11-03,2023-11-05,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=16&viewmode=opensonly,confirmed
+2023-2024,7,Crossman - 2023,2023-11-04,2023-11-05,FTN,https://forensicstournament.net/crossmaninvitational/23,confirmed
+2023-2024,8,The Bernacchi - 2023,2023-11-18,2023-11-18,FTN,https://forensicstournament.net/TheDVCThingSunday/23,confirmed
+2023-2024,9,Big Tent - 2023,2023-12-01,2023-12-03,Tabroom,source_pdfs/tabroom/Big Tent - 2023.json,confirmed
+2023-2024,10,PSCFA Fall Champs - 2023,2023-12-01,2023-12-03,FTN,https://forensicstournament.net/PSCFAFallChampionships/23,confirmed
+2023-2024,11,Mound High pt 1 - 2024,2024-01-05,2024-01-08,Tabroom,source_pdfs/tabroom/Mound High pt1 - 2024.json,confirmed
+2023-2024,12,Mound High pt 2 - 2024,2024-01-06,2024-01-08,Tabroom,source_pdfs/tabroom/Mound high pt2 - 2024.json,confirmed
+2023-2024,13,Great Salt Lake - 2024,2024-01-13,2024-01-15,FTN,https://forensicstournament.net/GreatSaltLake/24,confirmed
+2023-2024,14,Jannese Davidson - 2024Jan,2024-01-26,2024-01-28,FTN,https://forensicstournament.net/JanesseDavidsonMemorial/24,confirmed
+2023-2024,15,Talk Hawk - 2024,2024-02-02,2024-02-04,FTN,https://forensicstournament.net/TalkHawk/24,confirmed
+2023-2024,16,Gaske - 2024,2024-02-03,2024-02-04,FTN,https://forensicstournament.net/GaskeInvitational/24,confirmed
+2023-2024,17,NCFA Spring Champs - 2024,2024-02-23,2024-02-25,FTN,https://forensicstournament.net/NCFASpringChamps/24,confirmed
+2024-2025,1,GGO - 2024,2024-09-27,2024-09-28,FTN,https://forensicstournament.net/GGO/24,confirmed
+2024-2025,2,Rice University Classic - 2024,2024-09-28,2024-09-29,Tabroom,source_pdfs/tabroom/Rice University Classic - 2024.json,confirmed
+2024-2025,3,Jannese Davidson - 2024oct,2024-10-11,2024-10-13,FTN,https://forensicstournament.net/Davidson/24,confirmed
+2024-2025,4,Steve Hunt - 2024,2024-10-11,2024-10-13,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=17&viewmode=opensonly,confirmed
+2024-2025,5,Paul Winters - 2024,2024-11-01,2024-11-03,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=17&viewmode=opensonly,confirmed
+2024-2025,6,William Jewell pt 1 - 2024,2024-11-15,2024-11-17,Tabroom,source_pdfs/tabroom/William Jewell Swing pt 1 - 2024.json,confirmed
+2024-2025,7,The Bernacchi - 2024,2024-11-16,2024-11-16,FTN,https://forensicstournament.net/TheDVCThingSunday/24,confirmed
+2024-2025,8,William Jewell pt 2 - 2024,2024-11-16,2024-11-17,Tabroom,source_pdfs/tabroom/William Jewelll Swing pt 2 - 2024.json,confirmed
+2024-2025,9,PSCFA Fall Champs - 2024,2024-12-06,2024-12-08,FTN,https://forensicstournament.net/PSCFAFallChampionships/24,confirmed
+2024-2025,10,Mound High pt 1 - 2025,2025-01-09,2025-01-12,Tabroom,source_pdfs/tabroom/Mound High pt 1 - 2025.json,confirmed
+2024-2025,11,Mound High pt 2 - 2025,2025-01-10,2025-01-12,Tabroom,source_pdfs/tabroom/Mound High pt 2 - 2025.json,confirmed
+2024-2025,12,Crossman - 2025Jan,2025-01-18,2025-01-19,FTN,https://forensicstournament.net/crossmaninvitational/25,confirmed
+2024-2025,13,Great Salt Lake - 2025,2025-01-18,2025-01-20,FTN,https://forensicstournament.net/GreatSaltLake/25,confirmed
+2024-2025,14,Big Red - 2025,2025-01-25,2025-01-26,Tabroom,source_pdfs/tabroom/Big Red - 2025.json,confirmed
+2024-2025,15,Talk Hawk - 2025,2025-01-31,2025-02-02,FTN,https://forensicstournament.net/TalkHawk0/25,confirmed
+2024-2025,16,GGI - 2025,2025-02-08,2025-02-09,Tabroom,source_pdfs/tabroom/GGI - 2025.json,confirmed
+2024-2025,17,NCFA Spring Champs - 2025,2025-02-21,2025-02-23,FTN,https://forensicstournament.net/NCFACHAMPS/25,confirmed
+2024-2025,18,PSCFA Spring Champs - 2025,2025-02-21,2025-02-23,FTN,https://forensicstournament.net/PSCFASpringChamps/25,confirmed
+2025-2026,1,GGO - 2025,2025-09-26,2025-09-27,FTN,https://forensicstournament.net/GGO/25,confirmed
+2025-2026,2,Rice University Classic - 2025,2025-09-27,2025-09-28,Tabroom,source_pdfs/tabroom/Rice University Classic - 2025.json,confirmed
+2025-2026,3,Steve Hunt - 2025,2025-10-10,2025-10-12,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=18&viewmode=opensonly,confirmed
+2025-2026,4,Crossman - 2025,2025-10-11,2025-10-12,FTN,https://forensicstournament.net/crossmaninvitationalday1/25,confirmed
+2025-2026,5,Gina Lane pt 1 - 2025,2025-10-24,2025-10-26,Tabroom,source_pdfs/tabroom/Gina Lane pt1 and pt 2.json,confirmed
+2025-2026,6,Sunset Cliffs - 2025,2025-10-24,2025-10-26,FTN,https://forensicstournament.net/SunsetCliffsClassic/25,confirmed
+2025-2026,7,Gina Lane pt 2 - 2025,2025-10-25,2025-10-26,Tabroom,source_pdfs/tabroom/Gina Lane pt1 and pt 2.json,confirmed
+2025-2026,8,Paul Winters - 2025,2025-10-31,2025-11-02,SpeechWire,https://www.speechwire.com/files/19716-Schedule.pdf,confirmed
+2025-2026,9,Robert Barbera - 2025,2025-11-08,2025-11-09,FTN,https://forensicstournament.net/RobertBarbera/25,confirmed
+2025-2026,10,The Bernacchi - 2025,2025-11-22,2025-11-22,FTN,https://forensicstournament.net/BernacchiDay2/25,confirmed
+2025-2026,11,NPDA Fall Champs - 2025,2025-12-05,2025-12-06,FTN,https://forensicstournament.net/NPDAFall/25,confirmed
+2025-2026,12,Mound High pt 1 - 2026,2026-01-08,2026-01-11,Tabroom,source_pdfs/tabroom/Mound High pt 1 - 2026.json,confirmed
+2025-2026,13,Mound High pt 2 - 2026,2026-01-09,2026-01-11,Tabroom,source_pdfs/tabroom/Mound High pt 2 - 2026.json,confirmed
+2025-2026,14,Great Salt Lake - 2026,2026-01-16,2026-01-18,Tabroom,source_pdfs/tabroom/Great Salt Lake - 2026.json,confirmed
+2025-2026,15,GGI - 2026,2026-01-24,2026-01-25,Tabroom,source_pdfs/tabroom/Golden Gate Invitational - 2026.json,confirmed
+2025-2026,16,Talk Hawk - 2026,2026-01-30,2026-02-01,FTN,https://forensicstournament.net/TalkHawk/26,confirmed
+2025-2026,17,Big Red - 2026,2026-02-07,2026-02-08,Tabroom,source_pdfs/tabroom/Big Red - 2026.json,confirmed
+2025-2026,18,NCFA Spring Champs - 2026,2026-02-20,2026-02-22,FTN,https://forensicstournament.net/NCFAChampionship/26,confirmed
+2026-2027,1,GGO - 2026,2026-09-25,2026-09-26,FTN,https://forensicstournament.net/GGO/26,confirmed
+2026-2027,2,Rice University Classic - 2026,2026-10-03,2026-10-04,Tabroom,source_pdfs/tabroom/Rice University Classic - 2026.json,confirmed
+2026-2027,3,Steve Hunt - 2026,2026-10-09,2026-10-11,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=19&viewmode=opensonly,confirmed
+2026-2027,4,Crossman - 2026,2026-10-17,2026-10-17,FTN,https://forensicstournament.net/crossmaninvitationalday1/26,confirmed

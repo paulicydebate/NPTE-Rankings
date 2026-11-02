@@ -1,0 +1,101 @@
+# inference / generation notes
+GGO - 2021: generated Final Brenna Seiersen & Tristan Keene vs Braden Begbie & Christopher Cassin (WALKOVER)
+Norene Hockett - 2021 R3: same-school prelim ['Alex Tseng', 'Annalise Welsh'] vs ['Aiyanna Durepo', 'Zoie Enriquez']
+Norene Hockett - 2021 R4: same-school prelim ['Alex Tseng', 'Annalise Welsh'] vs ['Avery Bosco', 'Mackenzie Robertson']
+Norene Hockett - 2021 R2: same-school prelim ['Brianna Hosmer', 'Sarah LeGrande'] vs ['Avery Bosco', 'Mackenzie Robertson']
+NCFA Spring Champs - 2022 R5: double win (manual override)
+Jannese Davidson - 2023 R1: same-school prelim ['Felip Gerdes-Cabre', 'Razeen Nasar'] vs ['Julian Mackenzie', 'Shiv Puliady']
+Steve Hunt - 2023: generated Final Alexa Grechishkin & Kyle Mathy vs Jas Liu & Kasey Moulton (WALKOVER)
+PSCFA Fall Champs - 2023 R4: double win per official FTN sheet (Aiyanna Durepo & Tess Halbert vs Ryan Bartl & Spencer Simon)
+Great Salt Lake - 2024 R5: same-school prelim ['Simone Wiatrak', 'Sophia Smith'] vs ['Samantha Watrin', 'Meredith Jenkins']
+Great Salt Lake - 2024 R5: same-school prelim ['Will Ruzanski', 'Willow Wilson'] vs ['Kit Stevens', 'Javier Tejeda']
+Jannese Davidson - 2024Jan: generated Final Arjun Banerjee & Holden Carrillo vs Brenna Seiersen & Tristan Keene (WALKOVER)
+The Bernacchi - 2024 R1: double win per official FTN sheet (Hannah Schroers & Jane Wilson vs Aaron Deivaprakash & Sam Goodman)
+Crossman - 2025Jan R3: same-school prelim ['Abigail Morey', 'Sophia Cruz'] vs ['Andres Osorio', 'Ethan Syring']
+Crossman - 2025Jan R1: same-school prelim ['Alec Lyons', 'Logan Rowe'] vs ['Nia Gordon', 'Ashley Singh']
+Crossman - 2025Jan R5: same-school prelim ['Alec Lyons', 'Logan Rowe'] vs ['Eleni Klostrakis', 'Salma Kidwai']
+Crossman - 2025Jan R2: same-school prelim ['Eleni Klostrakis', 'Salma Kidwai'] vs ['Jack Timko', 'Joel Davis']
+Crossman - 2025Jan R4: same-school prelim ['Jack Timko', 'Joel Davis'] vs ['Juliette Celis', 'Julissa Celis']
+Great Salt Lake - 2025: generated Final Daneli Santillan & Axel Amador vs Sarah Campi & Benjamin Brogger (WALKOVER)
+PSCFA Spring Champs - 2025 R3: double win per official FTN sheet (Andres Osorio & Ethan Syring vs Xander Hepburn & Nathan Carvajal)
+Sunset Cliffs - 2025 R3: same-school prelim ['Gursimar Kaur', 'Stephanie Yeh'] vs ['Samantha Bush', 'Caroline Jethmal']
+Sunset Cliffs - 2025 R1: same-school prelim ['Srujam Dave', 'Lillian Theis'] vs ['Richey Li', 'Sibi Sivaram']
+The Bernacchi - 2025: generated Final Christina Sun & Garret Slody vs Jasper Pacheco & Adrian Lossada (WALKOVER)
+
+# bracket inference check on complete Tabroom brackets (ok, bad)
+Rice University Classic - 2021: (3, 4)
+Mile High pt 1 - 2022: (0, 2)
+Mile High pt 2 - 2022: (5, 2)
+Rice University Classic - 2022: (2, 1)
+Big Tent - 2022: (2, 1)
+Mile High pt 2 - 2023: (2, 5)
+Rice University Classic - 2023: (1, 5)
+Mercer Macke - 2023: (1, 5)
+Big Tent - 2023: (1, 0)
+Mound High pt 2 - 2024: (0, 6)
+Rice University Classic - 2024: (2, 5)
+GGI - 2025: (2, 1)
+Rice University Classic - 2025: (2, 1)
+Gina Lane pt 1 - 2025: (2, 1)
+Gina Lane pt 2 - 2025: (1, 6)
+Great Salt Lake - 2026: (2, 1)
+Big Red - 2026: (1, 2)
+Rice University Classic - 2026: (2, 5)
+
+# parse issues by tournament
+Steve Hunt - 2021: R4 Berkeley Parliamentary JDIB vs UPacific of the ASGG: OCR result unknown/conflicting
+Steve Hunt - 2021: R4 DVC BSTK vs Oregon ALGG: OCR result unknown/conflicting
+Steve Hunt - 2021: R4 Rice Univ JTMR vs Whitman RBIS: OCR result unknown/conflicting
+Steve Hunt - 2021: R3 Rice Univ MTCS vs UT Tyler ESEP: OCR result unknown/conflicting
+Steve Hunt - 2021: R4 UPacific PPJR vs Whitman JLKM: OCR result unknown/conflicting
+Steve Hunt - 2021: R4 UT Tyler ESEP vs Whitman AGKM: OCR result unknown/conflicting
+Steve Hunt - 2021: Octos: no def./BYE after DVC BSTK: " Brenna Seiersen and Tristan Keene 8 "
+Steve Hunt - 2021: Octos: no def./BYE after Rice Univ KWAZ: " Kia Witt and Alina Zhu "
+Steve Hunt - 2021: Semis: dangling def. after Rice Univ JTMR
+Missouri Mule - 2021: Finals: both Arkansas State University - Alex Mills & Somer Shannon and Arkansas State University - Christian Huggins & Harrison Cook show ?
+Sunset Cliffs - 2021: Finals: both University of the Pacific - Arshita Sandhiparthi & Tierra Smithson and University of the Pacific - Gustavo Garcia & Joel Brown show ?
+Jannese Davidson - 2022Jan: Rd 3: El Camino College - Uzair Pasta & Sophia Dornberg vs "Parliamentary Debate at Berkeley - Karthik Krishnan & Ryan Rashid" -> 0 candidates
+Jannese Davidson - 2022Jan: Rd 1: Morehouse College - Isaac Smith & Patrick Ohazurike vs "Parliamentary Debate at Berkeley - Karthik Krishnan & Ryan Rashid" -> 0 candidates
+Jannese Davidson - 2022Jan: Rd 2: University of the Pacific - Angelica Stephanie Guzman & Diego Paez vs "Parliamentary Debate at Berkeley - Karthik Krishnan & Ryan Rashid" -> 0 candidates
+NCFA Spring Champs - 2022: Rd 5: both University of California San Diego - Joseph Berck & Samyak Karnavat and University of the Pacific - Arshita Sandhiparthi & Tierra Smithson show W
+Gorlock Gala - 2023: Rd 2: The University of Central Missouri - Lillian Rhodes & Infinatasia Nading vs "Simpson College - Jenna Pfeiffer & Jadyn Mortenson" -> 0 candidates
+Gorlock Gala - 2023: Rd 1: Whitman College - Alexa Grechishkin & Isabel Mathy vs "Simpson College - Jenna Pfeiffer & Jadyn Mortenson" -> 0 candidates
+Steve Hunt - 2023: R4 Saint Mary's C BAGO: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R5 Saint Mary's C BAGO: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R2 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R4 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R5 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R1 Tulane Univers FAJI vs University of WAFE: OCR result unknown/conflicting
+Steve Hunt - 2023: Final: no def./BYE after Whitman Colleg GRMA: " Alexa Grechishkin and Kyle Mathy vs. "
+Steve Hunt - 2023: Final: no def./BYE after Whitman Colleg LIMO: " Jas Liu and Kasey Moulton 0-0 This tournament is "
+Paul Winters - 2023: R3 BERK SSKL vs UCD JHID: OCR result unknown/conflicting
+Paul Winters - 2023: R5 BERK SSKL vs RICE MRAS: OCR result unknown/conflicting
+Paul Winters - 2023: R5 CUI ARDB vs UOP DSAG: OCR result unknown/conflicting
+Paul Winters - 2023: R5 CUI HWBW vs DVC: OCR result unknown/conflicting
+Paul Winters - 2023: R5 DVC vs RICE KSMT: OCR result unknown/conflicting
+Paul Winters - 2023: R2 DVC BRTB vs WC AGKM: OCR result unknown/conflicting
+Paul Winters - 2023: R5 CUI HWBW vs DVC BRTB: OCR result unknown/conflicting
+Paul Winters - 2023: R4 DVC HSEH vs UOP AASC: OCR result unknown/conflicting
+PSCFA Fall Champs - 2023: Rd 4: both Point Loma Nazarene University - Aiyanna Durepo & Tess Halbert and San Diego State University - Ryan Bartl & Spencer Simon show W
+Mound High pt 1 - 2024: Quarters: PDAB SK vs UTTyl HS or McKend BM - opponent ambiguous in accepted CSV; not a usable debate
+Mound High pt 1 - 2024: Quarters: Rice SS vs McKend BM or UTTyl HS - opponent ambiguous in accepted CSV; not a usable debate
+Mound High pt 1 - 2024: R1: No pairings posted; 10 debates unknown
+Mound High pt 1 - 2024: R2: No pairings posted; 10 debates unknown
+Mound High pt 1 - 2024: R3: No pairings posted; 10 debates unknown
+Mound High pt 1 - 2024: R5: No pairings posted; 10 debates unknown
+Great Salt Lake - 2024: Rd 1: Concordia University Irvine - Benjamin Wagner & Hudson Winchel vs "San Joaquin Delta College - Eric Cardenas & Benjamin Brogger" -> 0 candidates
+GGO - 2024: Rd 1: Saint Mary's College - Emma Owen & Rose Velasquez vs "City College San Francisco - Matt Wood & Quinton Davis" -> 0 candidates
+Steve Hunt - 2024: R3 Whitman Colleg MOHA: unparsed "- University of STCA - Neg BE1 Tristan Keene"
+Steve Hunt - 2024: R5 Whitman Colleg PRBR: unparsed "- University of STCA - AFF XX6 JJ Caufield"
+The Bernacchi - 2024: Rd 1: both Diablo Valley College - Hannah Schroers & Jane Wilson and Saint Mary's College - Aaron Deivaprakash & Sam Goodman show W
+Great Salt Lake - 2025: Semis: both University of the Pacific - Sarah Campi & Benjamin Brogger and University of the Pacific - Carson Paul & Ileana Guzman show ?
+PSCFA Spring Champs - 2025: Rd 3: both El Camino College - Andres Osorio & Ethan Syring and University of California, Santa Barbara - Xander Hepburn & Nathan Carvajal show W
+Steve Hunt - 2025: R4 Parliamentary SCLI: OCR cell unresolved "W WIC TEMA Neg - - CU1 Alexander Maier"
+Steve Hunt - 2025: R2 Rice Universit SAST: OCR cell unresolved "W WIC TEMA Neg - - WC2 Grace Canny"
+Steve Hunt - 2025: R4 Whitman Colleg PIWA: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2025: Semis: no def./BYE after Parliamentary SCLI: " Scott Schuster and Kyleen Lin (Neg) 2-1 "
+Steve Hunt - 2025: Final: dangling def. after Parliamentary CABA
+Robert Barbera - 2025: Rd 1: Los Angeles Valley College - Amna Shah & Arpi Danielyan vs "California State University Long Beach - Jean Kim & Dorian Gurrola they/them" -> 0 candidates
+NPDA Fall Champs - 2025: Rd 2: Diablo Valley College - Adrian Lossada & Jasper Pacheco (They/Them) vs "William Jewell College - Lukas Lepage (He/Him) & Parker Massey (He/Him)" -> 0 candidates
+NPDA Fall Champs - 2025: Rd 1: Parliamentary Debate at Berkeley - Anthony Carrillo & Garret Slody (Diablo Valley College) vs "William Jewell College - Lukas Lepage (He/Him) & Parker Massey (He/Him)" -> 0 candidates
+Steve Hunt - 2026: placeholder team created for unparsed block "Parliamentary SY"
