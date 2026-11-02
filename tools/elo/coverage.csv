@@ -1,0 +1,90 @@
+season,tournament,platform,source,status,site_teams,parsed_prelim_debates,site_prelim_upper_bound,parsed_elim_debates,site_elim_losses,confirmed,inferred,unknown,walkover,forfeit,bye,wl_match,wl_mismatch,site_team_not_found,parse_issues
+2021-2022,GGO - 2021,FTN,source_pdfs/FTN/GGO - 2021.pdf,parsed,7,16,14,3,3,18,0,0,1,0,0,7,0,0,0
+2021-2022,Rice University Classic - 2021,Tabroom,source_pdfs/tabroom/Rice University Classic - 2021.json [event NPDA],parsed,24,60,60,12,12,72,0,0,0,0,3,24,0,0,0
+2021-2022,Norene Hockett - 2021,FTN,source_pdfs/FTN/Norene Hockett - 2021.pdf,parsed,8,15,16,1,1,16,0,0,0,0,2,8,0,0,0
+2021-2022,Steve Hunt - 2021,SpeechWire,source_pdfs/speechwire/complete Steve Hunt - 2021.pdf (OCR) [division Senior Parliamentary Debate],parsed,17,40,42,6,8,39,6,0,1,0,8,11,6,0,9
+2021-2022,Crossman - 2021,FTN,source_pdfs/FTN/Crossman - 2021.pdf,parsed,18,54,54,8,10,62,0,0,0,0,7,16,2,0,0
+2021-2022,Missouri Mule - 2021,FTN,source_pdfs/FTN/Missouri Mule - 2021.pdf,parsed,18,45,45,7,9,51,0,0,1,0,0,16,2,0,1
+2021-2022,Sunset Cliffs - 2021,FTN,source_pdfs/FTN/Sunset Cliffs - 2021.pdf,parsed,16,32,32,7,7,38,0,0,1,0,0,16,0,0,1
+2021-2022,Grossmont Griffin - 2021,FTN,source_pdfs/FTN/Grossmont Griffin - 2021.pdf,parsed,15,28,30,3,3,31,0,0,0,0,7,15,0,0,0
+2021-2022,DVC Thing - 2021,FTN,source_pdfs/FTN/DVC Thing - 2021.pdf,parsed,13,24,26,5,5,28,0,0,1,0,6,11,2,0,0
+2021-2022,PSCFA Fall Champs - 2021,FTN,source_pdfs/FTN/PSCFA Fall Champs - 2021.pdf,parsed,8,16,16,3,3,19,0,0,0,0,0,8,0,0,0
+2021-2022,Mile High pt 1 - 2022,Tabroom,source_pdfs/tabroom/Mile High pt 1 - 2022.json [event NPDA],parsed,13,30,32,5,5,35,0,0,0,0,6,10,3,0,0
+2021-2022,Mile High pt 2 - 2022,Tabroom,source_pdfs/tabroom/Mile High pt 2 - 2022.json [event NPDA],parsed,18,45,45,9,9,54,0,0,0,0,6,18,0,0,0
+2021-2022,Gorlock Gala - 2022,FTN,source_pdfs/FTN/Gorlock Gala - 2022.pdf,parsed,14,35,35,8,8,43,0,0,0,0,7,14,0,0,0
+2021-2022,Jannese Davidson - 2022Jan,FTN,source_pdfs/FTN/Jannese Davidson - 2022jan.pdf,parsed,14,35,35,9,9,44,0,0,0,0,9,14,0,0,3
+2021-2022,NCFA Spring Champs - 2022,FTN,source_pdfs/FTN/NCFA Spring Champs - 2022.pdf,parsed,10,25,25,5,5,29,0,0,0,0,2,8,2,0,1
+2021-2022,Tabor Venitsky - 2022,FTN,source_pdfs/FTN/Tabor Ventisky - 2022.pdf,parsed,14,28,28,5,5,33,0,0,0,0,1,14,0,0,0
+2021-2022,PSCFA Spring Champs - 2022,FTN,source_pdfs/FTN/PSCFA Spring Champs - 2022.pdf,parsed,17,32,34,7,7,39,0,0,0,0,4,17,0,0,0
+2022-2023,Rice University Classic - 2022,Tabroom,new-sources/Rice University Classic - 2022.json [event NPDA],parsed,15,35,37,7,7,40,0,0,2,0,5,15,0,0,0
+2022-2023,GGO - 2022,FTN,source_pdfs/FTN/GGO - 2022.pdf,parsed,9,16,18,3,3,18,0,0,1,0,4,9,0,0,0
+2022-2023,Steve Hunt - 2022,SpeechWire,source_pdfs/speechwire/complete Steve Hunt - 2022.pdf [division Senior Parliamentary Debate],parsed,13,30,32,5,5,34,0,0,1,0,7,13,0,0,0
+2022-2023,Sunset Cliffs - 2022,FTN,source_pdfs/FTN/Sunset Cliffs - 2022.pdf,parsed,13,24,26,5,5,29,0,0,0,0,6,13,0,0,0
+2022-2023,Paul Winters - 2022,SpeechWire,source_pdfs/speechwire/complete Paul Winters - 2022.pdf [division Parli Open Division],parsed,11,25,27,5,5,29,0,0,1,0,7,11,0,0,0
+2022-2023,Crossman - 2022,FTN,source_pdfs/FTN/Crossman - 2022.pdf,parsed,14,35,35,7,7,41,0,0,1,0,0,14,0,0,0
+2022-2023,DVC Thing - 2022,FTN,source_pdfs/FTN/DVC Thing - 2022.pdf,parsed,14,28,28,4,4,32,0,0,0,0,2,14,0,0,0
+2022-2023,Big Tent - 2022,Tabroom,source_pdfs/tabroom/Big Tent - 2022.json [event VNPDA],parsed,14,35,35,6,5,41,0,0,0,0,1,12,2,0,0
+2022-2023,Mile High pt 1 - 2023,Tabroom,,SKIPPED: Paul: ignore (no matchups available),19,0,38,0,6,0,0,0,0,0,0,0,0,0,0
+2022-2023,Mile High pt 2 - 2023,Tabroom,source_pdfs/tabroom/Mile High pt2 - 2023.json [event NPDA] + tabroom-brackets/mile_high_pt2_2023.csv,parsed,19,45,45,10,9,45,10,0,0,0,10,18,1,0,0
+2022-2023,Gorlock Gala - 2023,FTN,source_pdfs/FTN/Gorlock Gala - 2023.pdf,parsed,9,22,22,4,4,26,0,0,0,0,6,9,0,0,2
+2022-2023,Jannese Davidson - 2023,FTN,source_pdfs/FTN/Janesse Davidson - 2023.pdf,parsed,29,70,72,14,14,84,0,0,0,0,6,29,0,0,0
+2022-2023,Talk Hawk - 2023,FTN,source_pdfs/FTN/Talk Hawk - 2023.pdf,parsed,11,25,27,5,5,29,0,0,1,0,7,11,0,0,0
+2022-2023,Gaske - 2023,FTN,source_pdfs/FTN/Gaske - 2023.pdf,parsed,22,44,44,7,7,51,0,0,0,0,0,22,0,0,0
+2022-2023,NCFA Spring Champs - 2023,FTN,source_pdfs/FTN/NCFA Spring Champs - 2023.pdf,parsed,12,30,30,5,5,35,0,0,0,0,2,12,0,0,0
+2023-2024,GGO - 2023,FTN,source_pdfs/FTN/GGO - 2023.pdf,parsed,8,16,16,3,3,19,0,0,0,0,0,8,0,0,0
+2023-2024,Rice University Classic - 2023,Tabroom,source_pdfs/tabroom/Rice University Classic - 2023.json [event NPDA],parsed,24,60,60,10,11,68,0,0,2,0,4,22,2,0,0
+2023-2024,Steve Hunt - 2023,SpeechWire,source_pdfs/speechwire/complete Steve Hunt - 2023.pdf (OCR) [division Senior Parliamentary Debate],parsed,18,40,45,10,10,48,1,0,1,0,10,14,4,0,8
+2023-2024,BLCC - 2023,FTN,source_pdfs/FTN/Biggest Little City Classic - 2023.pdf,parsed,11,20,22,3,3,21,0,0,2,0,4,11,0,0,0
+2023-2024,Mercer Macke - 2023,Tabroom,source_pdfs/tabroom/Mercer Macke - 2023.json [event NPDA],parsed,17,40,40,7,8,47,0,0,0,0,12,15,2,0,0
+2023-2024,Paul Winters - 2023,SpeechWire,source_pdfs/speechwire/complete Paul Winters - 2023.pdf (OCR) [division Parli Open Division],parsed,16,50,40,7,7,49,8,0,0,0,0,6,10,0,8
+2023-2024,Crossman - 2023,FTN,source_pdfs/FTN/Crossman - 2023.pdf,parsed,16,40,40,7,7,45,0,0,2,0,0,16,0,0,0
+2023-2024,The Bernacchi - 2023,FTN,source_pdfs/FTN/The Bernacchi - 2023.pdf,parsed,10,20,20,2,2,22,0,0,0,0,1,10,0,0,0
+2023-2024,Big Tent - 2023,Tabroom,source_pdfs/tabroom/Big Tent - 2023.json [event VNPDA],parsed,10,25,25,2,4,26,0,0,1,0,3,5,5,0,0
+2023-2024,PSCFA Fall Champs - 2023,FTN,source_pdfs/FTN/PSCFA Fall Champs - 2023.pdf,parsed,30,60,60,10,10,69,0,0,0,0,4,30,0,0,1
+2023-2024,Mound High pt 1 - 2024,Tabroom,/workspace/repos/NPTE-Rankings/tools/elo/inputs/mound_high_pt1_2024_matchups.csv (accepted as is),parsed,10,10,25,9,9,3,5,11,0,0,6,0,10,0,6
+2023-2024,Mound High pt 2 - 2024,Tabroom,source_pdfs/tabroom/Mound high pt2 - 2024.json [event NPDA],parsed,19,45,45,8,9,45,8,0,0,0,11,17,2,0,0
+2023-2024,Great Salt Lake - 2024,FTN,source_pdfs/FTN/Great Salt Lake - 2024.pdf,parsed,14,35,35,3,6,38,0,0,0,0,1,11,3,0,1
+2023-2024,Jannese Davidson - 2024Jan,FTN,source_pdfs/FTN/Jannese Daviedson - 2024Jan.pdf,parsed,34,85,85,15,17,99,0,0,1,0,0,32,2,0,0
+2023-2024,Talk Hawk - 2024,FTN,source_pdfs/FTN/Talk Hawk - 2024.pdf,parsed,14,35,35,5,5,40,0,0,0,0,2,14,0,0,0
+2023-2024,Gaske - 2024,FTN,source_pdfs/FTN/Gaske - 2024.pdf,parsed,17,32,34,7,7,39,0,0,0,0,4,17,0,0,0
+2023-2024,NCFA Spring Champs - 2024,FTN,source_pdfs/FTN/NCFA Spring Champs - 2024.pdf,parsed,10,20,20,4,4,24,0,0,0,0,3,10,0,0,0
+2024-2025,GGO - 2024,FTN,source_pdfs/FTN/GGO - 2024.pdf,parsed,12,24,24,5,5,29,0,0,0,0,3,12,0,0,1
+2024-2025,Rice University Classic - 2024,Tabroom,source_pdfs/tabroom/Rice University Classic - 2024.json [event NPDA],parsed,29,70,70,14,14,84,0,0,0,0,6,29,0,0,0
+2024-2025,Jannese Davidson - 2024oct,FTN,source_pdfs/FTN/Jannese Davidson - 2024oct.pdf,parsed,21,50,52,11,11,61,0,0,0,0,9,21,0,0,0
+2024-2025,Steve Hunt - 2024,SpeechWire,source_pdfs/speechwire/complete Steve Hunt - 2024.pdf [division Senior Parliamentary Debate],parsed,20,50,50,11,11,61,0,0,0,0,4,20,0,0,2
+2024-2025,Paul Winters - 2024,SpeechWire,new-sources/Paul Winters - 2024 PDFs/d3418171-paul_winter_24_win_loss.pdf + new-sources/Paul Winters - 2024 PDFs/eab7cbc1-paul_winters_24_-_elim_resuklts.pdf [division Parli Open Division],parsed,29,70,72,13,13,82,0,0,1,0,7,26,3,0,0
+2024-2025,William Jewell pt 1 - 2024,Tabroom,source_pdfs/tabroom/William Jewell Swing pt 1 - 2024.json [event NPDA],parsed,20,50,50,10,10,60,0,0,0,0,5,20,0,0,0
+2024-2025,The Bernacchi - 2024,FTN,source_pdfs/FTN/The Bernacchi - 2024.pdf,parsed,12,24,24,2,2,24,0,0,1,0,1,12,0,0,1
+2024-2025,William Jewell pt 2 - 2024,Tabroom,source_pdfs/tabroom/William Jewelll Swing pt 2 - 2024.json [event NPTE],parsed,20,50,50,10,9,57,0,0,3,0,5,19,1,0,0
+2024-2025,PSCFA Fall Champs - 2024,FTN,source_pdfs/FTN/PSCFA Fall Champs - 2024.pdf,parsed,25,48,50,7,7,55,0,0,0,0,4,25,0,0,0
+2024-2025,Mound High pt 1 - 2025,Tabroom,source_pdfs/tabroom/Mound High pt 1 - 2025.json [event NPDA],parsed,36,72,72,17,17,89,0,0,0,0,14,36,0,0,0
+2024-2025,Mound High pt 2 - 2025,Tabroom,source_pdfs/tabroom/Mound High pt 2 - 2025.json [event NPDA],parsed,35,85,85,18,18,103,0,0,0,0,18,35,0,0,0
+2024-2025,Crossman - 2025Jan,FTN,source_pdfs/FTN/Crossman - 2025jan.pdf,parsed,19,45,47,8,8,53,0,0,0,0,12,19,0,0,0
+2024-2025,Great Salt Lake - 2025,FTN,source_pdfs/FTN/Great Salt Lake - 2025.pdf,parsed,10,25,25,3,4,26,0,0,2,0,0,9,1,0,1
+2024-2025,Big Red - 2025,Tabroom,source_pdfs/tabroom/Big Red - 2025.json [event NPDA],parsed,23,57,56,12,11,69,0,0,0,0,8,21,2,0,0
+2024-2025,Talk Hawk - 2025,FTN,source_pdfs/FTN/TalkHawk - 2025.pdf,parsed,12,30,30,6,6,36,0,0,0,0,1,12,0,0,0
+2024-2025,GGI - 2025,Tabroom,source_pdfs/tabroom/GGI - 2025.json [event OPEN] + tabroom-brackets/ggi_2025.csv,parsed,13,32,30,6,5,34,0,2,2,0,6,10,3,0,0
+2024-2025,NCFA Spring Champs - 2025,FTN,source_pdfs/FTN/NCFA Spring Champs - 2025.pdf,parsed,18,36,36,7,7,43,0,0,0,0,0,18,0,0,0
+2024-2025,PSCFA Spring Champs - 2025,FTN,source_pdfs/FTN/PSCFA Spring Champs - 2025.pdf,parsed,37,72,74,12,12,83,0,0,0,0,7,37,0,0,1
+2025-2026,GGO - 2025,FTN,source_pdfs/FTN/GGO - 2025.pdf,parsed,12,24,24,5,5,28,0,0,1,0,2,12,0,0,0
+2025-2026,Rice University Classic - 2025,Tabroom,source_pdfs/tabroom/Rice University Classic - 2025.json [event NPDA],parsed,18,45,45,7,7,52,0,0,0,0,0,18,0,0,0
+2025-2026,Steve Hunt - 2025,SpeechWire,source_pdfs/speechwire/complete Steve Hunt - 2025.pdf (OCR) [division Senior Parliamentary Debate],parsed,26,63,64,8,12,71,0,0,0,0,5,18,8,0,5
+2025-2026,Crossman - 2025,FTN,source_pdfs/FTN/Crossman - 2025.pdf,parsed,25,60,62,12,12,72,0,0,0,0,8,25,0,0,0
+2025-2026,Gina Lane pt 1 - 2025,Tabroom,source_pdfs/tabroom/Gina Lane pt1 and pt 2.json [event NPDA],parsed,19,49,47,7,7,54,0,0,0,2,1,19,0,0,0
+2025-2026,Sunset Cliffs - 2025,FTN,source_pdfs/FTN/Sunset Cliffs - 2025.pdf,parsed,16,32,32,7,7,39,0,0,0,0,0,16,0,0,0
+2025-2026,Gina Lane pt 2 - 2025,Tabroom,source_pdfs/tabroom/Gina Lane pt1 and pt 2.json [event NPTE],parsed,24,60,60,10,10,70,0,0,0,0,5,24,0,0,0
+2025-2026,Paul Winters - 2025,SpeechWire,source_pdfs/speechwire/complete Paul Winters - 2025.pdf [division Parli Open Division],parsed,24,60,60,11,11,70,0,0,1,0,4,24,0,0,0
+2025-2026,Robert Barbera - 2025,FTN,source_pdfs/FTN/Robert Barbera - 2025.pdf,parsed,17,33,34,3,3,36,0,0,0,0,6,17,0,0,1
+2025-2026,The Bernacchi - 2025,FTN,source_pdfs/FTN/The Bernacchi - 2025.pdf,parsed,19,36,38,5,5,40,0,0,1,0,6,19,0,0,0
+2025-2026,NPDA Fall Champs - 2025,FTN,source_pdfs/FTN/NPDA Fall Champs - 2025.pdf,parsed,21,52,52,10,10,62,0,0,0,0,8,21,0,0,2
+2025-2026,Mound High pt 1 - 2026,Tabroom,source_pdfs/tabroom/Mound High pt 1 - 2026.json [event OpenN],parsed,31,75,77,15,16,90,0,0,0,0,20,29,2,0,0
+2025-2026,Mound High pt 2 - 2026,Tabroom,source_pdfs/tabroom/Mound High pt 2 - 2026.json [event OpenN],parsed,31,75,77,15,15,90,0,0,0,0,5,31,0,0,0
+2025-2026,Great Salt Lake - 2026,Tabroom,source_pdfs/tabroom/Great Salt Lake - 2026.json [event NPDA],parsed,15,35,37,7,7,41,0,0,1,0,5,15,0,0,0
+2025-2026,GGI - 2026,Tabroom,source_pdfs/tabroom/Golden Gate Invitational - 2026.json [event OPEN],parsed,37,90,92,17,17,105,0,0,1,1,19,34,3,0,0
+2025-2026,Talk Hawk - 2026,FTN,source_pdfs/FTN/Talk Hawk - 2026.pdf,parsed,16,40,40,7,7,44,0,0,3,0,0,14,2,0,0
+2025-2026,Big Red - 2026,Tabroom,source_pdfs/tabroom/Big Red - 2026.json [event NPDA],parsed,31,79,77,7,15,85,0,0,0,1,1,15,16,0,0
+2025-2026,NCFA Spring Champs - 2026,FTN,source_pdfs/FTN/NCFA Spring Champs - 2026.pdf,parsed,9,16,18,3,3,18,0,0,1,0,4,8,1,0,0
+2026-2027,GGO - 2026,FTN,source_pdfs/FTN/GGO26.pdf,parsed,18,27,27,7,7,34,0,0,0,0,0,18,0,0,0
+2026-2027,Rice University Classic - 2026,Tabroom,new-sources/Rice University Classic - 2026 (Tabroom raw).json [event NPDA],parsed,23,55,57,12,12,67,0,0,0,0,8,23,0,0,0
+2026-2027,Steve Hunt - 2026,SpeechWire,source_pdfs/speechwire/Steve Hunt Prelims.pdf + new-sources/Steve Hunt - 2026 elim results.pdf (OCR) [division Senior Parliamentary Debate],parsed,26,65,65,11,11,76,0,0,0,0,4,26,0,0,1
+2026-2027,Crossman - 2026,FTN,source_pdfs/FTN/Crossman Invitational - 2026.pdf,parsed,28,70,70,14,14,83,0,0,1,0,1,28,0,0,0

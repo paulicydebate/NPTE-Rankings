@@ -1,0 +1,9 @@
+relabel,Octos
+round,aff,neg,winner,status,reasoning
+Quarters,Mercer PS,UCLA/PDAB MS,UCLA/PDAB MS,INFERRED,1 vs 8/9 winner; site elim MS 2-1 and Mercer 1-1 (bye + loss)
+Quarters,Rice RS,PDAB SK,Rice RS,INFERRED,4 vs 5; site elim RS 4-0 (champion) and SK 1-1 (bye + loss)
+Quarters,PDAB BC,Timothy Zhu,PDAB BC,INFERRED,3 vs 6/11 winner; BC 3-1 finalist needs a quarters win (site has no elim row for Zhu's loss)
+Quarters,UTTyl PS,UCLA/PDAB SP,UCLA/PDAB SP,INFERRED,2 vs 7/10 winner; site elim SP 2-1 and PS 1-1 (bye + loss)
+Semis,UCLA/PDAB MS,Rice RS,Rice RS,INFERRED,top half; MS 2-1 and RS 4-0
+Semis,PDAB BC,UCLA/PDAB SP,PDAB BC,INFERRED,bottom half; BC 3-1 and SP 2-1
+Final,Rice RS,PDAB BC,Rice RS,INFERRED,RS 4-0 champion; BC 3-1

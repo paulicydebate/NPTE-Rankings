@@ -1,0 +1,68 @@
+tournament,team,round,issue,official_opponent,official_decision
+Crossman - 2021,Elise Sprimont & Haidyn Christoffel,R3,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,W
+Crossman - 2021,Tristan Keene & Brenna Seiersen,R1,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,W
+Crossman - 2021,David Rekart & Uzair Pasta,R6,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,L
+Crossman - 2021,Eli Gail & Julian MacKenzie,R4,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,W
+Crossman - 2021,Jamari Jackson & Noah Marlar,R2,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,W
+Crossman - 2021,Sierra Hillman & Kirsten Lofgren,R5,opponent differs: parsed 'Mae Riley & N/A',University of California San Diego - Mae Riley & Jose Chavez,L
+Crossman - 2021,Mae Riley & Jose Chavez,R1,missing in parse,Diablo Valley College - Tristan Keene & Brenna Seiersen,L
+Crossman - 2021,Mae Riley & Jose Chavez,R2,missing in parse,McKendree University - Jamari Jackson & Noah Marlar,L
+Crossman - 2021,Mae Riley & Jose Chavez,R3,missing in parse,Concordia University Irvine - Elise Sprimont & Haidyn Christoffel,L
+Crossman - 2021,Mae Riley & Jose Chavez,R4,missing in parse,Grossmont College - Eli Gail & Julian MacKenzie,L
+Crossman - 2021,Mae Riley & Jose Chavez,R5,missing in parse,San Francisco State University - Sierra Hillman & Kirsten Lofgren,W
+Crossman - 2021,Mae Riley & Jose Chavez,R6,missing in parse,El Camino College - David Rekart & Uzair Pasta,W
+Grossmont Griffin - 2021,Olivia Penland & Will Brandt,bronze,missing in parse,University of California San Diego - Nikhil Emde & Michael Wagreich,L (LLW)
+Grossmont Griffin - 2021,Uzair Pasta & David Rekart,bronze,missing in parse,ZZ,W (WWW)
+Grossmont Griffin - 2021,Uzair Pasta & David Rekart,gold,missing in parse,Kansas Wesleyan University - Abby Wray & Savannah Bonilla,L (LLL)
+Grossmont Griffin - 2021,Abby Wray & Savannah Bonilla,bronze,missing in parse,ZZ,W (WWW)
+Grossmont Griffin - 2021,Abby Wray & Savannah Bonilla,gold,missing in parse,El Camino College - Uzair Pasta & David Rekart,W (WWW)
+Grossmont Griffin - 2021,Cody Sanders & Noah Platt,bronze,missing in parse,ZZ,W (WWW)
+Grossmont Griffin - 2021,Cody Sanders & Noah Platt,gold,missing in parse,University of California San Diego - Nikhil Emde & Michael Wagreich,L (LWL)
+Grossmont Griffin - 2021,Nikhil Emde & Michael Wagreich,bronze,missing in parse,El Camino College - Olivia Penland & Will Brandt,W (WWL)
+Grossmont Griffin - 2021,Nikhil Emde & Michael Wagreich,gold,missing in parse,Schreiner University - Cody Sanders & Noah Platt,W (WLW)
+PSCFA Fall Champs - 2021,Rachel Thibodeaux & Sebastian Chavez,bronze,missing in parse,Schreiner University - Cody Sanders & N/A,L (LLW)
+PSCFA Fall Champs - 2021,Olivia Penland & Will Brandt,bronze,missing in parse,San Diego State University - Matthew Hitomi & Kyle Pryor-Landman,W (WLW)
+PSCFA Fall Champs - 2021,Olivia Penland & Will Brandt,gold,missing in parse,Schreiner University - Cody Sanders & N/A,W (WWW)
+PSCFA Fall Champs - 2021,Matthew Hitomi & Kyle Pryor-Landman,bronze,missing in parse,El Camino College - Olivia Penland & Will Brandt,L (LWL)
+PSCFA Fall Champs - 2021,Cody Sanders & N/A,bronze,missing in parse,California State University Long Beach - Rachel Thibodeaux & Sebastian Chavez,W (WWL)
+PSCFA Fall Champs - 2021,Cody Sanders & N/A,gold,missing in parse,El Camino College - Olivia Penland & Will Brandt,L (LLL)
+Tabor Venitsky - 2022,Caleb Spires & Katie Rockhill,bronze,missing in parse,ZZ,W (WWW)
+Tabor Venitsky - 2022,Caleb Spires & Katie Rockhill,gold,missing in parse,El Camino College - Cody Hagemeier & David Rekart,W (WWW)
+Tabor Venitsky - 2022,Burch Harbison & Nicodemus Gabel,bronze,missing in parse,El Camino College - Olivia Penland & Josiah Edwards,L (LWL)
+Tabor Venitsky - 2022,Evy Jones & Jack Clifford,bronze,missing in parse,El Camino College - Cody Hagemeier & David Rekart,L (LLW)
+Tabor Venitsky - 2022,Cody Hagemeier & David Rekart,bronze,missing in parse,College of Southern Idaho - Evy Jones & Jack Clifford,W (WWL)
+Tabor Venitsky - 2022,Cody Hagemeier & David Rekart,gold,missing in parse,Cleveland State Community College - Caleb Spires & Katie Rockhill,L (LLL)
+Tabor Venitsky - 2022,Olivia Penland & Josiah Edwards,bronze,missing in parse,Cleveland State Community College - Burch Harbison & Nicodemus Gabel,W (WLW)
+Tabor Venitsky - 2022,Olivia Penland & Josiah Edwards,gold,missing in parse,Orange Coast College - Kendall Seevers & Nina Menzagopian,W (WLW)
+Tabor Venitsky - 2022,Sophia Dornberg & Uzair Pasta,bronze,missing in parse,Orange Coast College - Kendall Seevers & Nina Menzagopian,L (LLW)
+Tabor Venitsky - 2022,Kendall Seevers & Nina Menzagopian,bronze,missing in parse,El Camino College - Sophia Dornberg & Uzair Pasta,W (WWL)
+Tabor Venitsky - 2022,Kendall Seevers & Nina Menzagopian,gold,missing in parse,El Camino College - Olivia Penland & Josiah Edwards,L (LWL)
+GGO - 2022,Haidyn Christoffel & Nathan Estrick,bronze,missing in parse,University of the Pacific - Estefany Torres & Jonathan Reyes,W (WLW)
+GGO - 2022,Haidyn Christoffel & Nathan Estrick,gold,missing in parse,Concordia University Irvine - Brody Rezen & Benjamin Wagner,W (W)
+GGO - 2022,Brody Rezen & Benjamin Wagner,bronze,missing in parse,Saint Mary's College - Adrian Lossada & Marina Garcia,W (WWW)
+GGO - 2022,Brody Rezen & Benjamin Wagner,gold,missing in parse,Concordia University Irvine - Haidyn Christoffel & Nathan Estrick,L (L)
+GGO - 2022,Adrian Lossada & Marina Garcia,bronze,missing in parse,Concordia University Irvine - Brody Rezen & Benjamin Wagner,L (LLL)
+GGO - 2022,Estefany Torres & Jonathan Reyes,bronze,missing in parse,Concordia University Irvine - Haidyn Christoffel & Nathan Estrick,L (LWL)
+PSCFA Fall Champs - 2023,Aiyanna Durepo & Tess Halbert,R4,decision differs: parsed winner 'Ryan Bartl & Spencer Simon' status INFERRED,San Diego State University - Ryan Bartl & Spencer Simon,W&W
+The Bernacchi - 2024,Aaron Deivaprakash & Sam Goodman,R1,decision differs: parsed winner 'Hannah Schroers & Jane Wilson' status INFERRED,Diablo Valley College - Hannah Schroers & Jane Wilson,W&W
+PSCFA Spring Champs - 2025,Xander Hepburn & Nathan Carvajal,R3,decision differs: parsed winner 'Andres Osorio & Ethan Syring' status INFERRED,El Camino College - Andres Osorio & Ethan Syring,W&W
+Robert Barbera - 2025,Devin Redding (He/They) & Ellie Ghanbari (she/her),bronze,missing in parse,ZZ,W (WWW)
+Robert Barbera - 2025,Devin Redding (He/They) & Ellie Ghanbari (she/her),gold,missing in parse,El Camino College - David Khashchuk & Mehra Ziatabari,W (WLW)
+Robert Barbera - 2025,Jonathan Cook & Benjamin Zapf,bronze,missing in parse,ZZ,W (WWW)
+Robert Barbera - 2025,Jonathan Cook & Benjamin Zapf,gold,missing in parse,UC Berkeley - Anthony Carillo & Alexia Gallon,L (LLW)
+Robert Barbera - 2025,Zion Kandel & Abigail Sucup,bronze,missing in parse,UC Berkeley - Anthony Carillo & Alexia Gallon,L (WLL)
+Robert Barbera - 2025,David Khashchuk & Mehra Ziatabari,bronze,missing in parse,ZZ,W (WWW)
+Robert Barbera - 2025,David Khashchuk & Mehra Ziatabari,gold,missing in parse,Clovis Community College - Devin Redding (He/They) & Ellie Ghanbari (she/her),L (LWL)
+Robert Barbera - 2025,Anthony Carillo & Alexia Gallon,bronze,missing in parse,El Camino College - Zion Kandel & Abigail Sucup,W (LWW)
+Robert Barbera - 2025,Anthony Carillo & Alexia Gallon,gold,missing in parse,Concordia University Irvine - Jonathan Cook & Benjamin Zapf,W (WWL)
+Talk Hawk - 2026,Aly Greaver they/them & Charlie Burrows,R1,missing in parse,Solano Community College - Francesca Franco & Mahari Wright,L
+Talk Hawk - 2026,Aly Greaver they/them & Charlie Burrows,R2,missing in parse,Diablo Valley College - Frank Quintanilla & Ian Kusmiantoro,L
+Talk Hawk - 2026,Aly Greaver they/them & Charlie Burrows,R3,missing in parse,Diablo Valley College - Kana McNiff & Gage Walker,L
+Talk Hawk - 2026,Aly Greaver they/them & Charlie Burrows,R4,missing in parse,Foothill College - Yigue (Alex) Chang & Ridhi Thapar,W
+Talk Hawk - 2026,Aly Greaver they/them & Charlie Burrows,R5,missing in parse,Solano Community College - Tyler King & Lance Cohen,L
+Talk Hawk - 2026,Kana McNiff & Gage Walker,R3,opponent differs: parsed 'Aly & Charlie Burrows',Cal Poly Humboldt - Aly Greaver they/them & Charlie Burrows,W
+Talk Hawk - 2026,Frank Quintanilla & Ian Kusmiantoro,R2,opponent differs: parsed 'Aly & Charlie Burrows',Cal Poly Humboldt - Aly Greaver they/them & Charlie Burrows,W
+Talk Hawk - 2026,Yigue (Alex) Chang & Ridhi Thapar,R4,opponent differs: parsed 'Aly & Charlie Burrows',Cal Poly Humboldt - Aly Greaver they/them & Charlie Burrows,L
+Talk Hawk - 2026,Francesca Franco & Mahari Wright,R1,opponent differs: parsed 'Aly & Charlie Burrows',Cal Poly Humboldt - Aly Greaver they/them & Charlie Burrows,W
+Talk Hawk - 2026,Tyler King & Lance Cohen,R5,opponent differs: parsed 'Aly & Charlie Burrows',Cal Poly Humboldt - Aly Greaver they/them & Charlie Burrows,W
+NCFA Spring Champs - 2026,Eric Cardenas & Joshua Turnbull,R4,decision differs: parsed winner 'Eric Cardenas & Joshua Turnbull' status BYE,ZZ,L&L
