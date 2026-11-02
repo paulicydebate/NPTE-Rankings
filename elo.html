@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELO Ratings · NPTE National Rankings</title>
+<script>(function(){var t;try{t=localStorage.getItem('npte-theme')}catch(e){}if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark')})();</script>
+<link rel="stylesheet" href="assets/elo-h2h.css">
+</head>
+<body data-page="elo">
+<div class="wrap">
+<header><div><h1>NPTE Rankings · ELO Ratings</h1><div class="sub" id="sub">Loading…</div></div>
+<nav class="site"><a class="btn" href="index.html">🏆 Rankings</a><a class="btn" href="h2h.html">Head-to-Head</a><a class="btn on" href="elo.html">ELO Ratings</a><button class="btn" id="dark" type="button" aria-label="Toggle dark mode">🌙</button></nav></header>
+<div id="paneH" style="display:none">
+<div class="card"><div class="row">
+<div><label>Search by</label><select id="mode"><option value="d">Debater</option><option value="p">Partnership</option></select></div>
+<div><label>Competitor A</label><input class="name" id="qa" list="dl" placeholder="Type a name…"></div>
+<div><label>Competitor B (optional, leave blank for all of A's debates)</label><input class="name" id="qb" list="dl" placeholder="Type a name…"></div>
+<div><label>Season</label><select id="hs"></select></div>
+<button class="btn" id="swap">⇄</button>
+</div><datalist id="dl"></datalist></div>
+<div class="card" id="h2hOut"><span class="muted">Pick a debater or partnership. Names follow the rankings site's canonical spelling.</span></div>
+</div>
+
+<div id="paneL">
+<div class="card"><div class="row">
+<div><label>Season</label><select id="ls"></select></div>
+<div><label>Type</label><select id="lt"><option value="p">Partnerships</option><option value="d">Debaters</option></select></div>
+<div><label>Min. debates</label><input id="lmin" type="number" value="5" style="width:90px"></div>
+<div><label>Filter</label><input id="lf" placeholder="name or school"></div>
+</div></div>
+<div class="card method"><b>How the ELO ratings work</b>
+<ul>
+<li>Every partnership and every debater starts at <b>1500</b>; K factor <b>32</b> (prelims and elims).</li>
+<li>Ratings carry over between seasons, pulled partway back to the mean: season start = 1500 + 0.75 × (last season's end − 1500). New debaters start at 1500.</li>
+<li>A new partnership starts at the average of its two debaters' ratings.</li>
+<li>Each debater is rated against the opposing team's average rating.</li>
+<li>Byes, walkovers (including same-school elim meetings), forfeits and double wins are excluded; only decided debates count.</li>
+<li>Open/Varsity NPDA (parli) divisions only. "All-time" is one continuous rating with no season reset.</li>
+</ul><div class="sub" id="cfg" style="margin-top:8px"></div></div>
+<div class="card scroll"><table id="lb"></table></div>
+</div>
+
+</div>
+<script src="assets/elo-h2h.js"></script>
+</body>
+</html>
