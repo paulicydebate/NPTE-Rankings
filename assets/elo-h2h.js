@@ -51,7 +51,7 @@ $('mode').onchange=()=>{fillDL();renderH2H()};$('swap').onclick=()=>{const t=$('
 let lbSort=[2,-1];
 function renderLB(){const S=$('ls').value,T=$('lt').value,min=+$('lmin').value||0,f=norm($('lf').value||'');
  let L=S==='all-time'?(T==='p'?DATA.ap:DATA.ad):((T==='p'?DATA.bp:DATA.bd)[S]||[]);
- L=L.filter(x=>x[4]>=min&&(!f||norm(x[0]+' '+x[1]).includes(f)));
+ L=L.filter(x=>(f?true:x[4]>=min)&&(!f||norm(x[0]+' '+x[1]).includes(f)));
  const [k,dir]=lbSort;L=L.slice().sort((a,b)=>(a[k]>b[k]?1:a[k]<b[k]?-1:0)*dir);
  const hd=['#',T==='p'?'Partnership':'Debater','School(s)','Rating','Peak','Debates','W','L'];
  let h='<thead><tr>'+hd.map((x,i)=>`<th data-k="${i-1}">${x}</th>`).join('')+'</tr></thead><tbody>';
