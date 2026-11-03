@@ -228,7 +228,7 @@ def entry_display_name(entry_id, entry_map, student_map):
 
 def resolve_matchups(matchups, entry_map, student_map, year, tournament_name):
     """Turns raw entry_id-keyed matchup dicts (from analyze_prelim_rounds /
-    analyze_elim_rounds) into the real per-debate records the Elo pipeline
+    analyze_elim_rounds) into the real per-debate records the head-to-head pipeline
     consumes: who debated whom, who won, what side each was on. A matchup
     whose winner is still undetermined (round not yet judged) is kept with
     Winner=None rather than dropped, so a later consumer can decide how to

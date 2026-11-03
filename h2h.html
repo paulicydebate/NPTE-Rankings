@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Head-to-Head · NPTE National Rankings</title>
 <script>(function(){var t;try{t=localStorage.getItem('npte-theme')}catch(e){}if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark')})();</script>
-<link rel="stylesheet" href="assets/elo-h2h.css">
+<link rel="stylesheet" href="assets/h2h.css">
 </head>
 <body data-page="h2h">
 <div class="wrap">
 <header><div><h1>NPTE Rankings · Head-to-Head</h1><div class="sub" id="sub">Loading…</div></div>
-<nav class="site"><a class="btn" href="index.html">🏆 Rankings</a><a class="btn on" href="h2h.html">Head-to-Head</a><a class="btn" href="elo.html">ELO Ratings</a><button class="btn" id="dark" type="button" aria-label="Toggle dark mode">🌙</button></nav></header>
+<nav class="site"><a class="btn" href="index.html">🏆 Rankings</a><a class="btn on" href="h2h.html">Head-to-Head</a><button class="btn" id="dark" type="button" aria-label="Toggle dark mode">🌙</button></nav></header>
 <div id="paneH">
 <div class="card"><div class="row">
 <div><label>Search by</label><select id="mode"><option value="d">Debater</option><option value="p">Partnership</option></select></div>
@@ -22,17 +22,7 @@
 <div class="card" id="h2hOut"><span class="muted">Pick a debater or partnership. Names follow the rankings site's canonical spelling.</span></div>
 </div>
 
-<div id="paneL" style="display:none">
-<div class="card"><div class="row">
-<div><label>Season</label><select id="ls"></select></div>
-<div><label>Type</label><select id="lt"><option value="p">Partnerships</option><option value="d">Debaters</option></select></div>
-<div><label>Min. debates</label><input id="lmin" type="number" value="5" style="width:90px"></div>
-<div><label>Filter</label><input id="lf" placeholder="name or school"></div>
-</div></div>
-<div class="card scroll"><table id="lb"></table></div>
 </div>
-<div id="cfg" style="display:none"></div>
-</div>
-<script src="assets/elo-h2h.js"></script>
+<script src="assets/h2h.js"></script>
 </body>
 </html>
