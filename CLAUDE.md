@@ -134,3 +134,8 @@ points/record, the biggest riser (compare season rankings with vs.
 without the new tournament, by rank delta), and the final-round result.
 Compute the "before" snapshot by re-running season rankings excluding
 just the new tournament's rows from `tournamentLogs`.
+
+## Head-to-Head page
+
+`h2h.html` + `assets/h2h.js`/`assets/h2h.css` read `data/h2h.json` (matchups only),
+built by `tools/h2h/build.py` (see `tools/h2h/README.md`). There is no ELO feature.

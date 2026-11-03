@@ -11,5 +11,5 @@ Override files: mile_high_pt2_2023.csv and ggi_2025.csv. build.py reads them thr
 - QF: TZ over DK 3-0 and CG over SMC LP 2-1, both CONFIRMED. SL over LJ is a WALKOVER. BC had a bye (top seed).
 - SF: all 4 semifinalists are Berkeley teams, so both semis were walkovers. CG and BC advanced over TZ and SL, but which opponent each one met is unknown, so both semis are marked UNKNOWN.
 - Final: CG vs BC, a Berkeley WALKOVER. CG is listed as advancing because the site has CG at 2-0 and BC at 0-0.
-- None of the semis or the final is rated in ELO.
+- None of the semis or the final counts as a debate in head-to-head W-L.
 - Remaining mismatches come from the site's inconsistent walkover credit: SL is 1-1 on the site, TZ is 1-1 on the site versus 1-0 parsed, and BC is 0-0 on the site.

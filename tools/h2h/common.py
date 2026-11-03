@@ -1,4 +1,4 @@
-"""Shared helpers for the NPTE-Rankings matchup / ELO build."""
+"""Shared helpers for the NPTE-Rankings matchup / head-to-head build."""
 import json, os, re, subprocess, unicodedata
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root

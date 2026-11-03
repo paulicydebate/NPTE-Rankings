@@ -1,5 +1,5 @@
 """One-off corrections to tournamentLogs in index.html (Nov 2026), verified
-against official FTN sheets / the Tabroom API by tools/elo (validation.csv).
+against official FTN sheets / the Tabroom API by tools/h2h (validation.csv).
 Idempotent: re-running makes no further changes.
   python3 tools/site_data_fixes_2026_11.py [validation.csv]
 """
@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HTML = ROOT / 'index.html'
-VAL = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'tools/elo/validation.csv'
+VAL = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'tools/h2h/validation.csv'
 PAT = re.compile(r'(const tournamentLogs = )(\[.*?\])(;\s*\n\s*let summaryData)', re.S)
 FOUR_MINUS_W = {'Crossman - 2022', 'Crossman - 2023', 'Jannese Davidson - 2023', 'Talk Hawk - 2023', 'Talk Hawk - 2024',
                 'NCFA Spring Champs - 2022', 'NCFA Spring Champs - 2023', 'Gorlock Gala - 2023', 'Great Salt Lake - 2024'}

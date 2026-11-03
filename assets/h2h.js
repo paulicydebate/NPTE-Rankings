@@ -1,7 +1,6 @@
-// Head-to-Head + ELO pages. Data: data/elo.json, built by tools/elo/build.py.
+// Head-to-Head page. Data: data/h2h.json, built by tools/h2h/build.py.
 (function(){
-fetch('data/elo.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(DATA=>{
-const PAGE=document.body.dataset.page;
+fetch('data/h2h.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(DATA=>{
 
 const M=DATA.m; // [season,tourn,round,type,aNames,aSchool,bNames,bSchool,sideA,winner,ballots,judges,status,note,torder,rorder,aPid,bPid]
 const $=id=>document.getElementById(id);
@@ -9,14 +8,12 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const COUNT={CONFIRMED:1,INFERRED:1};
 const seasons=[...new Set(M.map(r=>r[0]))].sort();
 $('sub').textContent=`${M.length.toLocaleString()} debates/meetings · ${seasons[0]} to ${seasons[seasons.length-1]} · byes excluded`;
-const c=DATA.cfg;$('cfg').textContent=`ELO: start ${c.start}, K ${c.k} (elims ${c.kelim}), ballot weighting ${c.ballot_weight?'on':'off'}. Season ratings carry over with regression to the mean: start = ${c.start} + ${c.carry} × (last season's end − ${c.start}); a partnership starts each season at its debaters' average. Only CONFIRMED and INFERRED debates count; walkovers, byes, forfeits and unknown results do not.`;
 $('dark').onclick=()=>{const d=document.documentElement.classList.toggle('dark');try{localStorage.setItem('npte-theme',d?'dark':'light')}catch(e){}};
 // name lists
 const debaters=new Set(),pships=new Set();
 M.forEach(r=>{r[4].forEach(n=>debaters.add(n));r[6].forEach(n=>debaters.add(n));if(r[4].length)pships.add(r[16]);if(r[6].length)pships.add(r[17])});
 function fillDL(){const set=$('mode').value==='d'?debaters:pships;$('dl').innerHTML=[...set].sort().map(n=>`<option value="${esc(n)}">`).join('')}
-['hs','ls'].forEach(id=>{$(id).innerHTML=(id==='ls'?'<option value="all-time">All-time (continuous)</option>':'<option value="">All seasons</option>')+seasons.slice().reverse().map(s=>`<option>${s}</option>`).join('')});
-$('ls').value=seasons[seasons.length-1];
+$('hs').innerHTML='<option value="">All seasons</option>'+seasons.slice().reverse().map(s=>`<option>${s}</option>`).join('');
 const norm=s=>s.toLowerCase().normalize('NFKD').replace(/[^a-z& ]/g,'').replace(/\s+/g,' ').trim();
 function sideOf(r,q,mode){ // returns 'a','b' or null
  if(mode==='d'){const qn=norm(q);if(r[4].some(n=>norm(n)===qn))return 'a';if(r[6].some(n=>norm(n)===qn))return 'b';return null}
@@ -48,24 +45,11 @@ function renderH2H(){
 }
 ['qa','qb','hs'].forEach(id=>$(id).addEventListener('input',renderH2H));
 $('mode').onchange=()=>{fillDL();renderH2H()};$('swap').onclick=()=>{const t=$('qa').value;$('qa').value=$('qb').value;$('qb').value=t;renderH2H()};
-let lbSort=[2,-1];
-function renderLB(){const S=$('ls').value,T=$('lt').value,min=+$('lmin').value||0,f=norm($('lf').value||'');
- let L=S==='all-time'?(T==='p'?DATA.ap:DATA.ad):((T==='p'?DATA.bp:DATA.bd)[S]||[]);
- L=L.filter(x=>x[4]>=min&&(!f||norm(x[0]+' '+x[1]).includes(f)));
- const [k,dir]=lbSort;L=L.slice().sort((a,b)=>(a[k]>b[k]?1:a[k]<b[k]?-1:0)*dir);
- const hd=['#',T==='p'?'Partnership':'Debater','School(s)','Rating','Peak','Debates','W','L'];
- let h='<thead><tr>'+hd.map((x,i)=>`<th data-k="${i-1}">${x}</th>`).join('')+'</tr></thead><tbody>';
- L.forEach((x,i)=>{h+=`<tr class="${i<4&&lbSort[0]===2&&dir<0?'top':''}"><td>${i+1}</td><td><span class="clickable" data-n="${esc(x[0])}">${esc(x[0])}</span></td><td class="muted">${esc(x[1])}</td><td><b>${x[2].toFixed(1)}</b></td><td>${x[3].toFixed(1)}</td><td>${x[4]}</td><td class="W">${x[5]}</td><td class="L">${x[6]}</td></tr>`});
- $('lb').innerHTML=h+'</tbody>';
- $('lb').querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=+th.dataset.k;if(k<0)return;lbSort=[k,lbSort[0]===k?-lbSort[1]:(k<=1?1:-1)];renderLB()});
- $('lb').querySelectorAll('[data-n]').forEach(e=>e.onclick=()=>{location.href='h2h.html?'+new URLSearchParams({mode:T,a:e.dataset.n,s:S==='all-time'?'':S})});
-}
-['ls','lt','lmin','lf'].forEach(id=>$(id).addEventListener('input',renderLB));
 
 const q=new URLSearchParams(location.search);
 if(q.get('mode'))$('mode').value=q.get('mode')==='p'?'p':'d';
 fillDL();
 if(q.get('a'))$('qa').value=q.get('a');if(q.get('b'))$('qb').value=q.get('b');if(q.has('s'))$('hs').value=q.get('s');
-if(PAGE==='elo')renderLB();else renderH2H();
-}).catch(e=>{document.getElementById(document.body.dataset.page==='elo'?'lb':'h2hOut').innerHTML='<tr><td>Could not load data/elo.json ('+e.message+').</td></tr>'});
+renderH2H();
+}).catch(e=>{document.getElementById('h2hOut').textContent='Could not load data/h2h.json ('+e.message+').'});
 })();

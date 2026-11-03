@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
-"""Rebuild the NPTE-Rankings round-by-round matchup table, per-season ELO, and the head-to-head page.
+"""Rebuild the NPTE-Rankings round-by-round matchup table and the head-to-head data file (data/h2h.json).
 
     python3 build.py            # everything, from the source files
-Outputs (this folder): matchups.csv, debater_ids.csv, elo_partnerships.csv, elo_debaters.csv,
-elo_history.csv, h2h.html, validation.csv, coverage.csv  (README.md is hand-written, numbers from coverage.csv)
+Outputs (this folder): matchups.csv, debater_ids.csv, validation.csv, coverage.csv; plus ../../data/h2h.json  (README.md is hand-written, numbers from coverage.csv)
 """
-# ----------------------------------------------------------------------------- ELO config
-ELO_START = 1500          # starting rating for every partnership / debater
-ELO_K = 32                # K factor for prelims
-ELO_K_ELIM = 32           # K factor for elims (set higher to weight elims more)
-SEASON_CARRY_R = 0.75     # season-scope carry-over: new season start = 1500 + R * (previous season end - 1500)
-                          # brand-new debaters start at ELO_START; a partnership starts each season at the average of its
-                          # two debaters' carried-over ratings (R = 0 gives a hard reset every season)
-BALLOT_WEIGHT = False     # False: score = 1/0 by decision. True: score = ballot share (2-1 -> 0.667 / 0.333)
-ELO_STATUSES = ('CONFIRMED', 'INFERRED')   # statuses that count as debates for ELO
 # -----------------------------------------------------------------------------
 import csv, difflib, json, os, re, sys
 from collections import defaultdict, Counter
@@ -822,93 +812,6 @@ def write_outputs(debs, coverage, notes, parse_issues, bracket_checks):
         for r in sorted(set(NOT_ON_SITE)):
             w.writerow(r)
 
-    # ---------------- ELO
-    hist = []
-    def run(scope_fn, scope_name):
-        P, D = {}, {}
-        stats_p = defaultdict(lambda: {'games': 0, 'W': 0, 'L': 0, 'peak': ELO_START, 'schools': set(), 'last': ''})
-        stats_d = defaultdict(lambda: {'games': 0, 'W': 0, 'L': 0, 'peak': ELO_START, 'schools': set(), 'last': ''})
-        cur_scope = None
-        D_start = None
-        for i, d in enumerate(debs):
-            if d['status'] not in ELO_STATUSES or d['b'] is None or d['winner'] is None or not d['a']['names'] or not d['b']['names']:
-                continue
-            sc = scope_fn(d)
-            if sc != cur_scope:
-                if scope_name == 'season':
-                    # regression to the mean between seasons (not a hard reset)
-                    D = {n: ELO_START + SEASON_CARRY_R * (r - ELO_START) for n, r in D.items()}
-                    D_start = dict(D)
-                    P = {}
-                else:
-                    D_start = None
-                cur_scope = sc
-            A, B = d['a'], d['b']
-            pa, pb = pid(A), pid(B)
-            for p_, t_ in ((pa, A), (pb, B)):
-                if p_ not in P:   # partnership start = average of its debaters' (carried-over) ratings
-                    base = D_start if D_start is not None else D
-                    P[p_] = sum(base.get(n, ELO_START) for n in t_['names']) / len(t_['names'])
-                    stats_p[(sc, p_)]['start'] = P[p_]
-            ra, rb = P[pa], P[pb]
-            sa = 1.0 if d['winner'] == 'a' else 0.0
-            if BALLOT_WEIGHT and re.match(r'^\d+-\d+$', d['ballots'] or ''):
-                x, y = map(int, d['ballots'].split('-'))
-                if x + y > 1:
-                    share = x / (x + y)
-                    sa = share if d['winner'] == 'a' else 1 - share
-            K = ELO_K if d['round_type'] == 'prelim' else ELO_K_ELIM
-            ea = 1 / (1 + 10 ** ((rb - ra) / 400))
-            P[pa] = ra + K * (sa - ea)
-            P[pb] = rb + K * ((1 - sa) - (1 - ea))
-            # debaters vs opposing team's average debater rating (pre-debate)
-            da = {n: D.get(n, ELO_START) for n in A['names']}
-            db = {n: D.get(n, ELO_START) for n in B['names']}
-            avg_a, avg_b = sum(da.values()) / len(da), sum(db.values()) / len(db)
-            for names_, own, opp_avg, s in ((A['names'], da, avg_b, sa), (B['names'], db, avg_a, 1 - sa)):
-                for n in names_:
-                    e = 1 / (1 + 10 ** ((opp_avg - own[n]) / 400))
-                    D[n] = own[n] + K * (s - e)
-            for t, p_, r0, s in ((A, pa, ra, sa), (B, pb, rb, 1 - sa)):
-                st = stats_p[(sc, p_)]
-                st['games'] += 1; st['W'] += s >= 0.5; st['L'] += s < 0.5
-                st['peak'] = max(st.get('pk', st.get('start', ELO_START)), P[p_]); st['pk'] = st['peak']; st['rating'] = P[p_]; st['schools'].add(t['school']); st['last'] = d['tournament']
-                hist.append([scope_name, sc, 'partnership', p_, d['season'], d['tournament'], d['round'], pid(B if t is A else A),
-                             'W' if s >= 0.5 else 'L', round(r0, 1), round(P[p_], 1)])
-            for t, own, s, opp in ((A, da, sa, B), (B, db, 1 - sa, A)):
-                for n in t['names']:
-                    st = stats_d[(sc, n)]
-                    if 'start' not in st:
-                        st['start'] = own[n]; st['pk'] = own[n]
-                    st['games'] += 1; st['W'] += s >= 0.5; st['L'] += s < 0.5
-                    st['peak'] = max(st['pk'], D[n]); st['pk'] = st['peak']; st['rating'] = D[n]; st['schools'].add(t['school']); st['last'] = d['tournament']
-                    hist.append([scope_name, sc, 'debater', n, d['season'], d['tournament'], d['round'], pid(opp),
-                                 'W' if s >= 0.5 else 'L', round(own[n], 1), round(D[n], 1)])
-        return stats_p, stats_d
-    sp_s, sd_s = run(lambda d: d['season'], 'season')
-    sp_a, sd_a = run(lambda d: 'all-time', 'all-time')
-
-    def dump(fn, stats_list, label):
-        with open(os.path.join(HERE, fn), 'w', newline='') as f:
-            w = csv.writer(f)
-            w.writerow(['scope', 'season', 'rank', label, 'schools', 'rating', 'season_start', 'peak', 'games', 'wins', 'losses', 'last_tournament'])
-            for scope, stats in stats_list:
-                bys = defaultdict(list)
-                for (sc, ent), st in stats.items():
-                    bys[sc].append((ent, st))
-                for sc in sorted(bys):
-                    lst = sorted(bys[sc], key=lambda x: -x[1]['rating'])
-                    for rk, (ent, st) in enumerate(lst, 1):
-                        w.writerow([scope, sc, rk, ent, '; '.join(sorted(s for s in st['schools'] if s)), round(st['rating'], 1),
-                                    round(st.get('start', ELO_START), 1), round(st['peak'], 1), st['games'], st['W'], st['L'], st['last']])
-    dump('elo_partnerships.csv', [('season', sp_s), ('all-time', sp_a)], 'partnership')
-    dump('elo_debaters.csv', [('season', sd_s), ('all-time', sd_a)], 'debater')
-    with open(os.path.join(HERE, 'elo_history.csv'), 'w', newline='') as f:
-        w = csv.writer(f)
-        w.writerow(['scope', 'scope_key', 'entity_type', 'entity', 'season', 'tournament', 'round', 'opponent_partnership', 'result',
-                    'rating_before', 'rating_after'])
-        w.writerows(hist)
-
     # ---------------- validation vs site W-L
     val = []
     by_t = defaultdict(list)
@@ -998,11 +901,11 @@ def write_outputs(debs, coverage, notes, parse_issues, bracket_checks):
             for i in iss:
                 f.write(f'{t}: {i}\n')
 
-    write_html(debs, sp_s, sd_s, sp_a, sd_a)
+    write_h2h(debs)
     return rows, cov, val
 
 
-def write_html(debs, sp_s, sd_s, sp_a, sd_a):
+def write_h2h(debs):
     M = []
     for d in debs:
         if d['b'] is None:
@@ -1011,16 +914,10 @@ def write_html(debs, sp_s, sd_s, sp_a, sd_a):
         M.append([d['season'], d['tournament'], d['round'], d['round_type'][0], a['names'], a['school'], b['names'], b['school'],
                   d['side_a'] or '', d['winner'] or '', d['ballots'], '; '.join(d['judges']), d['status'], d['note'], d['tourn_order'], d['round_order'],
                   pid(a) if a['names'] else a.get('code', ''), pid(b) if b['names'] else b.get('code', '')])
-    def board(stats):
-        out = defaultdict(list)
-        for (sc, ent), st in stats.items():
-            out[sc].append([ent, '; '.join(sorted(s for s in st['schools'] if s)), round(st['rating'], 1), round(st['peak'], 1), st['games'], st['W'], st['L']])
-        return {k: sorted(v, key=lambda x: -x[2]) for k, v in out.items()}
-    data = {'m': M, 'bp': board(sp_s), 'bd': board(sd_s), 'ap': board(sp_a)['all-time'] if sp_a else [], 'ad': board(sd_a)['all-time'] if sd_a else [],
-            'cfg': {'start': ELO_START, 'k': ELO_K, 'kelim': ELO_K_ELIM, 'ballot_weight': BALLOT_WEIGHT, 'carry': SEASON_CARRY_R}}
-    # site data file read by /h2h.html and /elo.html
+    data = {'m': M}
+    # site data file read by /h2h.html
     os.makedirs(os.path.join(REPO, 'data'), exist_ok=True)
-    with open(os.path.join(REPO, 'data', 'elo.json'), 'w') as f:
+    with open(os.path.join(REPO, 'data', 'h2h.json'), 'w') as f:
         json.dump(data, f, separators=(',', ':'))
 
 
@@ -1028,6 +925,6 @@ if __name__ == '__main__':
     debs, coverage, notes, parse_issues, bc = main()
     rows, cov, val = write_outputs(debs, coverage, notes, parse_issues, bc)
     import readme
-    readme.main({'start': ELO_START, 'k': ELO_K, 'kelim': ELO_K_ELIM, 'carry': SEASON_CARRY_R})
+    readme.main()
     st = Counter(r['status'] for r in rows)
     print('debate rows:', len(rows), dict(st))
