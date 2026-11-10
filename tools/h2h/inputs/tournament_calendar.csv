@@ -88,3 +88,4 @@ season,order_in_season,tournament,start_date,end_date,platform,date_source,confi
 2026-2027,2,Rice University Classic - 2026,2026-10-03,2026-10-04,Tabroom,source_pdfs/tabroom/Rice University Classic - 2026.json,confirmed
 2026-2027,3,Steve Hunt - 2026,2026-10-09,2026-10-11,SpeechWire,https://www.speechwire.com/p-calendar.php?seasonid=19&viewmode=opensonly,confirmed
 2026-2027,4,Crossman - 2026,2026-10-17,2026-10-17,FTN,https://forensicstournament.net/crossmaninvitationalday1/26,confirmed
+2026-2027,5,Paul Winters - 2026,,,SpeechWire,source_pdfs/speechwire/complete Paul Winters - 2026.pdf,date not listed in source
