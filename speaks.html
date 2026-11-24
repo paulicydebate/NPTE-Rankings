@@ -23,6 +23,7 @@
 </div>
 <div id="app" hidden></div>
 </div>
-<script src="assets/speaks.js"></script>
+<script>/* load the page script fresh every visit, so an update is never hidden by the browser cache */
+(function(){var s=document.createElement('script');s.src='assets/speaks.js?t='+Date.now();document.body.appendChild(s)})();</script>
 </body>
 </html>
