@@ -71,6 +71,11 @@ for(const r of R){
   const j=J[r[5]]||(J[r[5]]={n:0,s:0,q:0});j.n++;j.s+=r[8];j.q+=r[8]*r[8];
   const k=r[5]*100000+r[2];const jd=JD.get(k)||{n:0,s:0,q:0};jd.n++;jd.s+=r[8];jd.q+=r[8]*r[8];JD.set(k,jd);
 }
+// league yardstick for turning a z-score back into points: the average score, and the typical spread of one judge's scores
+let LG_N=0,LG_S=0,LG_SS=0,LG_J=0;
+for(const k in J){const j=J[k];LG_N+=j.n;LG_S+=j.s;LG_SS+=j.q-j.s*j.s/j.n;LG_J++}
+const LG_MU=LG_N?LG_S/LG_N:0,LG_SD=LG_N>LG_J?Math.sqrt(LG_SS/(LG_N-LG_J)):1;
+const adjAvg=z=>z==null?null:LG_MU+z*LG_SD;
 let MINJ=5;
 function base(r){ // the judge's mean and SD on everyone else -> {mu, sd} or null if too few ballots
   if(r[5]<0)return null;const j=J[r[5]],jd=JD.get(r[5]*100000+r[2]),n=j.n-jd.n;
@@ -83,7 +88,7 @@ function others(r){ // the debater's mean from every other judge
 }
 
 // ---- state
-const S={tab:'c',seasons:new Set(),tourn:'',school:'',minC:10,minJ:3,qC:'',qJ:'',sortC:['z',-1],sortJ:['rooms',-1]};
+const S={tab:'c',seasons:new Set(),tourn:'',school:'',minC:10,minJ:3,qC:'',qJ:'',sortC:['aa',-1],sortJ:['rooms',-1]};
 const inScope=t=>(!S.seasons.size||S.seasons.has(T[t][1]))&&(S.tourn===''||+S.tourn===t);
 
 // ---- shell
@@ -97,6 +102,7 @@ $('method').innerHTML=`
 <p><b>What counts.</b> Open/Varsity NPDA and NPTE prelim speaker points, one score per debater per judge per round, exactly as printed on the result sheets. Byes (which print an average, not a judge's score) and scores outside ${D.meta.range[0]}–${D.meta.range[1]} (zeros for an absent partner, forfeits, mis-keyed ranks) are left out.</p>
 <p><b>Vs Judge.</b> For each ballot: the points a debater got minus what that judge gives on average to <i>everyone else</i> (the debater's own ballots are left out, so a debater seen often by one judge does not move their own yardstick). A judge needs at least the chosen number of other ballots to count. The column is the average of those differences: +0.50 means half a point above what the same judges usually give.</p>
 <p><b>Z-score.</b> The same difference divided by how spread out that judge's points are (their standard deviation, never taken as less than ${SD_FLOOR}). It puts a generous judge with a wide range and a strict judge with a narrow range on the same scale. 0 is that judge's average; +1.0 is one standard deviation above it. Averaged over the debater's ballots. This is the fairest single column for comparing debaters who saw different judges.</p>
+<p><b>Adj Avg.</b> The Z-score put back on the points scale so it reads like an average: the league-wide average score (${f(LG_MU)}) plus the Z-score times the spread of a typical judge's scores (${f(LG_SD)}). Read it as "what this debater would average in front of a typical judge". Compare it with Raw Avg: higher means their judges were stricter than usual, lower means their judges were generous. It ranks debaters in the same order as the Z-score.</p>
 <p><b>Judge baselines use every season</b>, whatever filters are set, so a judge's yardstick does not wobble when you narrow the view.</p>
 <p><b>Judges.</b> <i>Vs Others</i> is the mirror image: this judge's points minus what the same debaters averaged from all their other judges. Positive = more generous than their peers to the same people; negative = stricter. <i>W–L Gap</i> is the average points to winners minus losers. <i>Low-Pt Win</i> is how often the winning team got fewer total points than the losing team. <i>Aff % / Neg %</i> is the share of this judge's decisions that went to each side, counting prelims and, where the sheet records each panel member's vote, elims.</p>
 <p><b>Caveat.</b> The adjustment assumes a judge sees a roughly typical mix of teams. A judge who mostly sits top-bracket rooms has a higher average for a real reason, so their debaters are adjusted down a little more than they should be. Treat small differences as ties.</p>`;
@@ -146,7 +152,7 @@ function cStats(rows){
   for(const r of rows){const b=base(r);if(b){dl.push(r[8]-b.mu);zs.push((r[8]-b.mu)/b.sd)}}
   return {n:rows.length,avg:mean(p),med:median(p),sd:sd(p),hi:p.length?Math.max(...p):null,lo:p.length?Math.min(...p):null,
     w:mean(rows.filter(r=>r[7]===1).map(r=>r[8])),l:mean(rows.filter(r=>r[7]===0).map(r=>r[8])),
-    adj:mean(dl),z:mean(zs),an:dl.length,rec:[rows.filter(r=>r[7]===1).length,rows.filter(r=>r[7]===0).length]};
+    adj:mean(dl),z:mean(zs),aa:adjAvg(mean(zs)),an:dl.length,rec:[rows.filter(r=>r[7]===1).length,rows.filter(r=>r[7]===0).length]};
 }
 function modeOf(a){const c=new Map();let b=null,bn=0;for(const x of a){const n=(c.get(x)||0)+1;c.set(x,n);if(n>=bn){b=x;bn=n}}return b}
 function competitorTable(){
@@ -157,6 +163,7 @@ function competitorTable(){
   const cols=[
    {k:'name',h:'Debater',v:r=>r.name,f:r=>linkC(r.d)},{k:'school',h:'School',v:r=>r.school},
    {k:'n',h:'Rounds',num:1,v:r=>r.n,tip:'Scored ballots in view'},{k:'avg',h:'Raw Avg',num:1,v:r=>r.avg,f:r=>f(r.avg)},
+   {k:'aa',h:'Adj Avg',num:1,v:r=>r.aa,f:r=>r.aa==null?'–':`<b>${f(r.aa)}</b>`,tip:'Judge-adjusted average: what this debater would average in front of a typical judge (league average + Z-score × a typical judge\'s spread)'},
    {k:'med',h:'Median',num:1,v:r=>r.med,f:r=>f(r.med,1)},{k:'sd',h:'Std Dev',num:1,v:r=>r.sd,f:r=>f(r.sd)},
    {k:'hi',h:'High',num:1,v:r=>r.hi,f:r=>f(r.hi,1)},{k:'lo',h:'Low',num:1,v:r=>r.lo,f:r=>f(r.lo,1)},
    {k:'w',h:'Win Avg',num:1,v:r=>r.w,f:r=>f(r.w)},{k:'l',h:'Loss Avg',num:1,v:r=>r.l,f:r=>f(r.l)},
@@ -224,12 +231,12 @@ function competitorDetail(d){
   let h=`<button class="btn back" id="back">← Leaderboard</button><h2>${esc(DEB[d])}</h2><div class="muted">${esc(sch)} · ${scopeNote()}</div>`;
   if(!rows.length){$('out').innerHTML=h+'<p class="muted">No scored rounds in this view.</p>';$('back').onclick=()=>{location.hash=''};return}
   h+=`<div class="stats">${stat(s.n,'Scored rounds')}${stat(f(s.avg),'Raw average')}${stat(f(s.med,1),'Median')}${stat(f(s.sd),'Std dev')}${stat(f(s.hi,1)+' / '+f(s.lo,1),'High / low')}
-   ${stat(f(s.w)+' / '+f(s.l),'Avg in wins / losses')}${stat(sg(s.adj),'Vs judge (avg)')}${stat(sg(s.z),'Judge-adjusted Z')}${stat(s.an,'Rounds adjusted')}</div>`;
+   ${stat(f(s.w)+' / '+f(s.l),'Avg in wins / losses')}${stat(f(s.aa),'Adjusted average')}${stat(sg(s.adj),'Vs judge (avg)')}${stat(sg(s.z),'Judge-adjusted Z')}${stat(s.an,'Rounds adjusted')}</div>`;
   const grp=(keyf)=>{const m=new Map();for(const r of rows){const k=keyf(r);(m.get(k)||m.set(k,[]).get(k)).push(r)}return m};
-  h+='<h3>By season</h3>'+simpleTable([['Season'],['Rounds',1],['Raw Avg',1],['Median',1],['High',1],['Low',1],['Vs Judge',1],['Z-Score',1]],
-    [...grp(r=>T[r[0]][1])].sort((a,b)=>a[0]-b[0]).map(([k,g])=>{const x=cStats(g);return [esc(SEASONS[k]),x.n,f(x.avg),f(x.med,1),f(x.hi,1),f(x.lo,1),sg(x.adj),sg(x.z)]}));
-  h+='<h3>By tournament</h3>'+simpleTable([['Tournament'],['Partner'],['Record'],['Rounds',1],['Raw Avg',1],['High',1],['Low',1],['Vs Judge',1],['Z-Score',1]],
-    [...grp(r=>r[0])].map(([k,g])=>{const x=cStats(g);return [esc(T[k][0]),[...new Set(g.map(r=>r[3]))].map(linkC).join(', '),`${x.rec[0]}-${x.rec[1]}`,x.n,f(x.avg),f(x.hi,1),f(x.lo,1),sg(x.adj),sg(x.z)]}));
+  h+='<h3>By season</h3>'+simpleTable([['Season'],['Rounds',1],['Raw Avg',1],['Adj Avg',1],['Median',1],['High',1],['Low',1],['Vs Judge',1],['Z-Score',1]],
+    [...grp(r=>T[r[0]][1])].sort((a,b)=>a[0]-b[0]).map(([k,g])=>{const x=cStats(g);return [esc(SEASONS[k]),x.n,f(x.avg),f(x.aa),f(x.med,1),f(x.hi,1),f(x.lo,1),sg(x.adj),sg(x.z)]}));
+  h+='<h3>By tournament</h3>'+simpleTable([['Tournament'],['Partner'],['Record'],['Rounds',1],['Raw Avg',1],['Adj Avg',1],['High',1],['Low',1],['Vs Judge',1],['Z-Score',1]],
+    [...grp(r=>r[0])].map(([k,g])=>{const x=cStats(g);return [esc(T[k][0]),[...new Set(g.map(r=>r[3]))].map(linkC).join(', '),`${x.rec[0]}-${x.rec[1]}`,x.n,f(x.avg),f(x.aa),f(x.hi,1),f(x.lo,1),sg(x.adj),sg(x.z)]}));
   const bj=[...grp(r=>r[5])].filter(([k])=>k>=0).map(([k,g])=>{const p=g.map(r=>r[8]),b=base(g[0]);return [k,g.length,mean(p),b?b.mu:null,b?mean(p)-b.mu:null]}).sort((a,b)=>b[1]-a[1]);
   h+='<h3>By judge</h3>'+simpleTable([['Judge'],['Rounds',1],['Avg given to this debater',1],['Judge avg to everyone else',1],['Difference',1]],
     bj.map(x=>[linkJ(x[0]),x[1],f(x[2]),f(x[3]),sg(x[4])]));
