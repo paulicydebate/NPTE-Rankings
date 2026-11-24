@@ -1,30 +1,30 @@
-round,aff,neg,judges,winner,status,reasoning
-R4,PDAB SL,UTTyl RB,"Tesfaye, Fiker",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,Rice TY,UTTyl HS,"Dense, June",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,Mercer RK,WilJew GB,"Postula, Rebecca",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,Mercer SB,UTTyl RW,"Deleel, Mitch",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,PDAB SK,WilJew DT,"Powell, Adeja",PDAB SK,CONFIRMED,"Posted pairing; site has Seiersen/Keene 5-0, so they won every prelim"
-R4,McKend MH,Pacific GS,"Remaley, Mason",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,McKend CT,Rice SS,"Parrish, Hunter",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,Rice RS,UTTyl SH,"Nicholson, Brent",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,PDAB BC,KCKC LC,"Worth, David",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-R4,McKend BM,Mercer PO,"Farias, Steven",,UNKNOWN,Posted pairing; records do not prove the winner (both teams have losses or one team is not on the site)
-Octs,UTTyl HS,Rice TY,"Dense, June; Postula, Rebecca; Elliott, Darren",UTTyl HS,CONFIRMED,"Posted; site: Hurtado/Stansbery 1 elim win, Trevino/Yang 0-1"
-Octs,KCKC LC,McKend BM,"Remaley, Mason; Worth, David; Parrish, Hunter",McKend BM,CONFIRMED,"Posted; site: Campbell/Lapee 0-1, Brown/McIlhargie 1 elim win"
-Octs,PDAB SK,BYE,,PDAB SK,BYE,Posted bye; site counts the bye as an elim win
-Octs,Rice SS,BYE,,Rice SS,BYE,Posted bye; site counts the bye as an elim win
-Octs,UTTyl SH,BYE,,UTTyl SH,BYE,Posted bye; site counts the bye as an elim win
-Octs,WilJew DT,BYE,,WilJew DT,BYE,Posted bye; site counts the bye as an elim win
-Octs,Rice RS,BYE,,Rice RS,BYE,Posted bye; site counts the bye as an elim win
-Octs,PDAB BC,BYE,,PDAB BC,BYE,Posted bye; site counts the bye as an elim win
-Quarters,PDAB SK,UTTyl HS or McKend BM,,PDAB SK,INFERRED,Seed 1 meets the 8/9 octs winner; which octs section was 8v9 is not known
-Quarters,Rice SS,McKend BM or UTTyl HS,,Rice SS,INFERRED,Seed 2 meets the 7/10 octs winner; the other octs winner from above
-Quarters,UTTyl SH,PDAB BC,,UTTyl SH,INFERRED,"Seeds 3 v 6 (bye order taken as seed order); Herrig/Smith advanced, Banerjee/Carrillo 1-1 (bye win + loss)"
-Quarters,WilJew DT,Rice RS,,Rice RS,INFERRED,"Seeds 4 v 5; Dixon/Terry 1-1 (bye + loss), Renteria/Surya reached semis"
-Semis,PDAB SK,Rice RS,,PDAB SK,INFERRED,"Seed 1 v 4/5 winner; SK 4-0, RS 2-1"
-Semis,UTTyl SH,Rice SS,,UTTyl SH,INFERRED,"Seed 2 v 3/6 winner; SH 3-1, SS 2-1"
-Finals,PDAB SK,UTTyl SH,,PDAB SK,INFERRED,"Forced by records: only SK (4-0) and SH (3-1, lost final) can be finalists. Sides/judges unknown"
-R1,,,,,UNKNOWN,No pairings posted; 10 debates unknown
-R2,,,,,UNKNOWN,No pairings posted; 10 debates unknown
-R3,,,,,UNKNOWN,No pairings posted; 10 debates unknown
-R5,,,,,UNKNOWN,No pairings posted; 10 debates unknown
+round,aff,neg,judges,winner,ballots,status,reasoning
+R4,PDAB SL,UTTyl RB,"Tesfaye, Fiker",PDAB SL,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. SL W, RB L. Each R4 section has exactly one W entry and one L."
+R4,Rice TY,UTTyl HS,"Dense, June",Rice TY,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. TY W, HS L. Each R4 section has exactly one W entry and one L."
+R4,Mercer RK,WilJew GB,"Postula, Rebecca",WilJew GB,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. GB W, RK L. Each R4 section has exactly one W entry and one L."
+R4,Mercer SB,UTTyl RW,"Deleel, Mitch",Mercer SB,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. SB W, RW L. Each R4 section has exactly one W entry and one L."
+R4,PDAB SK,WilJew DT,"Powell, Adeja",PDAB SK,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. SK W, DT L (also forced by the site 5-0 record). Each R4 section has exactly one W entry and one L."
+R4,McKend MH,Pacific GS,"Remaley, Mason",Pacific GS,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. GS W, MH L. Each R4 section has exactly one W entry and one L."
+R4,McKend CT,Rice SS,"Parrish, Hunter",Rice SS,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. SS W, CT L. Each R4 section has exactly one W entry and one L."
+R4,Rice RS,UTTyl SH,"Nicholson, Brent",UTTyl SH,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. SH W, RS L. Each R4 section has exactly one W entry and one L."
+R4,PDAB BC,KCKC LC,"Worth, David",PDAB BC,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. BC W, LC L. Each R4 section has exactly one W entry and one L."
+R4,McKend BM,Mercer PO,"Farias, Steven",McKend BM,,CONFIRMED,"Tabroom Speaker Awards generated 9:03 AM PT on 2026-11-24; each entry's W/L is its Round 4 result. BM W, PO L. Each R4 section has exactly one W entry and one L."
+Octs,UTTyl HS,Rice TY,"Dense, June; Postula, Rebecca; Elliott, Darren",UTTyl HS,2-1,CONFIRMED,"Tabroom Final Places generated 9:04 AM PT on 2026-11-24: HS *L | W | W | (2-1), TY *W | L | L | (1-2). Matches the site elim records (Hurtado/Stansbery 1 elim win, Trevino/Yang 0-1)."
+Octs,KCKC LC,McKend BM,"Remaley, Mason; Worth, David; Parrish, Hunter",McKend BM,2-1,CONFIRMED,"Tabroom Final Places generated 9:04 AM PT on 2026-11-24: BM *W | W | L | (2-1), LC *L | L | W | (1-2). Matches the site elim records (Brown/McIlhargie 1 elim win, Campbell/Lapee 0-1)."
+Octs,PDAB SK,BYE,,PDAB SK,,BYE,Posted bye; site counts the bye as an elim win
+Octs,Rice SS,BYE,,Rice SS,,BYE,Posted bye; site counts the bye as an elim win
+Octs,UTTyl SH,BYE,,UTTyl SH,,BYE,Posted bye; site counts the bye as an elim win
+Octs,WilJew DT,BYE,,WilJew DT,,BYE,Posted bye; site counts the bye as an elim win
+Octs,Rice RS,BYE,,Rice RS,,BYE,Posted bye; site counts the bye as an elim win
+Octs,PDAB BC,BYE,,PDAB BC,,BYE,Posted bye; site counts the bye as an elim win
+Quarters,PDAB SK,UTTyl HS or McKend BM,,PDAB SK,,INFERRED,"Seed 1 meets the 8/9 octs winner; which octs section was 8v9 is not known. Final Places ranks the four debated octs teams 7-10 as HS, BM, TY, LC, which does not match 8v9 / 7v10 pairings, so the ambiguity remains."
+Quarters,Rice SS,McKend BM or UTTyl HS,,Rice SS,,INFERRED,Seed 2 meets the 7/10 octs winner; the other octs winner from above. Final Places does not resolve 8v9 vs 7v10.
+Quarters,UTTyl SH,PDAB BC,,UTTyl SH,,INFERRED,"Seeds 3 v 6 (bye order taken as seed order); Herrig/Smith advanced, Banerjee/Carrillo 1-1 (bye win + loss)"
+Quarters,WilJew DT,Rice RS,,Rice RS,,INFERRED,"Seeds 4 v 5; Dixon/Terry 1-1 (bye + loss), Renteria/Surya reached semis"
+Semis,PDAB SK,Rice RS,,PDAB SK,,INFERRED,"Seed 1 v 4/5 winner; SK 4-0, RS 2-1"
+Semis,UTTyl SH,Rice SS,,UTTyl SH,,INFERRED,"Seed 2 v 3/6 winner; SH 3-1, SS 2-1"
+Finals,PDAB SK,UTTyl SH,,PDAB SK,,INFERRED,"Forced by records: only SK (4-0) and SH (3-1, lost final) can be finalists. Sides/judges unknown"
+R1,,,,,,UNKNOWN,No pairings posted; 10 debates unknown
+R2,,,,,,UNKNOWN,No pairings posted; 10 debates unknown
+R3,,,,,,UNKNOWN,No pairings posted; 10 debates unknown
+R5,,,,,,UNKNOWN,No pairings posted; 10 debates unknown
