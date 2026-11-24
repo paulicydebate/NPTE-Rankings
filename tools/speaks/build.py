@@ -209,6 +209,7 @@ JSEEN = defaultdict(Counter)   # judge key -> Counter(spelling)
 JAFF = defaultdict(Counter)    # judge key -> Counter(affiliation)
 JPID = defaultdict(set)        # tabroom person id -> {judge key}
 JTOUR = defaultdict(set)
+OCR_KEYS, CLEAN_KEYS = set(), set()   # judge spellings read by OCR / read from real text
 
 
 def val(t, kind, detail, **kw):
@@ -216,11 +217,12 @@ def val(t, kind, detail, **kw):
                 'judge': kw.get('judge', ''), 'points': kw.get('points', ''), 'action': kw.get('action', '')})
 
 
-def see_judge(t, raw, pid=None):
+def see_judge(t, raw, pid=None, ocr=False):
     n, aff = judge_name(raw)
     if not n:
         return None
     k = key(n)
+    (OCR_KEYS if ocr else CLEAN_KEYS).add(k)
     JSEEN[k][n] += 1
     JTOUR[k].add(t)
     if aff:
@@ -377,7 +379,7 @@ def do_speechwire(t):
     if not os.path.exists(path):
         return None
     if mode == 'ocr':
-        return 'ocr', os.path.relpath(path, REPO)
+        return do_speechwire_ocr(t, path)
     if mode == 'tables':
         blocks, div = x_sw.table_blocks(path), 'Senior Parliamentary Debate'
     else:
@@ -412,6 +414,123 @@ def do_speechwire(t):
     return st, os.path.relpath(path, REPO) + f' [division {div}]'
 
 
+OCR_SIDE = re.compile(r'^(AFF|AF|Aff|Neg|NEG|Ne|Gov|GOV|Opp|OPP)\]?$')
+
+
+def ocr_judge(cell):
+    """Judge name out of an OCR'd grid cell: the capitalised words after the room code, side or last dash."""
+    c = re.sub(r'\(ONLINE\)|\(REMOTE\)', '', cell).strip()
+    m = re.search(r'\b[A-Z]{1,4}\d{1,3}\s+([A-Z][A-Za-z\'.-]+(?:\s+[A-Z][A-Za-z\'-]+){1,2})\s*$', c)
+    if m:
+        return m.group(1)
+    toks = c.split()
+    cut = max([i for i, x in enumerate(toks) if x in ('-', ']') or OCR_SIDE.match(x) or (x.isupper() and len(x) >= 3)] or [-1])
+    tail = toks[cut + 1:]
+    if len(tail) == 3 and re.match(r'^[A-Z]{1,3}[0-9A-Za-z]{1,2}$', tail[0]) and len(tail[0]) <= 4 and not (tail[0][1:].isalpha() and tail[0].istitle()):
+        tail = tail[1:]                               # room code whose digit OCR read as a letter ("SCi")
+    if 2 <= len(tail) <= 3 and all(re.match(r"^[A-Z][A-Za-z'.-]+$", x) for x in tail):
+        return ' '.join(tail)
+    return ''
+
+
+def do_speechwire_ocr(t, path):
+    """Image-only SpeechWire export. Points are kept only for debaters whose round points add up to the printed total."""
+    try:
+        divs = x_sw.grid_divisions(path, ocr=True, cache=os.path.join(OUT, 'ocr_cache'))
+    except FileNotFoundError:
+        return 'ocr', os.path.relpath(path, REPO)       # Tesseract / pdftoppm not installed
+    site_last = {key(n).split()[-1] for r in SITE_ROWS[t] for n in r['names'] if key(n)}
+    div = x_sw.pick_division(divs, site_last)
+    blocks = divs[div]
+    teams = x_sw.p_sw.build_prelims(blocks)
+    recs, _ = x_sw.p_sw.prelim_debates_loose(teams)
+    R = Resolver(t)
+    st = Counter()
+    trusted = []
+    for b, tm in zip(blocks, teams):
+        ok = {}
+        for name, per, tot in b['scores']:
+            if tot is not None and abs(sum(per.values()) - tot) <= 0.011:
+                ok[name] = per
+            else:
+                val(t, 'OCR check failed', f'{name}: round points read as {sorted(per.items())}, printed total {tot}', debater=name,
+                    action='excluded (points could not be confirmed against the printed total)')
+        trusted.append(ok)
+    # each team's own cell gives result, side and judge; a cell both teams agree on (mutual pairing) fills what OCR lost
+    own = defaultdict(dict)          # team index -> round -> [side, win, judge name] or 'BYE'
+    for i, tm in enumerate(teams):
+        for rn, txt in tm['rounds'].items():
+            toks = re.sub(r'[^A-Za-z0-9\' ]', ' ', txt).split()
+            if not toks:
+                continue
+            if re.search(r'\b(BYE|FORFEIT)\b', txt, re.I) and not any(x in ('W', 'L') for x in toks):
+                own[i][rn] = 'BYE'
+                continue
+            wl = {x for x in toks if x in ('W', 'L')}
+            sd = {('Aff' if x.lower() in ('aff', 'af', 'gov') else 'Neg') for x in toks if OCR_SIDE.match(x)}
+            own[i][rn] = [sd.pop() if len(sd) == 1 else None, (wl.pop() == 'W') if len(wl) == 1 else None, ocr_judge(txt)]
+    paired = defaultdict(list)
+    for k, r in recs.items():
+        if r.get('status') != 'BYE' and r.get('b') is not None and r.get('seen') == 2:
+            paired[(r['rn'], r['a'])].append(r['b']); paired[(r['rn'], r['b'])].append(r['a'])
+    for (rn, i), opp in paired.items():
+        if len(opp) != 1 or len(paired[(rn, opp[0])]) != 1:
+            continue
+        a, b_ = own[i].get(rn), own[opp[0]].get(rn)
+        if not isinstance(a, list) or not isinstance(b_, list):
+            continue
+        if a[0] is None and b_[0]:
+            a[0] = 'Neg' if b_[0] == 'Aff' else 'Aff'
+        if a[1] is None and b_[1] is not None:
+            a[1] = not b_[1]
+        if not a[2] and b_[2]:
+            a[2] = b_[2]
+    by_team = defaultdict(dict)      # team index -> round -> (side, win, judge key)
+    rooms = defaultdict(list)
+    for i in own:
+        for rn, v in own[i].items():
+            if v == 'BYE':
+                by_team[i][rn] = 'BYE'
+                continue
+            jk = see_judge(t, v[2], ocr=True) if v[2] else None
+            by_team[i][rn] = (v[0], v[1], jk)
+            if jk:
+                rooms[(rn, jk)].append((v[0], v[1]))
+    for (rn, jk), g in rooms.items():
+        aff = [w for sd, w in g if sd == 'Aff' and w is not None]
+        neg = [w for sd, w in g if sd == 'Neg' and w is not None]
+        if len(g) > 2 or len(aff) > 1 or len(neg) > 1 or (aff and neg and aff[0] == neg[0]):
+            val(t, 'OCR room inconsistent', f'R{rn}, judge "{JSEEN[jk].most_common(1)[0][0]}": {len(g)} teams read, sides/results {g}', round=f'R{rn}',
+                action='points kept; no decision counted for this room')
+            continue
+        if aff or neg:
+            D.append({'t': t, 'round': f'R{rn}', 'judge': jk, 'aff_won': aff[0] if aff else not neg[0], 'elim': 0})
+    for i, (b, tm) in enumerate(zip(blocks, teams)):
+        team = {'school': tm['school_text'], 'names': tm['names'], 'code': tm['code']}
+        res = R(team)
+        note_resolution(t, res, team)
+        if not res['site']:
+            st['teams_not_on_site'] += 1
+        for rn, txt in sorted(tm['rounds'].items()):
+            info = by_team[i].get(rn)
+            pts = {name: per[rn] for name, per in trusted[i].items() if rn in per}
+            if info == 'BYE' or (info is None and re.search(r'\bBYE\b', txt, re.I)):
+                st['bye_rows'] += 1
+                continue
+            if not pts:
+                continue
+            st['prelim_team_rounds'] += 1
+            if info is None:
+                val(t, 'OCR cell unreadable', f'{tm["code"]} R{rn}: "{txt[:60]}"', round=f'R{rn}', debater=' & '.join(res['map'].values()),
+                    points='/'.join(str(v) for v in pts.values()), action='points kept (they pass the total check); judge, side and result unknown')
+                info = (None, None, None)
+            side, win, jk = info
+            st['rows'] += add_points(t, res, team, f'R{rn}', jk, side, -1 if win is None else int(win), pts)
+    st['teams'] = len(teams)
+    st['ocr'] = 1
+    return st, os.path.relpath(path, REPO) + f' (OCR) [division {div}]'
+
+
 def matchup_decisions(t):
     """Prelim decisions for tournaments whose export has no per-ballot scores: taken from the head-to-head matchup table."""
     n = 0
@@ -441,13 +560,16 @@ def main():
         if got is None:
             cov.update(status='missing', reason='source file is not in the repository')
         elif got[0] == 'ocr':
-            cov.update(status='pending', source=got[1], reason='image-only SpeechWire sheet: needs OCR (planned for the next milestone)')
+            cov.update(status='pending', source=got[1], reason='image-only SpeechWire sheet: needs OCR (Tesseract was not installed for this build)')
             cov['decisions'] = matchup_decisions(t)
         else:
             st, src = got
             cov.update(source=src, teams=st['teams'], speaker_rows=st['rows'], bye_rows=st['bye_rows'], teams_not_on_site=st['teams_not_on_site'])
             if st['rows']:
                 cov['status'] = 'included'
+                if st['ocr']:
+                    cov['reason'] = "read by OCR; kept only where a debater's round points add up to the printed total"
+
             else:
                 cov['status'] = 'no points'
                 has_wl = any(d['t'] == t for d in D)
@@ -464,6 +586,12 @@ def main():
         while parent.get(k, k) != k:
             k = parent[k]
         return k
+    clean = sorted(CLEAN_KEYS)
+    for k in sorted(OCR_KEYS - CLEAN_KEYS):
+        best = max(clean, key=lambda c: difflib.SequenceMatcher(None, k, c).ratio(), default=None)
+        if best and difflib.SequenceMatcher(None, k, best).ratio() >= 0.85 and k[:1] == best[:1]:
+            parent[k] = best
+            val('', 'OCR judge name corrected', f'"{JSEEN[k].most_common(1)[0][0]}" (OCR) counted as "{JSEEN[best].most_common(1)[0][0]}"', action='merged')
     for pid, ks in JPID.items():
         ks = sorted(ks, key=lambda k: -sum(JSEEN[k].values()))
         for k in ks[1:]:
@@ -576,7 +704,7 @@ def main():
     tourn = [[c['tournament'], seasons.index(c['season']), int(c['order_in_season']), c['platform'],
               1 if COV[c['tournament']]['judge_names'] in ('yes', 'partly') else 0, status_code[COV[c['tournament']]['status']],
               COV[c['tournament']]['speaker_rows'], COV[c['tournament']]['decisions'], c['start_date']] for c in cal]
-    missing = [[c['season'], c['tournament'], c['platform'], COV[c['tournament']]['reason']] for c in cal if COV[c['tournament']]['status'] != 'included']
+    missing = [[c['season'], c['tournament'], c['platform'], COV[c['tournament']]['reason']] for c in cal if COV[c['tournament']]['reason']]
     payload = {
         'meta': {'built': datetime.date.today().isoformat(), 'tournaments_with_speaks': sum(1 for c in COV.values() if c['status'] == 'included'),
                  'tournaments_total': len(cal), 'rows': len(rows), 'decisions': len(dec), 'range': [LO, HI]},

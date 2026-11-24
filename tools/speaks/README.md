@@ -28,7 +28,7 @@ new one and commit the new `data/speaks.enc.json`; the old passphrase stops work
 | `build.py` | Walks `tools/h2h/inputs/tournament_calendar.csv`, extracts points per platform, resolves names to the site's spelling (`NAME_ALIASES`, `SCHOOL_ALIASES`, `tools/h2h/debater_aliases.csv`), writes the payload and the three review files |
 | `x_ftn.py` | FTN result-sheet PDFs: one row per team per round, both debaters' points, judge, decision |
 | `x_tabroom.py` | Tabroom JSON: one record per ballot (`point` and `winloss` scores) |
-| `x_speechwire.py` | SpeechWire prelim grids (real-text exports); reuses `tools/h2h/p_speechwire.py` unchanged |
+| `x_speechwire.py` | SpeechWire prelim grids (real-text and OCR'd exports); reuses `tools/h2h/p_speechwire.py` unchanged |
 | `encrypt.py` | gzip, PBKDF2-HMAC-SHA256 (600,000 iterations, 16-byte salt), AES-256-GCM (12-byte IV) |
 | `judge_aliases.csv` | Judge spellings counted as one person (names only). Lines marked "provisional" await review |
 
@@ -46,4 +46,6 @@ new one and commit the new `data/speaks.enc.json`; the old passphrase stops work
 - Judge decisions (for Aff/Neg percentages) come from prelims plus elims where each panel member's vote is
   recorded (FTN prints it, Tabroom stores a ballot per judge). For Tabroom exports with no scores at all, prelim
   decisions are taken from `tools/h2h/matchups.csv`.
-- Image-only SpeechWire sheets are not read yet (they need OCR); they are listed in the page's coverage section.
+- Image-only SpeechWire sheets are read with Tesseract (`apt-get update && apt-get install -y tesseract-ocr`), using the
+  OCR routine in `tools/h2h/p_speechwire.py`. A debater's points are kept only if their round points add up to the
+  printed total. Without Tesseract the build still runs and lists those sheets as pending.

@@ -41,7 +41,10 @@ def _block(lines, cols):
 _orig_make_block = p_sw.make_block
 
 
-def grid_divisions(path, ocr=False):
+def grid_divisions(path, ocr=False, cache=None):
+    if cache:                       # keep OCR output out of tools/h2h/cache (that folder is committed)
+        os.makedirs(cache, exist_ok=True)
+        p_sw.CACHE = cache
     pages = p_sw.page_words(path, ocr)
     p_sw.make_block = _block
     try:

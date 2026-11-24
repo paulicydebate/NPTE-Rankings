@@ -170,7 +170,12 @@ function competitorTable(){
 // ---- judge aggregation
 function debates(rows){ // group one judge's ballots into rooms -> [{t,round,aff:[rows],neg:[rows]}]
   const m=new Map();for(const r of rows){const k=r[0]+'|'+r[1]+'|'+r[5];(m.get(k)||m.set(k,[]).get(k)).push(r)}
-  return [...m.values()].map(g=>({t:g[0][0],round:g[0][1],j:g[0][5],aff:g.filter(r=>r[6]===1),neg:g.filter(r=>r[6]===2),all:g}));
+  return [...m.values()].map(g=>{
+    let aff=g.filter(r=>r[6]===1),neg=g.filter(r=>r[6]===2),unk=false;const rest=g.filter(r=>r[6]===0);
+    if(rest.length){ // side not recorded on the sheet: split into teams, fill whichever column is free
+      const tm=new Map();for(const r of rest){const k=Math.min(r[2],r[3]<0?r[2]:r[3])+'-'+Math.max(r[2],r[3]);(tm.get(k)||tm.set(k,[]).get(k)).push(r)}
+      for(const t of tm.values()){if(!aff.length)aff=t;else if(!neg.length)neg=t}unk=true}
+    return {t:g[0][0],round:g[0][1],j:g[0][5],aff,neg,all:g,unk}});
 }
 function jStats(rows,decs){
   const p=rows.map(r=>r[8]),oth=[];for(const r of rows){const o=others(r);if(o!=null)oth.push(r[8]-o)}
@@ -262,7 +267,7 @@ function judgeDetail(j){
   if(db.length)h+='<h3>Round log</h3>'+simpleTable([['Tournament'],['Rd'],['Aff'],['Neg'],['Note']],db.map(d=>{
     const a=d.aff.reduce((x,r)=>x+r[8],0),n=d.neg.reduce((x,r)=>x+r[8],0);
     const low=d.aff.length&&d.neg.length&&d.aff.length===d.neg.length&&d.aff[0][7]>=0&&d.aff[0][7]!==d.neg[0][7]&&((d.aff[0][7]===1)?a<n:n<a);
-    return [esc(T[d.t][0]),esc(d.round),team(d.aff),team(d.neg),low?'<span class="tag">low-point win</span>':'']}));
+    return [esc(T[d.t][0]),esc(d.round),team(d.aff),team(d.neg),(low?'<span class="tag">low-point win</span> ':'')+(d.unk?'<span class="tag">sides not recorded</span>':'')]}));
   $('out').innerHTML=h;$('back').onclick=()=>{location.hash=''};wire($('out'));
 }
 
@@ -272,7 +277,7 @@ function judgeDetail(j){
   const rows=T.map(t=>[esc(SEASONS[t[1]]),esc(t[0]),esc(t[3]),st[t[5]],t[6]||'',t[6]?(t[4]?'yes':'no'):'',t[7]||'']);
   const why=new Map(D.missing.map(m=>[m[1],m[3]]));
   $('covBody').innerHTML=`<p class="note">${D.meta.tournaments_with_speaks} of ${D.meta.tournaments_total} tournaments have speaker points. Nothing is estimated or filled in: a tournament without published points simply contributes none. Decisions (for Aff/Neg percentages) can exist even where points do not.</p>`+
-   simpleTable([['Season'],['Tournament'],['Platform'],['Status'],['Speaker ballots',1],['Judges named'],['Decisions',1],['Why not']],rows.map((r,i)=>r.concat([esc(why.get(T[i][0])||'')])));
+   simpleTable([['Season'],['Tournament'],['Platform'],['Status'],['Speaker ballots',1],['Judges named'],['Decisions',1],['Note']],rows.map((r,i)=>r.concat([esc(why.get(T[i][0])||'')])));
 })();
 
 // ---- routing
