@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+# private speaker-points build: plaintext must never be committed
+tools/speaks/out/
+*.plain.json
