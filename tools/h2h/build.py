@@ -34,6 +34,8 @@ TAB_FILES = {
     'GGI - 2026': ('Golden Gate Invitational - 2026.json', None),
     'Rice University Classic - 2022': (NEW + '/Rice University Classic - 2022.json', None),
     'Big Tent - 2022': ('Big Tent - 2022.json', 'VNPDA'), 'Big Tent - 2023': ('Big Tent - 2023.json', 'VNPDA'),
+    'I70 Lane - 2026': ('I70 Lane - 2026.json', 'Open NPDA'),
+    'I70 Hunsaker - 2026': ('I70 Hunsaker - 2026.json', 'Open NPDA'),
 }
 SW_FILES = {  # tournament -> (grid pdf, elim pdf or None, ocr?, mode)
     'Steve Hunt - 2021': (SW + 'complete Steve Hunt - 2021.pdf', None, True, 'grid'),
@@ -46,6 +48,7 @@ SW_FILES = {  # tournament -> (grid pdf, elim pdf or None, ocr?, mode)
     'Paul Winters - 2023': (SW + 'complete Paul Winters - 2023.pdf', None, True, 'grid'),
     'Paul Winters - 2024': (PW24 + 'd3418171-paul_winter_24_win_loss.pdf', PW24 + 'eab7cbc1-paul_winters_24_-_elim_resuklts.pdf', False, 'grid'),
     'Paul Winters - 2025': (SW + 'complete Paul Winters - 2025.pdf', None, False, 'grid'),
+    'Paul Winters - 2026': (SW + 'complete Paul Winters - 2026.pdf', None, True, 'grid'),
 }
 # Same-person merges confirmed by Paul (Nov 2, 2026). alias -> canonical (most common / site spelling).
 # Applied after site matching, so it only changes debater ids, never which site row a team matches.
