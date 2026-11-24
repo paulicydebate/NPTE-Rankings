@@ -19,13 +19,13 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 
 ## Totals
 
-4362 debates/meetings (byes excluded); 4301 count as debates. Status counts over all rows: CONFIRMED 4263, BYE 418, WALKOVER 40, INFERRED 38, UNKNOWN 13, DOUBLE_WIN 4, FORFEIT 4.
+4362 debates/meetings (byes excluded); 4310 count as debates. Status counts over all rows: CONFIRMED 4272, BYE 418, WALKOVER 40, INFERRED 38, UNKNOWN 4, DOUBLE_WIN 4, FORFEIT 4.
 
 | season | debates | counted as debates |
 |---|---|---|
 | 2021-2022 | 663 | 657 |
 | 2022-2023 | 551 | 544 |
-| 2023-2024 | 745 | 724 |
+| 2023-2024 | 745 | 733 |
 | 2024-2025 | 1062 | 1049 |
 | 2025-2026 | 1080 | 1067 |
 | 2026-2027 | 261 | 260 |
@@ -38,7 +38,7 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 - DOUBLE_WIN = FTN "W&W" (both teams credited a win): not a decided debate, so it does not count as debates.
 - Identity: source names go through the site's NAME_ALIASES, then each source team is matched to a site row for the same tournament on debater names (exact > same last name + first initial > close spelling), with school as a tie-breaker. A matched team takes the site's spelling. Partnerships are unordered pairs. Fuzzy matches are listed in `uncertain_matches.csv`. Near-identical debater ids are flagged in `debater_ids.csv` and **not merged**.
 - Tournaments run in `calendar/tournament_calendar.csv` order, with rounds in order within each one.
-- Mile High pt 1 2023: skipped (Paul: no matchups). Mound High pt 1 2024: the accepted `mound-high-pt1-2024/matchups.csv` is used as is (its R1-R3/R5 pairings do not exist; two quarterfinals with an "X or Y" opponent are UNKNOWN).
+- Mile High pt 1 2023: skipped (Paul: no matchups). Mound High pt 1 2024: the accepted `mound-high-pt1-2024/matchups.csv` is used as is. All 10 Round 4 decisions are CONFIRMED from the 2026-11-24 Tabroom Speaker Awards; R1-R3/R5 pairings still do not exist; two quarterfinals with an "X or Y" opponent stay UNKNOWN (8v9 vs 7v10 still unresolved).
 - Mavericks (one-person teams) are treated as a one-debater partnership.
 
 ## Coverage per tournament
@@ -89,7 +89,7 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 | 2023-2024 | The Bernacchi - 2023 | FTN | 20/20 | 2/2 | 0 | 0 | 0 | 10/10 |  |
 | 2023-2024 | Big Tent - 2023 | Tabroom | 25/25 | 2/4 | 0 | 0 | 1 | 5/10 |  |
 | 2023-2024 | PSCFA Fall Champs - 2023 | FTN | 60/60 | 10/10 | 0 | 0 | 0 | 30/30 |  |
-| 2023-2024 | Mound High pt 1 - 2024 | Tabroom | 10/25 | 9/9 | 5 | 11 | 0 | 0/10 |  |
+| 2023-2024 | Mound High pt 1 - 2024 | Tabroom | 10/25 | 9/9 | 5 | 2 | 0 | 0/10 |  |
 | 2023-2024 | Mound High pt 2 - 2024 | Tabroom | 45/45 | 8/9 | 8 | 0 | 0 | 17/19 |  |
 | 2023-2024 | Great Salt Lake - 2024 | FTN | 35/35 | 3/6 | 0 | 0 | 0 | 11/14 |  |
 | 2023-2024 | Jannese Davidson - 2024Jan | FTN | 85/85 | 15/17 | 0 | 0 | 1 | 32/34 |  |
@@ -146,7 +146,7 @@ The main patterns (details per team in validation.csv):
 - **Missing elim rounds in the source**: Big Red 2026 (Tabroom JSON has no octafinal round), Mile High pt 2 2023 (only octos, no winners), GGI 2025 (only quarters), Big Tent 2023, Steve Hunt 2021/2025 (OCR could not read every elim line). Those teams' elim records are short.
 - **Rice 2024**: site error (swapped elim records), confirmed from the Tabroom API.
 - **Elim byes / walkovers**: where an elim bye or a same-school walkover exists, the site counts it as an elim win. Validation accepts that. A few residual elim mismatches are on teams with a closeout.
-- **Mound High pt 1 2024**: R1-R3/R5 are unknown by design (accepted CSV), so the 10 teams' prelim records cannot match.
+- **Mound High pt 1 2024**: R1-R3/R5 are still unknown (accepted CSV), so the 10 teams' prelim records cannot match. Round 4 and the published octs now do match.
 
 ## Official-source verification (Nov 2, 2026)
 
@@ -158,7 +158,7 @@ The main patterns (details per team in validation.csv):
 - **The 4-vs-5 prelim issue is a site data error.** In Crossman 2022, Crossman 2023, Jannese Davidson 2023, Talk Hawk 2023, Talk Hawk 2024, NCFA Spring 2022, NCFA Spring 2023, Gorlock Gala 2023 and Great Salt Lake 2024, the official sheets show 5 real prelims for every team. The only byes are a few "ZZ" bye wins. No round belongs to another event. For every team in those tournaments the site stores prelim losses as max(0, 4 - wins), while wins are right. Example: Crossman 2022 Maszk/Shurance went 4-1 officially and shows 4-0 on the site. These rows are tagged `SITE ERROR` in the validation.csv `explanation` column.
 - **Rice 2024** (Tabroom API re-pulled, tourn_id 32594, identical to the repo JSON): Holden Carrillo & Michael Lan won octos (3-0 over Stansbery/Carroll) and quarters (2-1 over Dixon/Terry), then lost semis to Surya/Sanderfer, so 2-1. Anthony Carrillo & Alexia Gallon lost octos to Surya/Sanderfer, so 0-1. The site has 1-1 and 2-1, which looks swapped. **Site error.**
 - **Tabroom re-pulls** (API for Big Red 2025/2026, Big Tent 2022/2023, GGI 2025/2026, Mile High pt1 2022, Mile High pt2 2023, Mound pt2 2024, Mound pt1 2026, Rice 2023/2024, Mercer Macke 2023, William Jewell pt2 2024): all identical to the repo JSONs. The API has no Big Red 2026 octos, no Mile High pt2 2023 octo results, nothing past quarters for GGI 2025, and no varsity NPDA elims for Big Tent 2023. The Tabroom HTML results and bracket pages need a logged-in browser, so these are **still missing**. They need a browser pass of `tabroom.com/index/tourn/results/index.mhtml?tourn_id=37636 / 25894 / 34235 / 27495`.
-- **Mound High pt 1 2024** (11 UNKNOWN rows): the Tabroom JSON has pairings but no ballots, so these are still missing. The accepted CSV is used as is.
+- **Mound High pt 1 2024**: Tabroom republished results on 2026-11-24 (tourn_id 30089). Speaker Awards give all 10 Round 4 W/L (CONFIRMED). Final Places give octafinal ballot counts (both debated octs were 2-1) but do not resolve which debate was 8v9 vs 7v10. R1-R3/R5 pairings and later-elim results are still missing. The accepted CSV is the source. Two UNKNOWN rows remain (the ambiguous quarters).
 - **SpeechWire** (Steve Hunt 2021/2023/2025, Paul Winters 2023): `c-results.php` and `c-postings-pub.php` return 404, and `c-postings-results.php?tournid=11597` returns an empty shell. These are **still missing**, so the OCR parse stands.
 
 

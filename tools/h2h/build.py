@@ -354,7 +354,7 @@ def load_mound24():
         w = 'a' if r['winner'] == r['aff'] else ('b' if r['winner'] == r['neg'] else None)
         judges = [' '.join(reversed([p.strip() for p in j.split(',')])) for j in r['judges'].split(';') if j.strip()]
         side = 'Aff' if rtype == 'prelim' or r['status'] == 'CONFIRMED' else None
-        out.append(mk(rnd, rtype, T(r['aff']), T(r['neg']), side, w, '', judges, r['status'], r['reasoning']))
+        out.append(mk(rnd, rtype, T(r['aff']), T(r['neg']), side, w, r.get('ballots', '').strip(), judges, r['status'], r['reasoning']))
     return out, rel(MOUND24) + ' (accepted as is)', {'locked': True}, issues
 
 
