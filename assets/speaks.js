@@ -83,7 +83,7 @@ function others(r){ // the debater's mean from every other judge
 }
 
 // ---- state
-const S={tab:'c',seasons:new Set(),tourn:'',school:'',minC:10,minJ:8,qC:'',qJ:'',sortC:['z',-1],sortJ:['n',-1]};
+const S={tab:'c',seasons:new Set(),tourn:'',school:'',minC:10,minJ:3,qC:'',qJ:'',sortC:['z',-1],sortJ:['rooms',-1]};
 const inScope=t=>(!S.seasons.size||S.seasons.has(T[t][1]))&&(S.tourn===''||+S.tourn===t);
 
 // ---- shell
@@ -112,7 +112,7 @@ function filters(){
   </div><div class="row" style="margin-top:12px">
   <div><label>Tournament</label><select id="fT"><option value="">All tournaments</option>${tl.map(([t,i])=>`<option value="${i}" ${S.tourn!==''&&+S.tourn===i?'selected':''}>${esc(t[0])}</option>`).join('')}</select></div>
   ${c?`<div><label>School</label><select id="fS"><option value="">All schools</option>${sch.map(([n,i])=>`<option value="${i}" ${S.school!==''&&+S.school===i?'selected':''}>${esc(n)}</option>`).join('')}</select></div>`:''}
-  <div><label>${c?'Min rounds':'Min ballots'}</label><input id="fM" type="number" min="1" style="width:90px" value="${c?S.minC:S.minJ}"></div>
+  <div><label>Min rounds</label><input id="fM" type="number" min="1" style="width:90px" value="${c?S.minC:S.minJ}"></div>
   ${c?`<div><label>Judge needs at least</label><select id="fN"><option value="5" ${MINJ===5?'selected':''}>5 other ballots</option><option value="10" ${MINJ===10?'selected':''}>10 other ballots</option></select></div>`:''}
   <div><label>Search ${c?'debater':'judge'} (ignores the minimum)</label><input class="name" id="fQ" list="dl" placeholder="Type a name…" value="${esc(c?S.qC:S.qJ)}"></div>
   </div><datalist id="dl">${(c?DEB:JUD.map(j=>j[0])).slice().sort().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
@@ -192,11 +192,11 @@ function judgeTable(){
   for(const r of R){if(r[5]<0||!inScope(r[0]))continue;(by.get(r[5])||by.set(r[5],[]).get(r[5])).push(r)}
   for(const d of DEC){if(!inScope(d[0]))continue;(dby.get(d[2])||dby.set(d[2],[]).get(d[2])).push(d)}
   const q=norm(S.qJ.trim());let list=[];
-  for(const j of new Set([...by.keys(),...dby.keys()])){const rows=by.get(j)||[];if(q?!norm(JUD[j][0]).includes(q):rows.length<S.minJ)continue;
-    const s=jStats(rows,dby.get(j)||[]);s.j=j;s.name=JUD[j][0];s.aff_=JUD[j][1];list.push(s)}
+  for(const j of new Set([...by.keys(),...dby.keys()])){const rows=by.get(j)||[];if(q&&!norm(JUD[j][0]).includes(q))continue;
+    const s=jStats(rows,dby.get(j)||[]);if(!q&&s.rooms<S.minJ)continue;s.j=j;s.name=JUD[j][0];s.aff_=JUD[j][1];list.push(s)}
   const cols=[
    {k:'name',h:'Judge',v:r=>r.name,f:r=>linkJ(r.j)},{k:'aff_',h:'Affiliation',v:r=>r.aff_||null,f:r=>esc(r.aff_)},
-   {k:'rooms',h:'Rounds',num:1,v:r=>r.rooms,tip:'Rooms judged with speaker points'},{k:'n',h:'Ballots',num:1,v:r=>r.n,tip:'Individual speaker scores given'},
+   {k:'rooms',h:'Rounds',num:1,v:r=>r.rooms,tip:'Debates this judge scored'},{k:'n',h:'Ballots',num:1,v:r=>r.n,tip:'Individual speaker scores given (normally four per round)'},
    {k:'avg',h:'Mean',num:1,v:r=>r.avg,f:r=>f(r.avg)},{k:'med',h:'Median',num:1,v:r=>r.med,f:r=>f(r.med,1)},{k:'sd',h:'Std Dev',num:1,v:r=>r.sd,f:r=>f(r.sd)},
    {k:'lo',h:'Min',num:1,v:r=>r.lo,f:r=>f(r.lo,1)},{k:'hi',h:'Max',num:1,v:r=>r.hi,f:r=>f(r.hi,1)},
    {k:'oth',h:'Vs Others',num:1,v:r=>r.oth,f:r=>sg(r.oth),tip:'This judge\'s points minus what the same debaters average from their other judges. + generous, − strict'},
@@ -205,7 +205,7 @@ function judgeTable(){
    {k:'dn',h:'Decisions',num:1,v:r=>r.dn},{k:'aff',h:'Aff %',num:1,v:r=>r.aff,f:r=>r.aff==null?'–':Math.round(100*r.aff)+'%'},
    {k:'neg',h:'Neg %',num:1,v:r=>r.neg,f:r=>r.neg==null?'–':Math.round(100*r.neg)+'%'}];
   const el=grid(cols,list,S.sortJ,s=>{S.sortJ=s;table()});
-  const o=$('out');o.innerHTML=`<div class="note" style="margin-bottom:8px">${list.length.toLocaleString()} judges${q?'':` with at least ${S.minJ} speaker ballots in view`}. Sort by <b>Vs Others</b> to see who is generous and who is strict.</div>`;o.appendChild(el);
+  const o=$('out');o.innerHTML=`<div class="note" style="margin-bottom:8px">${list.length.toLocaleString()} judges${q?'':` with at least ${S.minJ} scored round${S.minJ===1?'':'s'} in view`}. Sort by <b>Vs Others</b> to see who is generous and who is strict.</div>`;o.appendChild(el);
 }
 function table(){S.tab==='c'?competitorTable():judgeTable()}
 function toTable(){if(location.hash.length>1){history.replaceState(null,'',location.pathname+location.search);}table()}
