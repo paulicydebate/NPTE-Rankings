@@ -189,6 +189,14 @@ def despace(t):
 
 def team_code(comp):
     toks = comp.split()
+    # Prefer a consecutive SCHOOLCODE TEAMCODE pair in the first tokens. OCR sometimes
+    # puts the school name first ("of the Pacific UOP GGJA University").
+    pair = None
+    for i in range(min(len(toks) - 1, 6)):
+        if CODE_TOK.match(toks[i]) and CODE_TOK.match(toks[i + 1]):
+            pair = i
+    if pair is not None:
+        return toks[pair + 1], [toks[pair]]
     idx = [i for i, t in enumerate(toks[:6]) if CODE_TOK.match(t)]
     # code = last all-caps token among the first tokens that is followed by a capitalised school word,
     # prefer index >= 1
@@ -197,7 +205,7 @@ def team_code(comp):
         return toks[0] if toks else '', toks[:1]
     i = idx[0]
     # if next token also caps code-like (e.g. 'UOP JABB'), take the later
-    while i + 1 < len(toks) and CODE_TOK.match(toks[i + 1]) and i + 1 <= 3:
+    while i + 1 < len(toks) and CODE_TOK.match(toks[i + 1]):
         i += 1
     return toks[i], toks[:i]
 
@@ -331,11 +339,28 @@ def parse_elims(text, teams):
         body = body.split('Champion:')[0]
         body = re.sub(r'\s+', ' ', body)
         body = re.sub(r'(\d)\s*-\s+(\d)', r'\1-\2', body)
-        # locate team code occurrences
+        # locate team code occurrences (exact "SCHOOL CODE", then typo-tolerant OCR variants)
         occ = []
         for i, t in enumerate(teams):
             for m in re.finditer(r'(?<![A-Za-z])' + re.escape(t['code']) + r'(?![A-Za-z])', body):
                 occ.append((m.start(), m.end(), i))
+        used = {(s, e) for s, e, _ in occ}
+        for m in re.finditer(r'(?<![A-Za-z])([A-Z]{2,5})\s+([A-Z]{3,6})(?![A-Za-z])', body):
+            if (m.start(), m.end()) in used:
+                continue
+            pref, code = m.group(1), m.group(2)
+            cand = [i for i, t in enumerate(teams) if t['prefix'] == pref and t['codetok'] == code]
+            if not cand:
+                close = []
+                for i, t in enumerate(teams):
+                    if t['prefix'] == pref and difflib.SequenceMatcher(None, t['codetok'], code).ratio() >= 0.75:
+                        close.append((difflib.SequenceMatcher(None, t['codetok'], code).ratio(), i))
+                close.sort(reverse=True)
+                if close and (len(close) == 1 or close[0][0] > close[1][0] + 0.05):
+                    cand = [close[0][1]]
+            if len(cand) == 1:
+                occ.append((m.start(), m.end(), cand[0]))
+                used.add((m.start(), m.end()))
         occ.sort()
         # drop overlapping
         clean = []
@@ -448,6 +473,9 @@ def prelim_debates_loose(teams):
                 continue
             if 'BYE' in [x.upper() for x in toks] and not any(x in ('W', 'L') for x in toks):
                 obs.setdefault((rn, i, None), []).append({'bye': True})
+                continue
+            if 'FORFEIT' in [x.upper() for x in toks] and not any(x in codes and x != t['codetok'] for x in toks):
+                issues.append(f'R{rn} {t["code"]}: forfeit recorded on the sheet with no opponent listed')
                 continue
             res = next((x for x in toks if x in ('W', 'L')), None)
             side = next((x for x in toks if SIDE_TOK.match(x)), None)

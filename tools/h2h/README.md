@@ -19,7 +19,7 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 
 ## Totals
 
-4362 debates/meetings (byes excluded); 4301 count as debates. Status counts over all rows: CONFIRMED 4263, BYE 418, WALKOVER 40, INFERRED 38, UNKNOWN 13, DOUBLE_WIN 4, FORFEIT 4.
+4628 debates/meetings (byes excluded); 4565 count as debates. Status counts over all rows: CONFIRMED 4527, BYE 439, WALKOVER 42, INFERRED 38, UNKNOWN 13, DOUBLE_WIN 4, FORFEIT 4.
 
 | season | debates | counted as debates |
 |---|---|---|
@@ -28,7 +28,7 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 | 2023-2024 | 745 | 724 |
 | 2024-2025 | 1062 | 1049 |
 | 2025-2026 | 1080 | 1067 |
-| 2026-2027 | 261 | 260 |
+| 2026-2027 | 527 | 524 |
 
 ## Rules applied
 
@@ -136,10 +136,15 @@ The site's Head-to-Head page (`/h2h.html`) reads `data/h2h.json` written by this
 | 2026-2027 | Rice University Classic - 2026 | Tabroom | 55/57 | 12/12 | 0 | 0 | 0 | 23/23 |  |
 | 2026-2027 | Steve Hunt - 2026 | SpeechWire | 65/65 | 11/11 | 0 | 0 | 0 | 26/26 | OCR |
 | 2026-2027 | Crossman - 2026 | FTN | 70/70 | 14/14 | 0 | 0 | 1 | 28/28 |  |
+| 2026-2027 | Paul Winters - 2026 | SpeechWire | 66/69 | 11/11 | 0 | 0 | 0 | 26/28 | OCR |
+| 2026-2027 | Grossmont Griffin - 2026 | FTN | 36/36 | 6/6 | 0 | 0 | 0 | 18/18 |  |
+| 2026-2027 | The Bernacchi - 2026 | FTN | 28/28 | 6/6 | 0 | 0 | 0 | 14/14 |  |
+| 2026-2027 | I70 Lane - 2026 | Tabroom | 55/57 | 11/11 | 0 | 0 | 1 | 23/23 |  |
+| 2026-2027 | I70 Hunsaker - 2026 | Tabroom | 40/40 | 7/7 | 0 | 0 | 1 | 16/16 |  |
 
 ## Mismatches against the site (validation.csv)
 
-1502 of 1604 site team-records match the parsed W-L exactly (byes counted the way the site counts them), 102 differ, 0 site teams are not found in the source.
+1599 of 1703 site team-records match the parsed W-L exactly (byes counted the way the site counts them), 104 differ, 0 site teams are not found in the source.
 
 The main patterns (details per team in validation.csv):
 - **Site error, prelim losses stored as 4 - wins** in 9 FTN tournaments. This is confirmed against the official sheets (see above).

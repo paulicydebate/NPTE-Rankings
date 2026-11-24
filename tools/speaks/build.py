@@ -45,6 +45,8 @@ TAB_FILES = {  # tournament -> (file, event abbr or None = pick by overlap with 
     'Gina Lane pt 1 - 2025': ('Gina Lane pt1 and pt 2.json', 'NPDA'), 'Gina Lane pt 2 - 2025': ('Gina Lane pt1 and pt 2.json', 'NPTE'),
     'GGI - 2026': ('Golden Gate Invitational - 2026.json', None),
     'Big Tent - 2022': ('Big Tent - 2022.json', 'VNPDA'), 'Big Tent - 2023': ('Big Tent - 2023.json', 'VNPDA'),
+    'I70 Lane - 2026': ('I70 Lane - 2026.json', 'Open NPDA'),
+    'I70 Hunsaker - 2026': ('I70 Hunsaker - 2026.json', 'Open NPDA'),
 }
 SW_FILES = {  # tournament -> (file, mode); 'ocr' = obfuscated-font export, needs Tesseract (milestone 3)
     'Steve Hunt - 2021': ('complete Steve Hunt - 2021.pdf', 'ocr'), 'Steve Hunt - 2022': ('complete Steve Hunt - 2022.pdf', 'grid'),
