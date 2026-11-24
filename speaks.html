@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Speaker Points · NPTE Rankings</title>
+<script>(function(){var t;try{t=localStorage.getItem('npte-theme')}catch(e){}if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark')})();</script>
+<link rel="stylesheet" href="assets/h2h.css">
+<link rel="stylesheet" href="assets/speaks.css">
+</head>
+<body data-page="speaks">
+<div class="wrap">
+<header><div><h1>NPTE Rankings · Speaker Points</h1><div class="sub" id="sub">Private</div></div>
+<nav class="site"><button class="btn" id="lock" type="button" hidden>Lock</button><button class="btn" id="dark" type="button" aria-label="Toggle dark mode">🌙</button></nav></header>
+<div class="card gate" id="gate">
+<form id="gateForm" autocomplete="off">
+<label for="pass">Passphrase</label>
+<div class="row"><input type="password" id="pass" autocomplete="current-password" autofocus><button class="btn on" id="go" type="submit">Unlock</button></div>
+<div class="muted" id="gateMsg" role="status" aria-live="polite"></div>
+</form>
+</div>
+<div id="app" hidden></div>
+</div>
+<script src="assets/speaks.js"></script>
+</body>
+</html>

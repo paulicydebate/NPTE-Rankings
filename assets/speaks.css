@@ -1,0 +1,22 @@
+/* Speaker-points page: additions on top of h2h.css */
+.gate{max-width:440px;margin:12vh auto 0}.gate input{flex:1;min-width:0}.gate .muted{margin-top:10px;min-height:1.2em;font-size:.9rem}
+[hidden]{display:none!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text);cursor:pointer;font-size:.82rem;font-weight:600}
+.chip.on{background:#2563eb;color:#fff;border-color:#2563eb}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.stat{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--head)}
+.stat b{display:block;font-size:1.25rem;font-weight:800}.stat>span{font-size:.75rem;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+th .arr{color:var(--link)}
+.pos{color:var(--win);font-weight:700}.neg{color:var(--loss);font-weight:700}
+h2{font-size:1.25rem;margin:0 0 4px;font-weight:800}h3{font-size:1rem;margin:18px 0 8px;font-weight:700}
+.bars{display:grid;grid-template-columns:90px 1fr 90px;gap:4px 10px;align-items:center;font-size:.85rem;max-width:560px}
+.bar{height:14px;border-radius:3px;background:#2563eb;min-width:1px}
+.split{display:flex;height:18px;border-radius:4px;overflow:hidden;max-width:560px;border:1px solid var(--border)}
+.split i{display:block;height:100%}.split .a{background:#2563eb}.split .b{background:#d97706}
+.note{font-size:.82rem;color:var(--muted);line-height:1.45}
+.back{margin-bottom:10px}
+details.card summary{cursor:pointer;font-weight:700}
+.tbl{overflow:auto;max-height:72vh}
+@media(max-width:640px){header{flex-direction:column;align-items:flex-start}input.name{width:100%}}

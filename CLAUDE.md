@@ -139,3 +139,10 @@ just the new tournament's rows from `tournamentLogs`.
 
 `h2h.html` + `assets/h2h.js`/`assets/h2h.css` read `data/h2h.json` (matchups only),
 built by `tools/h2h/build.py` (see `tools/h2h/README.md`). There is no ELO feature.
+
+## Private speaker-points page
+
+`speaks.html` + `assets/speaks.js`/`assets/speaks.css` decrypt `data/speaks.enc.json` in the browser
+(passphrase-gated, `noindex`). Built by `tools/speaks/build.py` then `tools/speaks/encrypt.py` (see
+`tools/speaks/README.md`). **Never link it from `index.html` or `h2h.html`. Never commit the passphrase,
+`tools/speaks/out/`, or any `*.plain.json`** - only the ciphertext and the code go in git.
