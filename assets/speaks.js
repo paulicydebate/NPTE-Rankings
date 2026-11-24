@@ -104,7 +104,7 @@ $('method').innerHTML=`
 <p><b>Z-score.</b> The same difference divided by how spread out that judge's points are (their standard deviation, never taken as less than ${SD_FLOOR}). It puts a generous judge with a wide range and a strict judge with a narrow range on the same scale. 0 is that judge's average; +1.0 is one standard deviation above it. Averaged over the debater's ballots. This is the fairest single column for comparing debaters who saw different judges.</p>
 <p><b>Adj Avg.</b> The Z-score put back on the points scale so it reads like an average: the league-wide average score (${f(LG_MU)}) plus the Z-score times the spread of a typical judge's scores (${f(LG_SD)}). Read it as "what this debater would average in front of a typical judge". Compare it with Raw Avg: higher means their judges were stricter than usual, lower means their judges were generous. It ranks debaters in the same order as the Z-score.</p>
 <p><b>Judge baselines use every season</b>, whatever filters are set, so a judge's yardstick does not wobble when you narrow the view.</p>
-<p><b>Judges.</b> <i>Vs Others</i> is the mirror image: this judge's points minus what the same debaters averaged from all their other judges. Positive = more generous than their peers to the same people; negative = stricter. <i>W–L Gap</i> is the average points to winners minus losers. <i>Low-Pt Win</i> is how often the winning team got fewer total points than the losing team. <i>Aff % / Neg %</i> is the share of this judge's decisions that went to each side, counting prelims and, where the sheet records each panel member's vote, elims.</p>
+<p><b>Judges.</b> <i>Vs Others</i> is the mirror image: this judge's points minus what the same debaters averaged from all their other judges. Positive = more generous than their peers to the same people; negative = stricter. <i>W–L Gap</i> is the average points to winners minus losers. <i>Gave a 30</i> is the share of rounds (not ballots) in which the judge gave at least one of the four debaters a 30. <i>Low-Pt Win</i> is how often the winning team got fewer total points than the losing team. <i>Aff % / Neg %</i> is the share of this judge's decisions that went to each side, counting prelims and, where the sheet records each panel member's vote, elims.</p>
 <p><b>Caveat.</b> The adjustment assumes a judge sees a roughly typical mix of teams. A judge who mostly sits top-bracket rooms has a higher average for a real reason, so their debaters are adjusted down a little more than they should be. Treat small differences as ties.</p>`;
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{location.hash='';S.tab=b.dataset.tab;render()});
 
@@ -191,7 +191,8 @@ function jStats(rows,decs){
     const a=d.aff.reduce((x,r)=>x+r[8],0),n=d.neg.reduce((x,r)=>x+r[8],0),aw=d.aff[0][7]===1;lpn++;if(aw?a<n:n<a)lp++}}
   const w=mean(rows.filter(r=>r[7]===1).map(r=>r[8])),l=mean(rows.filter(r=>r[7]===0).map(r=>r[8]));
   const aw=decs.filter(d=>d[3]===1).length;
-  return {n:rows.length,rooms:db.length,avg:mean(p),med:median(p),sd:sd(p),lo:p.length?Math.min(...p):null,hi:p.length?Math.max(...p):null,
+  const t30=db.filter(d=>d.all.some(r=>r[8]>=30)).length;
+  return {n:rows.length,rooms:db.length,t30,p30:db.length?t30/db.length:null,avg:mean(p),med:median(p),sd:sd(p),lo:p.length?Math.min(...p):null,hi:p.length?Math.max(...p):null,
     gap:w!=null&&l!=null?w-l:null,lp:lpn?lp/lpn:null,lpn,oth:mean(oth),dn:decs.length,aff:decs.length?aw/decs.length:null,neg:decs.length?1-aw/decs.length:null,aw};
 }
 function judgeTable(){
@@ -208,6 +209,7 @@ function judgeTable(){
    {k:'lo',h:'Min',num:1,v:r=>r.lo,f:r=>f(r.lo,1)},{k:'hi',h:'Max',num:1,v:r=>r.hi,f:r=>f(r.hi,1)},
    {k:'oth',h:'Vs Others',num:1,v:r=>r.oth,f:r=>sg(r.oth),tip:'This judge\'s points minus what the same debaters average from their other judges. + generous, − strict'},
    {k:'gap',h:'W–L Gap',num:1,v:r=>r.gap,f:r=>f(r.gap),tip:'Average points to winners minus losers'},
+   {k:'p30',h:'Gave a 30',num:1,v:r=>r.p30,f:r=>r.p30==null?'–':Math.round(100*r.p30)+'%',tip:'Share of rounds in which this judge gave at least one debater a 30'},
    {k:'lp',h:'Low-Pt Win',num:1,v:r=>r.lp,f:r=>r.lp==null?'–':Math.round(100*r.lp)+'%',tip:'Share of rooms where the winning team got fewer total points'},
    {k:'dn',h:'Decisions',num:1,v:r=>r.dn},{k:'aff',h:'Aff %',num:1,v:r=>r.aff,f:r=>r.aff==null?'–':Math.round(100*r.aff)+'%'},
    {k:'neg',h:'Neg %',num:1,v:r=>r.neg,f:r=>r.neg==null?'–':Math.round(100*r.neg)+'%'}];
@@ -252,7 +254,7 @@ function judgeDetail(j){
   const s=jStats(rows,decs);
   let h=`<button class="btn back" id="back">← Leaderboard</button><h2>${esc(JUD[j][0])}</h2><div class="muted">${esc(JUD[j][1]||'')}${JUD[j][1]?' · ':''}${scopeNote()}</div>`;
   h+=`<div class="stats">${stat(s.rooms,'Rounds with points')}${stat(s.n,'Speaker ballots')}${stat(f(s.avg),'Mean')}${stat(f(s.med,1),'Median')}${stat(f(s.sd),'Std dev')}${stat(f(s.lo,1)+' / '+f(s.hi,1),'Min / max')}
-   ${stat(sg(s.oth),'Vs other judges')}${stat(f(s.gap),'Win–loss gap')}${stat(s.lp==null?'–':Math.round(100*s.lp)+'%','Low-point wins')}</div>`;
+   ${stat(sg(s.oth),'Vs other judges')}${stat(f(s.gap),'Win–loss gap')}${stat(s.lp==null?'–':Math.round(100*s.lp)+'%','Low-point wins')}${stat(s.p30==null?'–':Math.round(100*s.p30)+'%',`Rounds with a 30 (${s.t30} of ${s.rooms})`)}</div>`;
   h+='<h3>Decisions by side</h3>';
   if(s.dn){const pre=decs.filter(d=>!d[4]),el=decs.filter(d=>d[4]),a=x=>x.filter(d=>d[3]===1).length;
     h+=`<div class="split" role="img" aria-label="Aff ${Math.round(100*s.aff)} percent, Neg ${Math.round(100*s.neg)} percent"><i class="a" style="width:${100*s.aff}%"></i><i class="b" style="width:${100*s.neg}%"></i></div>
@@ -266,9 +268,9 @@ function judgeDetail(j){
   const seas=new Map();for(const r of rows){const k=T[r[0]][1];(seas.get(k)||seas.set(k,{r:[],d:[]}).get(k)).r.push(r)}
   for(const d of decs){const k=T[d[0]][1];(seas.get(k)||seas.set(k,{r:[],d:[]}).get(k)).d.push(d)}
   let prev=null;
-  h+='<h3>Season by season</h3>'+simpleTable([['Season'],['Ballots',1],['Mean',1],['Change',1],['Median',1],['Std Dev',1],['Vs Others',1],['Decisions',1],['Aff %',1],['Neg %',1]],
+  h+='<h3>Season by season</h3>'+simpleTable([['Season'],['Rounds',1],['Ballots',1],['Mean',1],['Change',1],['Median',1],['Std Dev',1],['Vs Others',1],['Gave a 30',1],['Decisions',1],['Aff %',1],['Neg %',1]],
     [...seas].sort((a,b)=>a[0]-b[0]).map(([k,g])=>{const x=jStats(g.r,g.d),ch=prev!=null&&x.avg!=null?x.avg-prev:null;if(x.avg!=null)prev=x.avg;
-      return [esc(SEASONS[k]),x.n,f(x.avg),sg(ch),f(x.med,1),f(x.sd),sg(x.oth),x.dn,x.aff==null?'–':Math.round(100*x.aff)+'%',x.neg==null?'–':Math.round(100*x.neg)+'%']}));
+      return [esc(SEASONS[k]),x.rooms,x.n,f(x.avg),sg(ch),f(x.med,1),f(x.sd),sg(x.oth),x.p30==null?'–':Math.round(100*x.p30)+'%',x.dn,x.aff==null?'–':Math.round(100*x.aff)+'%',x.neg==null?'–':Math.round(100*x.neg)+'%']}));
   const team=g=>g.length?g.map(r=>`${linkC(r[2])} <b>${f(r[8],1)}</b>`).join(', ')+(g[0][7]>=0?' '+wl(g[0][7]):''):'<span class="muted">–</span>';
   const db=debates(rows).sort((a,b)=>tOrder(b.t)-tOrder(a.t)||a.round.localeCompare(b.round));
   if(db.length)h+='<h3>Round log</h3>'+simpleTable([['Tournament'],['Rd'],['Aff'],['Neg'],['Note']],db.map(d=>{
