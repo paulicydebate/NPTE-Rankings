@@ -88,3 +88,8 @@ season,tournament,platform,source,status,site_teams,parsed_prelim_debates,site_p
 2026-2027,Rice University Classic - 2026,Tabroom,source_pdfs/tabroom/Rice University Classic - 2026.json [event NPDA],parsed,23,55,57,12,12,67,0,0,0,0,8,23,0,0,0
 2026-2027,Steve Hunt - 2026,SpeechWire,source_pdfs/speechwire/Steve Hunt Prelims.pdf + new-sources/Steve Hunt - 2026 elim results.pdf (OCR) [division Senior Parliamentary Debate],parsed,26,65,65,11,11,76,0,0,0,0,4,26,0,0,1
 2026-2027,Crossman - 2026,FTN,source_pdfs/FTN/Crossman Invitational - 2026.pdf,parsed,28,70,70,14,14,83,0,0,1,0,1,28,0,0,0
+2026-2027,Paul Winters - 2026,SpeechWire,source_pdfs/speechwire/complete Paul Winters - 2026.pdf (OCR) [division Parli Open Division],parsed,28,66,69,11,11,77,0,0,0,0,8,26,2,0,3
+2026-2027,Grossmont Griffin - 2026,FTN,source_pdfs/FTN/Grossmont Griffin - 2026.pdf,parsed,18,36,36,6,6,42,0,0,0,0,3,18,0,0,0
+2026-2027,The Bernacchi - 2026,FTN,source_pdfs/FTN/The Bernacchi - 2026.pdf,parsed,14,28,28,6,6,34,0,0,0,0,1,14,0,0,0
+2026-2027,I70 Lane - 2026,Tabroom,source_pdfs/tabroom/I70 Lane - 2026.json [event Open NPDA],parsed,23,55,57,11,11,65,0,0,1,0,9,23,0,0,0
+2026-2027,I70 Hunsaker - 2026,Tabroom,source_pdfs/tabroom/I70 Hunsaker - 2026.json [event Open NPDA],parsed,16,40,40,7,7,46,0,0,1,0,0,16,0,0,0

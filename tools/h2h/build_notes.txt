@@ -41,6 +41,8 @@ Gina Lane pt 2 - 2025: (1, 6)
 Great Salt Lake - 2026: (2, 1)
 Big Red - 2026: (1, 2)
 Rice University Classic - 2026: (2, 5)
+I70 Lane - 2026: (4, 3)
+I70 Hunsaker - 2026: (3, 0)
 
 # parse issues by tournament
 Steve Hunt - 2021: R4 Berkeley Parliamentary JDIB vs UPacific of the ASGG: OCR result unknown/conflicting
@@ -60,11 +62,11 @@ Jannese Davidson - 2022Jan: Rd 2: University of the Pacific - Angelica Stephanie
 NCFA Spring Champs - 2022: Rd 5: both University of California San Diego - Joseph Berck & Samyak Karnavat and University of the Pacific - Arshita Sandhiparthi & Tierra Smithson show W
 Gorlock Gala - 2023: Rd 2: The University of Central Missouri - Lillian Rhodes & Infinatasia Nading vs "Simpson College - Jenna Pfeiffer & Jadyn Mortenson" -> 0 candidates
 Gorlock Gala - 2023: Rd 1: Whitman College - Alexa Grechishkin & Isabel Mathy vs "Simpson College - Jenna Pfeiffer & Jadyn Mortenson" -> 0 candidates
-Steve Hunt - 2023: R4 Saint Mary's C BAGO: OCR cell unresolved "FORFEIT"
-Steve Hunt - 2023: R5 Saint Mary's C BAGO: OCR cell unresolved "FORFEIT"
-Steve Hunt - 2023: R2 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
-Steve Hunt - 2023: R4 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
-Steve Hunt - 2023: R5 Saint Mary's C LOHU: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2023: R4 Saint Mary's C BAGO: forfeit recorded on the sheet with no opponent listed
+Steve Hunt - 2023: R5 Saint Mary's C BAGO: forfeit recorded on the sheet with no opponent listed
+Steve Hunt - 2023: R2 Saint Mary's C LOHU: forfeit recorded on the sheet with no opponent listed
+Steve Hunt - 2023: R4 Saint Mary's C LOHU: forfeit recorded on the sheet with no opponent listed
+Steve Hunt - 2023: R5 Saint Mary's C LOHU: forfeit recorded on the sheet with no opponent listed
 Steve Hunt - 2023: R1 Tulane Univers FAJI vs University of WAFE: OCR result unknown/conflicting
 Steve Hunt - 2023: Final: no def./BYE after Whitman Colleg GRMA: " Alexa Grechishkin and Kyle Mathy vs. "
 Steve Hunt - 2023: Final: no def./BYE after Whitman Colleg LIMO: " Jas Liu and Kasey Moulton 0-0 This tournament is "
@@ -92,10 +94,13 @@ Great Salt Lake - 2025: Semis: both University of the Pacific - Sarah Campi & Be
 PSCFA Spring Champs - 2025: Rd 3: both El Camino College - Andres Osorio & Ethan Syring and University of California, Santa Barbara - Xander Hepburn & Nathan Carvajal show W
 Steve Hunt - 2025: R4 Parliamentary SCLI: OCR cell unresolved "W WIC TEMA Neg - - CU1 Alexander Maier"
 Steve Hunt - 2025: R2 Rice Universit SAST: OCR cell unresolved "W WIC TEMA Neg - - WC2 Grace Canny"
-Steve Hunt - 2025: R4 Whitman Colleg PIWA: OCR cell unresolved "FORFEIT"
+Steve Hunt - 2025: R4 Whitman Colleg PIWA: forfeit recorded on the sheet with no opponent listed
 Steve Hunt - 2025: Semis: no def./BYE after Parliamentary SCLI: " Scott Schuster and Kyleen Lin (Neg) 2-1 "
 Steve Hunt - 2025: Final: dangling def. after Parliamentary CABA
 Robert Barbera - 2025: Rd 1: Los Angeles Valley College - Amna Shah & Arpi Danielyan vs "California State University Long Beach - Jean Kim & Dorian Gurrola they/them" -> 0 candidates
 NPDA Fall Champs - 2025: Rd 2: Diablo Valley College - Adrian Lossada & Jasper Pacheco (They/Them) vs "William Jewell College - Lukas Lepage (He/Him) & Parker Massey (He/Him)" -> 0 candidates
 NPDA Fall Champs - 2025: Rd 1: Parliamentary Debate at Berkeley - Anthony Carrillo & Garret Slody (Diablo Valley College) vs "William Jewell College - Lukas Lepage (He/Him) & Parker Massey (He/Him)" -> 0 candidates
 Steve Hunt - 2026: placeholder team created for unparsed block "Parliamentary SY"
+Paul Winters - 2026: R4 RICE MYRD: forfeit recorded on the sheet with no opponent listed
+Paul Winters - 2026: R5 RICE MYRD: forfeit recorded on the sheet with no opponent listed
+Paul Winters - 2026: R4 SMC JPEO: forfeit recorded on the sheet with no opponent listed
